@@ -13,12 +13,10 @@ const loginBtn = document.getElementById('login-btn');
 const errorMsg = document.getElementById('error-msg');
 const errorText = document.getElementById('error-text');
 
-// Check if already logged in on page load
 try {
   await getCurrentUser();
   showDashboard();
 } catch {
-  // not logged in, show login form
 }
 
 loginBtn.addEventListener('click', async () => {
