@@ -1,6 +1,16 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
+  Event: a
+    .model({
+      name: a.string().required(),
+      submissions: a.hasMany('Submission', 'eventId'),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated().to(['create', 'read', 'update', 'delete']),
+    ]),
+
   Submission: a
     .model({
       name: a.string().required(),
@@ -8,6 +18,8 @@ const schema = a.schema({
       phone: a.string().required(),
       consent: a.boolean().required(),
       submittedAt: a.datetime(),
+      eventId: a.id().required(),
+      event: a.belongsTo('Event', 'eventId'),
     })
     .authorization((allow) => [
       allow.guest().to(['create']),
