@@ -13,10 +13,15 @@ const loginBtn = document.getElementById('login-btn');
 const errorMsg = document.getElementById('error-msg');
 const errorText = document.getElementById('error-text');
 
+let allSubmissions = [];
+let allEvents = [];
+
+// Check if already logged in on page load
 try {
   await getCurrentUser();
   showDashboard();
 } catch {
+  // not logged in, show login form
 }
 
 loginBtn.addEventListener('click', async () => {
@@ -68,45 +73,98 @@ async function showDashboard() {
   const loadingMsg = document.getElementById('loading-msg');
   const emptyMsg = document.getElementById('empty-msg');
   const table = document.getElementById('submissions-table');
-  const tbody = document.getElementById('submissions-body');
 
   try {
-    const { data: submissions, errors } = await client.models.Submission.list();
+    const [eventsResult, submissionsResult] = await Promise.all([
+      client.models.Event.list(),
+      client.models.Submission.list(),
+    ]);
 
-    loadingMsg.style.display = 'none';
-
-    if (errors) {
-      console.error(errors);
-      showError('Failed to load submissions.');
+    if (eventsResult.errors || submissionsResult.errors) {
+      console.error(eventsResult.errors, submissionsResult.errors);
+      showError('Failed to load dashboard data.');
       return;
     }
 
-    if (!submissions || submissions.length === 0) {
+    allEvents = eventsResult.data || [];
+    allSubmissions = submissionsResult.data || [];
+
+    loadingMsg.style.display = 'none';
+
+    renderEventFilter();
+
+    if (allSubmissions.length === 0) {
       emptyMsg.style.display = 'block';
       return;
     }
 
-    submissions
-      .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
-      .forEach((s) => {
-        const row = document.createElement('tr');
-        const submittedDate = s.submittedAt ? new Date(s.submittedAt).toLocaleString() : '—';
-        row.innerHTML = `
-          <td>${escapeHtml(s.name)}</td>
-          <td>${escapeHtml(s.email)}</td>
-          <td>${escapeHtml(s.phone)}</td>
-          <td class="${s.consent ? 'consent-yes' : 'consent-no'}">${s.consent ? 'Yes' : 'No'}</td>
-          <td>${submittedDate}</td>
-        `;
-        tbody.appendChild(row);
-      });
-
+    renderTable(allSubmissions);
     table.style.display = 'table';
   } catch (err) {
     console.error(err);
     loadingMsg.style.display = 'none';
-    showError('Failed to load submissions.');
+    showError('Failed to load dashboard data.');
   }
+}
+
+function renderEventFilter() {
+  const filterContainer = document.getElementById('event-filter-container');
+  if (!filterContainer) return;
+
+  const eventMap = new Map(allEvents.map(e => [e.id, e.name]));
+
+  filterContainer.innerHTML = `
+    <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">Filter by event:</label>
+    <select id="event-filter" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;">
+      <option value="">All events</option>
+      ${allEvents.map(e => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')}
+    </select>
+  `;
+
+  document.getElementById('event-filter').addEventListener('change', (e) => {
+    const eventId = e.target.value;
+    const filtered = eventId
+      ? allSubmissions.filter(s => s.eventId === eventId)
+      : allSubmissions;
+    renderTable(filtered);
+  });
+}
+
+function renderTable(submissions) {
+  const tbody = document.getElementById('submissions-body');
+  const table = document.getElementById('submissions-table');
+  const emptyMsg = document.getElementById('empty-msg');
+
+  tbody.innerHTML = '';
+
+  if (submissions.length === 0) {
+    table.style.display = 'none';
+    emptyMsg.style.display = 'block';
+    return;
+  }
+
+  emptyMsg.style.display = 'none';
+  table.style.display = 'table';
+
+  const eventMap = new Map(allEvents.map(e => [e.id, e.name]));
+
+  submissions
+    .slice()
+    .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+    .forEach((s) => {
+      const row = document.createElement('tr');
+      const submittedDate = s.submittedAt ? new Date(s.submittedAt).toLocaleString() : '—';
+      const eventName = eventMap.get(s.eventId) || '—';
+      row.innerHTML = `
+        <td>${escapeHtml(eventName)}</td>
+        <td>${escapeHtml(s.name)}</td>
+        <td>${escapeHtml(s.email)}</td>
+        <td>${escapeHtml(s.phone)}</td>
+        <td class="${s.consent ? 'consent-yes' : 'consent-no'}">${s.consent ? 'Yes' : 'No'}</td>
+        <td>${submittedDate}</td>
+      `;
+      tbody.appendChild(row);
+    });
 }
 
 function escapeHtml(str) {
