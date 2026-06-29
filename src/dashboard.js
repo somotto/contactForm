@@ -166,6 +166,59 @@ function renderTable(submissions) {
       tbody.appendChild(row);
     });
 }
+document.addEventListener('DOMContentLoaded', () => {
+  const addEventBtn = document.getElementById('add-event-btn');
+  if (addEventBtn) {
+    addEventBtn.addEventListener('click', handleAddEvent);
+  }
+});
+
+async function handleAddEvent() {
+  const input = document.getElementById('new-event-name');
+  const msg = document.getElementById('add-event-msg');
+  const name = input.value.trim();
+
+  msg.style.display = 'none';
+
+  if (!name) {
+    msg.textContent = 'Please enter an event name.';
+    msg.style.color = '#b42318';
+    msg.style.display = 'block';
+    return;
+  }
+
+  const duplicate = allEvents.some(e => e.name.toLowerCase() === name.toLowerCase());
+  if (duplicate) {
+    msg.textContent = 'An event with this name already exists.';
+    msg.style.color = '#b42318';
+    msg.style.display = 'block';
+    return;
+  }
+
+  try {
+    const { data, errors } = await client.models.Event.create({ name });
+
+    if (errors) {
+      console.error(errors);
+      msg.textContent = 'Failed to create event.';
+      msg.style.color = '#b42318';
+      msg.style.display = 'block';
+      return;
+    }
+
+    allEvents.push(data);
+    renderEventFilter();
+    input.value = '';
+    msg.textContent = `"${name}" added successfully.`;
+    msg.style.color = '#1e6b2e';
+    msg.style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    msg.textContent = 'Failed to create event.';
+    msg.style.color = '#b42318';
+    msg.style.display = 'block';
+  }
+}
 
 function escapeHtml(str) {
   const div = document.createElement('div');
