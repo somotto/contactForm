@@ -21,8 +21,8 @@ const schema = a.schema({
       event: a.belongsTo('Event', 'eventId'),
     })
     .authorization((allow) => [
-      allow.guest().to(['create']),
-      allow.authenticated().to(['read', 'delete']),
+    allow.authenticated().to(['create', 'read', 'update', 'delete']),
+    allow.guest().to(['read']),
     ]),
 });
 
