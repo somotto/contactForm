@@ -4,7 +4,6 @@ const schema = a.schema({
   Event: a
     .model({
       name: a.string().required(),
-      submissions: a.hasMany('Submission', 'eventId'),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
@@ -22,8 +21,8 @@ const schema = a.schema({
       event: a.belongsTo('Event', 'eventId'),
     })
     .authorization((allow) => [
-      allow.authenticated().to(['create', 'read', 'update', 'delete']),
-      allow.guest().to(['read']),
+      allow.guest().to(['create']),
+      allow.authenticated().to(['read', 'delete']),
     ]),
 });
 
