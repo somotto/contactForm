@@ -18,7 +18,7 @@ const schema = a.schema({
       phone: a.string().required(),
       consent: a.boolean().required(),
       submittedAt: a.datetime(),
-      eventId: a.id().required(),
+      eventId: a.id(),
       event: a.belongsTo('Event', 'eventId'),
     })
     .authorization((allow) => [
