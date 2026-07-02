@@ -86,8 +86,10 @@ submitBtn.addEventListener('click', async () => {
   submitBtn.textContent = 'Submitting…';
 
   try {
+    const selectedEvent = events.find(e => e.id === eventId);
     const { errors } = await client.models.Submission.create({
       eventId,
+      eventName: selectedEvent?.name || '',
       name,
       email,
       phone,
