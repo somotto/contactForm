@@ -4,7 +4,7 @@ backend:
     build:
       commands:
         - nvm use 22
-        - npm install --prefer-offline
+        - npm install
 frontend:
   phases:
     build:
