@@ -121,12 +121,24 @@ function renderEventFilter() {
     }
   });
 
+  const baseUrl = window.location.origin;
   filterContainer.innerHTML = `
     <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">Filter by event:</label>
     <select id="event-filter" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;">
       <option value="">All events</option>
       ${uniqueEvents.map(e => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')}
     </select>
+    <div style="margin-top: 8px; font-size: 11px; color: #666;">
+      Event form URLs (use these for QR codes):
+      ${uniqueEvents.map(e => `
+        <div style="margin-top: 4px;">
+          <strong>${escapeHtml(e.name)}:</strong>
+          <a href="${baseUrl}/?event=${encodeURIComponent(e.name)}" target="_blank" style="color: #0C447C; word-break: break-all;">
+            ${baseUrl}/?event=${encodeURIComponent(e.name)}
+          </a>
+        </div>
+      `).join('')}
+    </div>
   `;
 
   document.getElementById('event-filter').addEventListener('change', (e) => {

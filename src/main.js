@@ -12,50 +12,21 @@ const errorText = document.getElementById('error-text');
 const successMsg = document.getElementById('success-msg');
 const eventSelect = document.getElementById('eventSelect');
 
-let events = [];
+// Read event from URL parameter — no AppSync call needed
+const params = new URLSearchParams(window.location.search);
+const eventParam = params.get('event');
 
-// Load events and populate the dropdown on page load
-async function loadEvents() {
-  try {
-    const { data, errors } = await client.models.Event.list();
-
-    if (errors) {
-      console.error(errors);
-      eventSelect.innerHTML = '<option value="">Unable to load events</option>';
-      return;
-    }
-
-    events = data || [];
-
-    if (events.length === 0) {
-      eventSelect.innerHTML = '<option value="">No events available</option>';
-      return;
-    }
-
-    eventSelect.innerHTML = '<option value="">Select an event…</option>' +
-      events.map(e => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('');
-
-    // Pre-select from ?event= URL parameter if present (matches by name, case-insensitive)
-    const params = new URLSearchParams(window.location.search);
-    const eventParam = params.get('event');
-    if (eventParam) {
-      const match = events.find(
-        e => e.name.toLowerCase() === eventParam.toLowerCase()
-      );
-      if (match) {
-        eventSelect.value = match.id;
-      }
-    }
-  } catch (err) {
-    console.error(err);
-    eventSelect.innerHTML = '<option value="">Unable to load events</option>';
-  }
+if (eventParam) {
+  // Event specified in URL — show it locked
+  eventSelect.innerHTML = `<option value="${escapeHtml(eventParam)}">${escapeHtml(eventParam)}</option>`;
+  eventSelect.disabled = true;
+} else {
+  // No event in URL — show a text input instead
+  eventSelect.outerHTML = `<input id="eventSelect" type="text" placeholder="Enter event name" style="width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf; padding: 10px 12px; font-size: 14px;" />`;
 }
 
-loadEvents();
-
 submitBtn.addEventListener('click', async () => {
-  const eventId = eventSelect.value;
+  const eventName = document.getElementById('eventSelect').value.trim();
   const name = document.getElementById('fullname').value.trim();
   const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
@@ -64,8 +35,8 @@ submitBtn.addEventListener('click', async () => {
   errorMsg.style.display = 'none';
   successMsg.style.display = 'none';
 
-  if (!eventId) {
-    showError('Please select an event.');
+  if (!eventName) {
+    showError('Please enter or select an event.');
     return;
   }
   if (!name) {
@@ -86,10 +57,8 @@ submitBtn.addEventListener('click', async () => {
   submitBtn.textContent = 'Submitting…';
 
   try {
-    const selectedEvent = events.find(e => e.id === eventId);
     const { errors } = await client.models.Submission.create({
-      eventId,
-      eventName: selectedEvent?.name || '',
+      eventName,
       name,
       email,
       phone,
@@ -108,7 +77,6 @@ submitBtn.addEventListener('click', async () => {
     document.getElementById('email').value = '';
     document.getElementById('phone').value = '';
     document.getElementById('consent').checked = false;
-    // Keep the event selected in case more attendees use the same device
   } catch (err) {
     console.error(err);
     showError('Something went wrong submitting your details. Please try again.');
