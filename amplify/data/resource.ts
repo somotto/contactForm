@@ -18,11 +18,11 @@ const schema = a.schema({
       consent: a.boolean().required(),
       submittedAt: a.datetime(),
       eventId: a.id(),
-      event: a.belongsTo('Event', 'eventId'),
+      eventName: a.string(),
     })
     .authorization((allow) => [
-    allow.authenticated().to(['create', 'read', 'update', 'delete']),
-    allow.guest().to(['read']),
+      allow.guest().to(['create']),
+      allow.authenticated().to(['read', 'delete']),
     ]),
 });
 
