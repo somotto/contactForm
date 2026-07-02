@@ -17,7 +17,7 @@
     "@aws-amplify/backend-cli": "1.8.3",
     "aws-cdk-lib": "2.244.0",
     "constructs": "10.6.0",
-    "esbuild": "0.28.1",
+    "esbuild": "0.25.0",
     "tsx": "4.22.4",
     "typescript": "5.9.3",
     "vite": "8.0.16"
