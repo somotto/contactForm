@@ -81,6 +81,9 @@ async function showDashboard() {
     }
   }
 
+  // Load vendor profile and update header with company name
+  await loadVendorProfile();
+
   const loadingMsg = document.getElementById('loading-msg');
   const emptyMsg = document.getElementById('empty-msg');
   const table = document.getElementById('submissions-table');
@@ -114,6 +117,29 @@ async function showDashboard() {
     console.error(err);
     loadingMsg.style.display = 'none';
     showError('Failed to load dashboard data.');
+  }
+}
+
+async function loadVendorProfile() {
+  try {
+    const { data, errors } = await client.models.Vendor.list();
+    if (errors || !data || data.length === 0) return;
+
+    const vendor = data[0];
+    const headerCompany = document.getElementById('header-company');
+    const headerTitle = document.getElementById('header-title');
+
+    if (headerCompany && vendor.companyName) {
+      headerCompany.textContent = vendor.companyName;
+    }
+    if (headerTitle) {
+      headerTitle.textContent = `${vendor.companyName} dashboard`;
+    }
+
+    // Update page title too
+    document.title = `Dashboard — ${vendor.companyName}`;
+  } catch (err) {
+    console.error('Failed to load vendor profile:', err);
   }
 }
 

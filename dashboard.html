@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Owner Dashboard — Acme Corporation</title>
+<title>Vendor Dashboard</title>
 <style>
   body {
     background: #f4f5f7;
@@ -43,11 +43,10 @@
     border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
   }
   #login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .register-link { text-align: center; margin-top: 1.25rem; font-size: 13px; color: #555; }
+  .register-link a { color: #0C447C; text-decoration: underline; }
 
-  /* New password challenge */
-  #newpass-card { display: none; }
-
-  /* Dashboard table */
+  /* Dashboard */
   #dashboard-card {
     background: #fff; border: 0.5px solid #d8dade; border-top: none;
     border-radius: 0 0 10px 10px; padding: 2rem; display: none;
@@ -71,8 +70,8 @@
 <div class="wrap">
   <div class="header">
     <div>
-      <p>Acme Corporation</p>
-      <h1>Owner dashboard</h1>
+      <p id="header-company">Lead Capture Platform</p>
+      <h1 id="header-title">Vendor dashboard</h1>
     </div>
     <button id="logout-btn">Log out</button>
   </div>
@@ -80,7 +79,7 @@
   <div id="login-card">
     <div class="field">
       <label for="login-email">Email</label>
-      <input id="login-email" type="email" placeholder="owner@acmecorp.com" />
+      <input id="login-email" type="email" placeholder="you@yourcompany.com" />
     </div>
     <div class="field">
       <label for="login-password">Password</label>
@@ -88,6 +87,9 @@
     </div>
     <button id="login-btn">Log in</button>
     <div id="error-msg"><span id="error-text"></span></div>
+    <div class="register-link">
+      Don't have an account? <a href="/register.html">Register here</a>
+    </div>
   </div>
 
   <div id="dashboard-card">
