@@ -67,6 +67,20 @@ async function showDashboard() {
   dashboardCard.style.display = 'block';
   logoutBtn.style.display = 'inline-block';
 
+  // Complete vendor profile creation if pending from registration
+  const pending = localStorage.getItem('pendingVendorProfile');
+  if (pending) {
+    try {
+      const profile = JSON.parse(pending);
+      const { errors } = await client.models.Vendor.create(profile);
+      if (!errors) {
+        localStorage.removeItem('pendingVendorProfile');
+      }
+    } catch (err) {
+      console.error('Failed to save vendor profile:', err);
+    }
+  }
+
   const loadingMsg = document.getElementById('loading-msg');
   const emptyMsg = document.getElementById('empty-msg');
   const table = document.getElementById('submissions-table');
