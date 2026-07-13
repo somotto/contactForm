@@ -93,30 +93,55 @@
   </div>
 
   <div id="dashboard-card">
-    <div id="add-event-card" style="border: 0.5px solid #d8dade; border-radius: 4px; padding: 14px 16px; margin-bottom: 1.5rem; background: #f7f8fa;">
-      <label for="new-event-name" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 6px;">Add a new event</label>
-      <div style="display: flex; gap: 8px;">
-        <input id="new-event-name" type="text" placeholder="e.g. Annual Gala 2026" style="flex: 1; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
-        <button id="add-event-btn" style="padding: 8px 16px; background: #0C447C; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer;">Add event</button>
+
+    <div id="add-event-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Add an Event</h2>
+      <div style="border: 0.5px solid #d8dade; border-radius: 4px; padding: 16px; background: #f7f8fa;">
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-name" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event name <span style="color:#d23b3b;">*</span></label>
+          <input id="new-event-name" type="text" placeholder="e.g. Annual Gala 2026" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-url" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event website <span style="color:#999; font-weight:400;">(optional)</span></label>
+          <input id="new-event-url" type="url" placeholder="e.g. https://annualgala.com" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label for="new-event-start" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Start date <span style="color:#999; font-weight:400;">(optional)</span></label>
+            <input id="new-event-start" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+          </div>
+          <div style="flex: 1;">
+            <label for="new-event-end" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">End date <span style="color:#999; font-weight:400;">(optional)</span></label>
+            <input id="new-event-end" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+          </div>
+        </div>
+        <button id="add-event-btn" style="padding: 8px 20px; background: #0C447C; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Add event</button>
+        <div id="add-event-msg" style="display: none; margin-top: 10px; font-size: 12px;"></div>
       </div>
-      <div id="add-event-msg" style="display: none; margin-top: 8px; font-size: 12px;"></div>
     </div>
-    <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
-    <div id="loading-msg">Loading submissions…</div>
-    <div id="empty-msg">No submissions yet.</div>
-    <table id="submissions-table" style="display:none;">
-      <thead>
-        <tr>
-          <th>Event</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Consent</th>
-          <th>Submitted at</th>
-        </tr>
-      </thead>
-      <tbody id="submissions-body"></tbody>
-    </table>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="view-submissions-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Submissions</h2>
+      <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
+      <div id="loading-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">Loading submissions…</div>
+      <div id="empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0; display: none;">No submissions yet.</div>
+      <table id="submissions-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Consent</th>
+            <th>Submitted at</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-body"></tbody>
+      </table>
+    </div>
+
   </div>
 </div>
 

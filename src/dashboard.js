@@ -163,7 +163,7 @@ function renderEventFilter() {
 
   const baseUrl = window.location.origin;
   filterContainer.innerHTML = `
-    <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">Filter by event:</label>
+    <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">View Submissions by Event:</label>
     <select id="event-filter" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;">
       <option value="">All events</option>
       ${uniqueEvents.map(e => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')}
@@ -235,6 +235,9 @@ async function handleAddEvent() {
   const input = document.getElementById('new-event-name');
   const msg = document.getElementById('add-event-msg');
   const name = input.value.trim();
+  const eventUrl = document.getElementById('new-event-url').value.trim() || null;
+  const startDate = document.getElementById('new-event-start').value || null;
+  const endDate = document.getElementById('new-event-end').value || null;
 
   msg.style.display = 'none';
 
@@ -254,7 +257,13 @@ async function handleAddEvent() {
   }
 
   try {
-    const { data, errors } = await client.models.Event.create({ name });
+    const { data, errors } = await client.models.Event.create({
+      name,
+      vendorId: 'default',
+      eventUrl,
+      startDate,
+      endDate,
+    });
 
     if (errors) {
       console.error(errors);
@@ -267,6 +276,9 @@ async function handleAddEvent() {
     allEvents.push(data);
     renderEventFilter();
     input.value = '';
+    document.getElementById('new-event-url').value = '';
+    document.getElementById('new-event-start').value = '';
+    document.getElementById('new-event-end').value = '';
     msg.textContent = `"${name}" added successfully.`;
     msg.style.color = '#1e6b2e';
     msg.style.display = 'block';

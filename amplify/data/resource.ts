@@ -18,6 +18,9 @@ const schema = a.schema({
     .model({
       name: a.string().required(),
       vendorId: a.string().required(),
+      eventUrl: a.string(),
+      startDate: a.date(),
+      endDate: a.date(),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
