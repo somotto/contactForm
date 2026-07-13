@@ -82,52 +82,80 @@
   </div>
 
   <div class="body-card">
-    <div class="field">
-      <label for="fullname">Full legal name <span class="req">*</span></label>
-      <input id="fullname" type="text" placeholder="e.g. Jonathan M. Reeves" />
+
+    <div id="registration-form">
+      <div class="field">
+        <label for="fullname">Full legal name <span class="req">*</span></label>
+        <input id="fullname" type="text" placeholder="e.g. Jonathan M. Reeves" />
+      </div>
+
+      <div class="field">
+        <label for="companyname">Company name <span class="req">*</span></label>
+        <input id="companyname" type="text" placeholder="e.g. Acme Corporation" />
+      </div>
+
+      <div class="field">
+        <label for="email">Email address <span class="req">*</span></label>
+        <input id="email" type="email" placeholder="e.g. j.reeves@acmecorp.com" />
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone number <span class="req">*</span></label>
+        <input id="phone" type="tel" placeholder="e.g. +254 712 345 678" />
+      </div>
+
+      <div class="field">
+        <label for="website">Company website</label>
+        <input id="website" type="url" placeholder="e.g. https://acmecorp.com" />
+      </div>
+
+      <div class="field">
+        <label for="password">Password <span class="req">*</span></label>
+        <input id="password" type="password" placeholder="Min 8 chars, upper, lower, number, symbol" />
+      </div>
+
+      <div id="error-msg"><span id="error-text"></span></div>
+
+      <div class="footer-row">
+        <p></p>
+        <button id="register-btn" type="button">Create account →</button>
+      </div>
+
+      <div class="login-link">
+        Already have an account? <a href="/dashboard.html">Log in</a>
+      </div>
     </div>
 
-    <div class="field">
-      <label for="companyname">Company name <span class="req">*</span></label>
-      <input id="companyname" type="text" placeholder="e.g. Acme Corporation" />
+    <div id="verification-form" style="display:none;">
+      <p id="verify-email-label" style="font-size: 13px; color: #555; margin-bottom: 1.5rem; line-height: 1.6;"></p>
+
+      <div class="field">
+        <label for="verify-code">Verification code <span class="req">*</span></label>
+        <input id="verify-code" type="text" placeholder="Enter 6-digit code" maxlength="6"
+          style="letter-spacing: 0.2em; font-size: 18px; text-align: center;" />
+      </div>
+
+      <div id="verify-error" style="display:none; margin-bottom: 1rem; font-size: 13px;
+        padding: 10px 14px; border-radius: 4px; border-left: 3px solid #E24B4A;
+        background: #fdeeee; color: #b42318;"></div>
+
+      <div style="display: flex; gap: 8px; margin-top: 1rem;">
+        <button id="verify-btn" type="button" style="flex: 1; padding: 10px; font-size: 14px;
+          font-weight: 500; background: #0C447C; border: none; border-radius: 4px;
+          color: #E6F1FB; cursor: pointer;">
+          Verify account
+        </button>
+        <button id="resend-btn" type="button" style="padding: 10px 16px; font-size: 13px;
+          background: white; border: 1px solid #c7c9cf; border-radius: 4px;
+          color: #555; cursor: pointer;">
+          Resend code
+        </button>
+      </div>
     </div>
 
-    <div class="field">
-      <label for="email">Email address <span class="req">*</span></label>
-      <input id="email" type="email" placeholder="e.g. j.reeves@acmecorp.com" />
-    </div>
+    <div id="success-msg"></div>
 
-    <div class="field">
-      <label for="phone">Phone number <span class="req">*</span></label>
-      <input id="phone" type="tel" placeholder="e.g. +1 212 555 0100" />
-    </div>
-
-    <div class="field">
-      <label for="website">Company website</label>
-      <input id="website" type="url" placeholder="e.g. https://acmecorp.com" />
-    </div>
-
-    <div class="field">
-      <label for="password">Password <span class="req">*</span></label>
-      <input id="password" type="text" placeholder="Min 8 chars, upper, lower, number, symbol" />
-    </div>
-
-    <div id="error-msg"><span id="error-text"></span></div>
-    <div id="success-msg">
-      Account created! Please check your email to verify your address, then
-      <a href="/dashboard.html" style="color:#1e6b2e;">log in to your dashboard</a>.
-    </div>
-
-    <div class="footer-row">
-      <p></p>
-      <button id="register-btn" type="button">Create account →</button>
-    </div>
-
-    <div class="login-link">
-      Already have an account? <a href="/dashboard.html">Log in</a>
-    </div>
   </div>
-
   <div class="legal-row">
     <p>© 2026 Lead Capture Platform. All rights reserved.</p>
     <p>Privacy Policy · Terms of Use</p>
