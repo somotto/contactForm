@@ -15,11 +15,16 @@ const successMsg = document.getElementById('success-msg');
 const params = new URLSearchParams(window.location.search);
 const eventName = params.get('event') || '';
 
+// Update header dynamically with event name
+const headerEventName = document.getElementById('header-event-name');
+const headerTitle = document.getElementById('header-title');
+
 if (eventName) {
-  const banner = document.getElementById('event-banner');
-  const bannerName = document.getElementById('event-banner-name');
-  bannerName.textContent = eventName;
-  banner.style.display = 'block';
+  headerEventName.textContent = eventName;
+  headerTitle.textContent = 'Contact registration';
+} else {
+  headerEventName.textContent = 'Lead Capture Platform';
+  headerTitle.textContent = 'Contact registration';
 }
 
 submitBtn.addEventListener('click', async () => {
