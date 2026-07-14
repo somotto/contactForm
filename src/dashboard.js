@@ -259,7 +259,6 @@ async function handleAddEvent() {
   try {
     const { data, errors } = await client.models.Event.create({
       name,
-      vendorId: 'default',
       eventUrl,
       startDate,
       endDate,

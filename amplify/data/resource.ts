@@ -17,7 +17,7 @@ const schema = a.schema({
   Event: a
     .model({
       name: a.string().required(),
-      vendorId: a.string().required(),
+      vendorId: a.string(),
       eventUrl: a.string(),
       startDate: a.date(),
       endDate: a.date(),
