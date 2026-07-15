@@ -4,7 +4,7 @@ import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
 
-const client = generateClient({ authMode: 'identityPool' });
+const client = generateClient({ authMode: 'iam' });
 
 const submitBtn = document.getElementById('submit-btn');
 const errorMsg = document.getElementById('error-msg');
