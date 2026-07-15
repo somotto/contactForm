@@ -14,6 +14,7 @@ const successMsg = document.getElementById('success-msg');
 // Read event name from URL parameter — no dropdown, no AppSync call
 const params = new URLSearchParams(window.location.search);
 const eventName = params.get('event') || '';
+const vendorSub = params.get('vendor') || null;
 
 // Update header dynamically with event name
 const headerEventName = document.getElementById('header-event-name');
@@ -56,6 +57,7 @@ submitBtn.addEventListener('click', async () => {
   try {
     const { errors } = await client.models.Submission.create({
       eventName: eventName || null,
+      vendorId: vendorSub,
       name,
       email,
       phone,

@@ -15,6 +15,7 @@ const errorText = document.getElementById('error-text');
 
 let allSubmissions = [];
 let allEvents = [];
+let currentVendorSub = '';
 
 try {
   await getCurrentUser();
@@ -84,14 +85,36 @@ async function showDashboard() {
   // Load vendor profile and update header with company name
   await loadVendorProfile();
 
+  // Get current user's unique ID for vendor isolation
+  try {
+    const { userId } = await getCurrentUser();
+    currentVendorSub = userId;
+  } catch (err) {
+    console.error('Failed to get current user:', err);
+  }
+
   const loadingMsg = document.getElementById('loading-msg');
   const emptyMsg = document.getElementById('empty-msg');
   const table = document.getElementById('submissions-table');
 
   try {
     const [eventsResult, submissionsResult] = await Promise.all([
-      client.models.Event.list(),
-      client.models.Submission.list(),
+      client.models.Event.list({
+        filter: {
+          or: [
+            { vendorId: { eq: currentVendorSub } },
+            { vendorId: { attributeExists: false } },
+          ]
+        }
+      }),
+      client.models.Submission.list({
+        filter: {
+          or: [
+            { vendorId: { eq: currentVendorSub } },
+            { vendorId: { attributeExists: false } },
+          ]
+        }
+      }),
     ]);
 
     if (eventsResult.errors || submissionsResult.errors) {
@@ -173,8 +196,8 @@ function renderEventFilter() {
       ${uniqueEvents.map(e => `
         <div style="margin-top: 4px;">
           <strong>${escapeHtml(e.name)}:</strong>
-          <a href="${baseUrl}/?event=${encodeURIComponent(e.name)}" target="_blank" style="color: #0C447C; word-break: break-all;">
-            ${baseUrl}/?event=${encodeURIComponent(e.name)}
+          <a href="${baseUrl}/?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}" target="_blank" style="color: #0C447C; word-break: break-all;">
+            ${baseUrl}/?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}
           </a>
         </div>
       `).join('')}
@@ -259,6 +282,7 @@ async function handleAddEvent() {
   try {
     const { data, errors } = await client.models.Event.create({
       name,
+      vendorId: currentVendorSub,
       eventUrl,
       startDate,
       endDate,
