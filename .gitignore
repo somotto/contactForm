@@ -3,3 +3,4 @@ node_modules
 .amplify
 amplifyconfiguration*
 distpackage-lock.json
+dist
