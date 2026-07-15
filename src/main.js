@@ -53,6 +53,7 @@ submitBtn.addEventListener('click', async () => {
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting…';
+  
 
   try {
     const { errors } = await client.models.Submission.create({
