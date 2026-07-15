@@ -166,7 +166,7 @@ function renderEventFilter() {
     <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">View Submissions by Event:</label>
     <select id="event-filter" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;">
       <option value="">All events</option>
-      ${uniqueEvents.map(e => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')}
+      ${uniqueEvents.map(e => `<option value="${escapeHtml(e.name)}">${escapeHtml(e.name)}</option>`).join('')}
     </select>
     <div style="margin-top: 8px; font-size: 11px; color: #666;">
       Event form URLs (use these for QR codes):
@@ -182,9 +182,9 @@ function renderEventFilter() {
   `;
 
   document.getElementById('event-filter').addEventListener('change', (e) => {
-    const eventId = e.target.value;
-    const filtered = eventId
-      ? allSubmissions.filter(s => s.eventId === eventId)
+    const eventName = e.target.value;
+    const filtered = eventName
+      ? allSubmissions.filter(s => s.eventName === eventName)
       : allSubmissions;
     renderTable(filtered);
   });
