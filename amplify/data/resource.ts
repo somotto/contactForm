@@ -7,7 +7,7 @@ const schema = a.schema({
       companyName: a.string().required(),
       email: a.string().required(),
       phone: a.string().required(),
-      websiteUrl: a.string(),
+      websiteUrl: a.string().default(''),
       vendorId: a.string().required(),
     })
     .authorization((allow) => [
