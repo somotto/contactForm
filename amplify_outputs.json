@@ -25,6 +25,7 @@
     },
     "unauthenticated_identities_enabled": true
   },
+  
   "data": {
     "url": "https://65uqpyc5pfa7vh6dzwqdrcv2si.appsync-api.us-east-1.amazonaws.com/graphql",
     "aws_region": "us-east-1",
