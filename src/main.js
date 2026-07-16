@@ -5,7 +5,6 @@ import outputs from '../amplify_outputs.json' with { type: 'json' };
 Amplify.configure(outputs);
 
 const client = generateClient({
-  endpoint: outputs.data.url,
   authMode: 'identityPool',
 });
 
