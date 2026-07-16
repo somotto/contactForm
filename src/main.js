@@ -5,7 +5,7 @@ import outputs from '../amplify_outputs.json' with { type: 'json' };
 Amplify.configure(outputs);
 
 const client = generateClient({
-  authMode: 'iam',
+  authMode: 'apiKey',
 });
 
 const submitBtn = document.getElementById('submit-btn');

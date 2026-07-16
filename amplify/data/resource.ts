@@ -39,7 +39,7 @@ const schema = a.schema({
       vendorId: a.string(),
     })
     .authorization((allow) => [
-      allow.guest().to(['create']),
+      allow.publicApiKey().to(['create']),
       allow.authenticated().to(['read', 'delete']),
     ]),
 });
@@ -49,6 +49,9 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+    defaultAuthorizationMode: 'apiKey',
+    apiKeyAuthorizationMode: {
+      expiresInDays: 365,
+    },
   },
 });
