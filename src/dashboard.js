@@ -196,8 +196,8 @@ function renderEventFilter() {
       ${uniqueEvents.map(e => `
         <div style="margin-top: 4px;">
           <strong>${escapeHtml(e.name)}:</strong>
-          <a href="${baseUrl}/?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}" target="_blank" style="color: #0C447C; word-break: break-all;">
-            ${baseUrl}/?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}
+          <a href="${baseUrl}/form.html?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}" target="_blank" style="color: #0C447C; word-break: break-all;">
+            ${baseUrl}/form.html?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}
           </a>
         </div>
       `).join('')}
