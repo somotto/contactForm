@@ -7,7 +7,10 @@ Amplify.configure(outputs);
 const client = generateClient({ authMode: 'apiKey' });
 
 // Extract slug from path: /e/renewable-energy → "renewable-energy"
-const slug = decodeURIComponent(window.location.pathname.replace(/^\/e\//, '').replace(/\/$/, ''));
+// Supports both direct serving (via Amplify rewrite rule) and
+// the ?path= fallback when the catch-all serves index.html first.
+const rawPath = new URLSearchParams(window.location.search).get('path') || window.location.pathname;
+const slug = decodeURIComponent(rawPath.replace(/^\/e\//, '').replace(/\/$/, ''));
 
 const loadingOverlay = document.getElementById('loading-overlay');
 const formContent = document.getElementById('form-content');
