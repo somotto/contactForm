@@ -22,3 +22,18 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-cache'
+  redirects:
+    - source: /e/<slug>
+      target: /e.html
+      status: '200'
+    - source: /register.html
+      target: /register.html
+      status: '200'
+    - source: /<*>
+      target: /index.html
+      status: '200'
