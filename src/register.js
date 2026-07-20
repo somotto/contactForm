@@ -1,5 +1,6 @@
 import { Amplify } from 'aws-amplify';
 import { signUp, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
+import { uploadData } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
@@ -18,6 +19,7 @@ registerBtn.addEventListener('click', async () => {
   const phone = document.getElementById('phone').value.trim();
   const website = document.getElementById('website').value.trim();
   const password = document.getElementById('password').value;
+  const logoFile = document.getElementById('logo').files[0] || null;
 
   errorMsg.style.display = 'none';
   successMsg.style.display = 'none';
@@ -28,6 +30,10 @@ registerBtn.addEventListener('click', async () => {
   if (!email || !emailRe.test(email)) { showError('A valid email address is required.'); return; }
   if (!phone) { showError('Phone number is required.'); return; }
   if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
+  if (logoFile && logoFile.size > 2 * 1024 * 1024) {
+    showError('Logo must be 2 MB or smaller.');
+    return;
+  }
 
   registerBtn.disabled = true;
   registerBtn.textContent = 'Creating account…';
@@ -35,7 +41,7 @@ registerBtn.addEventListener('click', async () => {
   try {
     const vendorId = generateVendorId(companyName);
 
-    await signUp({
+    const { userId } = await signUp({
       username: email,
       password,
       options: {
@@ -47,7 +53,16 @@ registerBtn.addEventListener('click', async () => {
       },
     });
 
-    // Store vendor profile for after verification
+    // Upload logo immediately after sign-up if provided
+    let logoKey = null;
+    if (logoFile) {
+      const ext = logoFile.name.split('.').pop();
+      const key = `logos/${userId}/logo.${ext}`;
+      await uploadData({ path: key, data: logoFile, options: { contentType: logoFile.type } }).result;
+      logoKey = key;
+    }
+
+    // Store vendor profile for after email verification
     localStorage.setItem('pendingVendorProfile', JSON.stringify({
       fullName,
       companyName,
@@ -55,11 +70,10 @@ registerBtn.addEventListener('click', async () => {
       phone,
       websiteUrl: website || null,
       vendorId,
+      logoKey,
     }));
 
     pendingEmail = email;
-
-    // Hide registration form, show verification form
     showVerificationForm();
 
   } catch (err) {
