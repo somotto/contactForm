@@ -74,18 +74,14 @@ async function showDashboard() {
     try {
       const profile = JSON.parse(pending);
       const { errors } = await client.models.Vendor.create(profile);
-      if (!errors) {
-        localStorage.removeItem('pendingVendorProfile');
-      }
+      if (!errors) localStorage.removeItem('pendingVendorProfile');
     } catch (err) {
       console.error('Failed to save vendor profile:', err);
     }
   }
 
-  // Load vendor profile and update header with company name
   await loadVendorProfile();
 
-  // Get current user's unique ID for vendor isolation
   try {
     const { userId } = await getCurrentUser();
     currentVendorSub = userId;
@@ -118,7 +114,6 @@ async function showDashboard() {
     ]);
 
     if (eventsResult.errors || submissionsResult.errors) {
-      console.error(eventsResult.errors, submissionsResult.errors);
       showError('Failed to load dashboard data.');
       return;
     }
@@ -152,14 +147,8 @@ async function loadVendorProfile() {
     const headerCompany = document.getElementById('header-company');
     const headerTitle = document.getElementById('header-title');
 
-    if (headerCompany && vendor.companyName) {
-      headerCompany.textContent = vendor.companyName;
-    }
-    if (headerTitle) {
-      headerTitle.textContent = `${vendor.companyName} dashboard`;
-    }
-
-    // Update page title too
+    if (headerCompany && vendor.companyName) headerCompany.textContent = vendor.companyName;
+    if (headerTitle) headerTitle.textContent = `${vendor.companyName} dashboard`;
     document.title = `Dashboard — ${vendor.companyName}`;
   } catch (err) {
     console.error('Failed to load vendor profile:', err);
@@ -170,21 +159,22 @@ function renderEventFilter() {
   const filterContainer = document.getElementById('event-filter-container');
   if (!filterContainer) return;
 
-  // Get unique event names from actual submissions
+  // Unique events from submissions
   const uniqueEvents = [...new Map(
     allSubmissions
       .filter(s => s.eventId && s.eventName)
-      .map(s => [s.eventId, { id: s.eventId, name: s.eventName }])
+      .map(s => [s.eventId, { id: s.eventId, name: s.eventName, slug: s.eventSlug || null }])
   ).values()];
 
-  // Also include events from allEvents that may have no submissions yet
+  // Include events with no submissions yet, using their stored slug
   allEvents.forEach(e => {
     if (!uniqueEvents.find(u => u.id === e.id)) {
-      uniqueEvents.push({ id: e.id, name: e.name });
+      uniqueEvents.push({ id: e.id, name: e.name, slug: e.slug });
     }
   });
 
   const baseUrl = window.location.origin;
+
   filterContainer.innerHTML = `
     <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">View Submissions by Event:</label>
     <select id="event-filter" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;">
@@ -193,21 +183,22 @@ function renderEventFilter() {
     </select>
     <div style="margin-top: 8px; font-size: 11px; color: #666;">
       Event form URLs (use these for QR codes):
-      ${uniqueEvents.map(e => `
-        <div style="margin-top: 4px;">
-          <strong>${escapeHtml(e.name)}:</strong>
-          <a href="${baseUrl}/form.html?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}" target="_blank" style="color: #0C447C; word-break: break-all;">
-            ${baseUrl}/form.html?event=${encodeURIComponent(e.name)}&vendor=${encodeURIComponent(currentVendorSub)}
-          </a>
-        </div>
-      `).join('')}
+      ${uniqueEvents.map(e => {
+        const url = `${baseUrl}/e/${encodeURIComponent(e.slug)}`;
+        return `
+          <div style="margin-top: 4px;">
+            <strong>${escapeHtml(e.name)}:</strong>
+            <a href="${url}" target="_blank" style="color: #0C447C; word-break: break-all;">${url}</a>
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 
-  document.getElementById('event-filter').addEventListener('change', (e) => {
-    const eventName = e.target.value;
-    const filtered = eventName
-      ? allSubmissions.filter(s => s.eventName === eventName)
+  document.getElementById('event-filter').addEventListener('change', (ev) => {
+    const name = ev.target.value;
+    const filtered = name
+      ? allSubmissions.filter(s => s.eventName === name)
       : allSubmissions;
     renderTable(filtered);
   });
@@ -249,9 +240,7 @@ function renderTable(submissions) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const addEventBtn = document.getElementById('add-event-btn');
-  if (addEventBtn) {
-    addEventBtn.addEventListener('click', handleAddEvent);
-  }
+  if (addEventBtn) addEventBtn.addEventListener('click', handleAddEvent);
 });
 
 async function handleAddEvent() {
@@ -279,9 +268,12 @@ async function handleAddEvent() {
     return;
   }
 
+  const slug = generateSlug(name);
+
   try {
     const { data, errors } = await client.models.Event.create({
       name,
+      slug,
       vendorId: currentVendorSub,
       eventUrl,
       startDate,
@@ -302,7 +294,9 @@ async function handleAddEvent() {
     document.getElementById('new-event-url').value = '';
     document.getElementById('new-event-start').value = '';
     document.getElementById('new-event-end').value = '';
-    msg.textContent = `"${name}" added successfully.`;
+
+    const shortUrl = `${window.location.origin}/e/${encodeURIComponent(slug)}`;
+    msg.textContent = `"${name}" added. Share link: ${shortUrl}`;
     msg.style.color = '#1e6b2e';
     msg.style.display = 'block';
   } catch (err) {
@@ -311,6 +305,16 @@ async function handleAddEvent() {
     msg.style.color = '#b42318';
     msg.style.display = 'block';
   }
+}
+
+// Generates a URL-friendly slug from an event name
+function generateSlug(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
 }
 
 function escapeHtml(str) {
