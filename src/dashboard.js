@@ -1,6 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import { signIn, getCurrentUser, signOut } from 'aws-amplify/auth';
+import { uploadData } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
@@ -73,6 +74,20 @@ async function showDashboard() {
   if (pending) {
     try {
       const profile = JSON.parse(pending);
+
+      // Upload logo now that the user is authenticated
+      const pendingLogo = localStorage.getItem('pendingVendorLogo');
+      if (pendingLogo) {
+        const { data: dataUrl, type, ext } = JSON.parse(pendingLogo);
+        const { userId } = await getCurrentUser();
+        const key = `logos/${userId}/logo.${ext}`;
+        // Convert base64 data URL back to a Blob for upload
+        const blob = await fetch(dataUrl).then(r => r.blob());
+        await uploadData({ path: key, data: blob, options: { contentType: type } }).result;
+        profile.logoKey = key;
+        localStorage.removeItem('pendingVendorLogo');
+      }
+
       const { errors } = await client.models.Vendor.create(profile);
       if (!errors) localStorage.removeItem('pendingVendorProfile');
     } catch (err) {
