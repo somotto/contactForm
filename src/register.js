@@ -1,6 +1,5 @@
 import { Amplify } from 'aws-amplify';
 import { signUp, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
-import { uploadData } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
@@ -13,27 +12,24 @@ const successMsg = document.getElementById('success-msg');
 let pendingEmail = '';
 
 registerBtn.addEventListener('click', async () => {
-  const fullName = document.getElementById('fullname').value.trim();
+  const fullName    = document.getElementById('fullname').value.trim();
   const companyName = document.getElementById('companyname').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const website = document.getElementById('website').value.trim();
-  const password = document.getElementById('password').value;
-  const logoFile = document.getElementById('logo').files[0] || null;
+  const email       = document.getElementById('email').value.trim();
+  const phone       = document.getElementById('phone').value.trim();
+  const website     = document.getElementById('website').value.trim();
+  const password    = document.getElementById('password').value;
+  const logoFile    = document.getElementById('logo').files[0] || null;
 
   errorMsg.style.display = 'none';
   successMsg.style.display = 'none';
 
-  if (!fullName) { showError('Full legal name is required.'); return; }
+  if (!fullName)    { showError('Full legal name is required.'); return; }
   if (!companyName) { showError('Company name is required.'); return; }
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRe.test(email)) { showError('A valid email address is required.'); return; }
-  if (!phone) { showError('Phone number is required.'); return; }
+  if (!phone)    { showError('Phone number is required.'); return; }
   if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
-  if (logoFile && logoFile.size > 2 * 1024 * 1024) {
-    showError('Logo must be 2 MB or smaller.');
-    return;
-  }
+  if (logoFile && logoFile.size > 2 * 1024 * 1024) { showError('Logo must be 2 MB or smaller.'); return; }
 
   registerBtn.disabled = true;
   registerBtn.textContent = 'Creating account…';
@@ -41,7 +37,7 @@ registerBtn.addEventListener('click', async () => {
   try {
     const vendorId = generateVendorId(companyName);
 
-    const { userId } = await signUp({
+    await signUp({
       username: email,
       password,
       options: {
@@ -53,16 +49,13 @@ registerBtn.addEventListener('click', async () => {
       },
     });
 
-    // Upload logo immediately after sign-up if provided
-    let logoKey = null;
+    // Convert logo to base64 so it survives until the user is authenticated
+    // and can actually write to S3. Upload happens on first dashboard load.
+    let logoData = null;
     if (logoFile) {
-      const ext = logoFile.name.split('.').pop();
-      const key = `logos/${userId}/logo.${ext}`;
-      await uploadData({ path: key, data: logoFile, options: { contentType: logoFile.type } }).result;
-      logoKey = key;
+      logoData = await fileToBase64(logoFile);
     }
 
-    // Store vendor profile for after email verification
     localStorage.setItem('pendingVendorProfile', JSON.stringify({
       fullName,
       companyName,
@@ -70,8 +63,17 @@ registerBtn.addEventListener('click', async () => {
       phone,
       websiteUrl: website || null,
       vendorId,
-      logoKey,
+      logoKey: null,          // filled in by dashboard after authenticated upload
     }));
+
+    // Store logo separately — it can be large, keep profile object clean
+    if (logoData) {
+      localStorage.setItem('pendingVendorLogo', JSON.stringify({
+        data: logoData,
+        type: logoFile.type,
+        ext: logoFile.name.split('.').pop(),
+      }));
+    }
 
     pendingEmail = email;
     showVerificationForm();
@@ -92,21 +94,15 @@ registerBtn.addEventListener('click', async () => {
 });
 
 function showVerificationForm() {
-  // Hide registration fields
   document.getElementById('registration-form').style.display = 'none';
-
-  // Show verification section
   document.getElementById('verification-form').style.display = 'block';
-
-  // Show which email the code was sent to
   document.getElementById('verify-email-label').textContent =
     `A 6-digit verification code was sent to ${pendingEmail}`;
 }
 
-// Verify button
 document.getElementById('verify-btn').addEventListener('click', async () => {
   const code = document.getElementById('verify-code').value.trim();
-  const verifyBtn = document.getElementById('verify-btn');
+  const verifyBtn   = document.getElementById('verify-btn');
   const verifyError = document.getElementById('verify-error');
 
   verifyError.style.display = 'none';
@@ -121,12 +117,8 @@ document.getElementById('verify-btn').addEventListener('click', async () => {
   verifyBtn.textContent = 'Verifying…';
 
   try {
-    await confirmSignUp({
-      username: pendingEmail,
-      confirmationCode: code,
-    });
+    await confirmSignUp({ username: pendingEmail, confirmationCode: code });
 
-    // Show success and redirect to login
     document.getElementById('verification-form').style.display = 'none';
     successMsg.innerHTML = `
       Account verified! You can now
@@ -150,9 +142,8 @@ document.getElementById('verify-btn').addEventListener('click', async () => {
   }
 });
 
-// Resend code button
 document.getElementById('resend-btn').addEventListener('click', async () => {
-  const resendBtn = document.getElementById('resend-btn');
+  const resendBtn   = document.getElementById('resend-btn');
   const verifyError = document.getElementById('verify-error');
 
   try {
@@ -171,6 +162,17 @@ document.getElementById('resend-btn').addEventListener('click', async () => {
     resendBtn.disabled = false;
   }
 });
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 function generateVendorId(companyName) {
   const slug = companyName
