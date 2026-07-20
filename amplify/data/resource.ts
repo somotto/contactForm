@@ -9,6 +9,7 @@ const schema = a.schema({
       phone: a.string().required(),
       websiteUrl: a.string().default(''),
       vendorId: a.string().required(),
+      logoKey: a.string(),
     })
     .authorization((allow) => [
       allow.owner(),
