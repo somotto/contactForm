@@ -17,13 +17,14 @@ const schema = a.schema({
   Event: a
     .model({
       name: a.string().required(),
+      slug: a.string().required(),
       vendorId: a.string(),
       eventUrl: a.string(),
       startDate: a.date(),
       endDate: a.date(),
     })
     .authorization((allow) => [
-      allow.guest().to(['read']),
+      allow.publicApiKey().to(['read']),
       allow.authenticated().to(['create', 'read', 'update', 'delete']),
     ]),
 
