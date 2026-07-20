@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vendor Dashboard</title>
+<!-- Route /e/* to the event contact form before any JS loads -->
+<script>
+  if (window.location.pathname.startsWith('/e/')) {
+    window.location.replace('/e.html?path=' + encodeURIComponent(window.location.pathname));
+  }
+</script>
 <style>
   body {
     background: #f4f5f7;
