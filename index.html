@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Contact Registration — Acme Corporation</title>
+<title>Vendor Dashboard</title>
 <style>
   body {
     background: #f4f5f7;
@@ -12,126 +12,139 @@
     padding: 2rem 1rem;
     color: #1a1a1a;
   }
-  .card-wrap { max-width: 520px; margin: 0 auto; }
+  .wrap { max-width: 900px; margin: 0 auto; }
   .header {
-    background: #0C447C;
-    border-radius: 10px 10px 0 0;
-    padding: 1.75rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background: #0C447C; border-radius: 10px 10px 0 0; padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
   }
   .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
   .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
-  .header-icon {
-    width: 40px; height: 40px; border-radius: 4px; background: #185FA5;
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  #logout-btn {
+    background: #185FA5; border: none; color: #E6F1FB; padding: 8px 14px;
+    border-radius: 4px; font-size: 13px; cursor: pointer; display: none;
   }
-  .subbar { background: #185FA5; padding: 8px 2rem; }
-  .subbar p { font-size: 12px; color: #B5D4F4; margin: 0; }
-  .subbar .req { color: #F09595; }
-  .body-card {
-    background: #ffffff; border: 0.5px solid #d8dade; border-top: none;
-    border-radius: 0 0 10px 10px; padding: 2rem;
+
+  /* Login card */
+  #login-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
   }
-  .field { margin-bottom: 1.5rem; }
-  label {
-    display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500;
-    letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 6px;
+  #login-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
   }
-  label .req { color: #d23b3b; }
-  input[type="text"], input[type="email"], input[type="tel"] {
-    width: 100%; box-sizing: border-box; border-radius: 4px;
-    border: 1px solid #c7c9cf; padding: 10px 12px; font-size: 14px;
+  #login-card .field { margin-bottom: 1.25rem; }
+  #login-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
   }
-  input:focus { outline: 2px solid #185FA5; outline-offset: -1px; }
-  .consent-box {
-    border: 0.5px solid #d8dade; border-radius: 4px; padding: 14px 16px; background: #f7f8fa;
+  #login-btn {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
   }
-  .consent-box label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; text-transform: none; font-weight: 400; }
-  .consent-box input[type="checkbox"] { margin-top: 2px; accent-color: #0C447C; width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
-  .consent-box .main-text { font-size: 13px; color: #1a1a1a; line-height: 1.5; }
-  .consent-box .sub-text { color: #888; font-size: 12px; display: block; margin-top: 4px; }
-  .consent-box a { color: #185FA5; text-decoration: underline; }
-  #error-msg, #success-msg {
-    display: none; margin-top: 1.25rem; font-size: 13px; border-radius: 0; padding: 10px 14px;
+  #login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .register-link { text-align: center; margin-top: 1.25rem; font-size: 13px; color: #555; }
+  .register-link a { color: #0C447C; text-decoration: underline; }
+
+  /* Dashboard */
+  #dashboard-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2rem; display: none;
   }
-  #error-msg { color: #b42318; background: #fdeeee; border-left: 3px solid #E24B4A; }
-  #success-msg { color: #1e6b2e; background: #eaf6ec; border-left: 3px solid #639922; }
-  .footer-row {
-    margin-top: 2rem; padding-top: 1.5rem; border-top: 0.5px solid #e2e3e7;
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eceef1; }
+  th { background: #f7f8fa; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #666; }
+  tr:hover { background: #fafbfc; }
+  .consent-yes { color: #1e6b2e; font-weight: 500; }
+  .consent-no { color: #999; }
+  #error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
   }
-  .footer-row p { font-size: 12px; color: #888; margin: 0; }
-  button#submit-btn {
-    padding: 9px 22px; font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
-    background: #0C447C; border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
-  }
-  button#submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .legal-row {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 1rem; padding: 0 4px;
-  }
-  .legal-row p { font-size: 11px; color: #999; margin: 0; }
+  #loading-msg { font-size: 13px; color: #888; padding: 1rem 0; }
+  #empty-msg { font-size: 13px; color: #888; padding: 1rem 0; display: none; }
 </style>
 </head>
 <body>
 
-<div class="card-wrap">
+<div class="wrap">
   <div class="header">
     <div>
-      <p id="header-event-name" style="font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500;">Contact Registration</p>
-      <h1 id="header-title">Register your details</h1>
+      <p id="header-company">Lead Capture Platform</p>
+      <h1 id="header-title">Vendor dashboard</h1>
     </div>
-    <div class="header-icon">🏢</div>
+    <button id="logout-btn">Log out</button>
   </div>
 
-  <div class="subbar">
-    <p>Form Ref: CR-2026 &nbsp;|&nbsp; All fields marked <span class="req">*</span> are mandatory</p>
-  </div>
-
-  <div class="body-card">
-
+  <div id="login-card">
     <div class="field">
-      <label for="fullname">Full legal name <span class="req">*</span></label>
-      <input id="fullname" type="text" placeholder="e.g. Jonathan M. Reeves" />
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" placeholder="you@yourcompany.com" />
     </div>
-
     <div class="field">
-      <label for="email">Corporate email address <span class="req">*</span></label>
-      <input id="email" type="email" placeholder="e.g. j.reeves@acmecorp.com" />
+      <label for="login-password">Password</label>
+      <input id="login-password" type="password" placeholder="••••••••" />
     </div>
-
-    <div class="field">
-      <label for="phone">Direct telephone <span class="req">*</span></label>
-      <input id="phone" type="tel" placeholder="e.g. +1 212 555 0100" />
-    </div>
-
-    <div class="consent-box">
-      <label>
-        <input id="consent" type="checkbox" />
-        <span class="main-text">
-          I consent to being contacted by telephone or email regarding this registration and relevant business communications.
-          <span class="sub-text">Optional. You may withdraw this consent at any time. See our <a href="#">Privacy Policy</a> for details.</span>
-        </span>
-      </label>
-    </div>
-
+    <button id="login-btn">Log in</button>
     <div id="error-msg"><span id="error-text"></span></div>
-    <div id="success-msg">Registration received. A representative will follow up within 2 business days.</div>
-
-    <div class="footer-row">
-      <p>🔒 Confidential — internal use only</p>
-      <button id="submit-btn" type="button">Submit registration →</button>
+    <div class="register-link">
+      Don't have an account? <a href="/register.html">Register here</a>
     </div>
   </div>
 
-  <div class="legal-row">
-    <p>© 2026 Lead Capture Platform. All rights reserved.</p>
-    <p>Privacy Policy · Terms of Use</p>
+  <div id="dashboard-card">
+
+    <div id="add-event-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Add an Event</h2>
+      <div style="border: 0.5px solid #d8dade; border-radius: 4px; padding: 16px; background: #f7f8fa;">
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-name" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event name <span style="color:#d23b3b;">*</span></label>
+          <input id="new-event-name" type="text" placeholder="e.g. Annual Gala 2026" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-url" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event website <span style="color:#999; font-weight:400;">(optional)</span></label>
+          <input id="new-event-url" type="url" placeholder="e.g. https://annualgala.com" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label for="new-event-start" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Start date <span style="color:#999; font-weight:400;">(optional)</span></label>
+            <input id="new-event-start" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+          </div>
+          <div style="flex: 1;">
+            <label for="new-event-end" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">End date <span style="color:#999; font-weight:400;">(optional)</span></label>
+            <input id="new-event-end" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+          </div>
+        </div>
+        <button id="add-event-btn" style="padding: 8px 20px; background: #0C447C; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Add event</button>
+        <div id="add-event-msg" style="display: none; margin-top: 10px; font-size: 12px;"></div>
+      </div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="view-submissions-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Submissions</h2>
+      <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
+      <div id="loading-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">Loading submissions…</div>
+      <div id="empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0; display: none;">No submissions yet.</div>
+      <table id="submissions-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Consent</th>
+            <th>Submitted at</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-body"></tbody>
+      </table>
+    </div>
+
   </div>
 </div>
 
-<script type="module" src="./src/main.js"></script>
+<script type="module" src="./src/dashboard.js"></script>
 </body>
 </html>
