@@ -116,7 +116,7 @@ document.getElementById('verify-btn').addEventListener('click', async () => {
     document.getElementById('verification-form').style.display = 'none';
     successMsg.innerHTML = `
       Account verified! You can now
-      <a href="/dashboard.html" style="color:#1e6b2e; font-weight:500;">log in to your dashboard</a>.
+      <a href="/" style="color:#1e6b2e; font-weight:500;">log in to your dashboard</a>.
     `;
     successMsg.style.display = 'block';
 
