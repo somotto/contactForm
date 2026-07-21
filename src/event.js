@@ -44,6 +44,10 @@ async function init() {
 
     resolvedEvent = data[0];
 
+    if (resolvedEvent.vendorBrandColor) {
+      document.documentElement.style.setProperty('--brand-color', resolvedEvent.vendorBrandColor);
+    }
+
     // Update header with event name
     document.getElementById('header-event-label').textContent = resolvedEvent.name;
     document.getElementById('header-title').textContent = 'Contact registration';
