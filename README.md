@@ -85,6 +85,7 @@ One record per vendor account, created after their first login.
 | `vendorId` | String | Yes | Slug generated from company name at registration time (not currently used for filtering — see `Event`/`Submission` below) |
 | `logoKey` | String | No | S3 key for the uploaded logo, set after the first authenticated login |
 | `description` | String | Yes | Brief description of the vendor's product/service, shown to attendees on the public event form |
+| `brandColor` | String | No | Hex color chosen from a preset swatch palette at registration; re-tints the header/subbar on the public event form |
 
 Authorization: `allow.owner()` — a vendor can only read/write their own record.
 
@@ -97,7 +98,7 @@ Authorization: `allow.owner()` — a vendor can only read/write their own record
 | `vendorId` | String | No | Set to the creating vendor's Cognito `userId` (sub) |
 | `eventUrl` | String | No | Optional vendor-provided link (e.g. event website) |
 | `startDate` / `endDate` | Date | No | |
-| `vendorCompanyName`, `vendorDescription`, `vendorLogoKey`, `vendorPhone`, `vendorContactEmail` | String | No | Snapshot of the vendor's profile, copied from `Vendor` at the moment the event is created (see [Vendor logos and profile info](#vendor-logos-and-profile-info)) |
+| `vendorCompanyName`, `vendorDescription`, `vendorLogoKey`, `vendorPhone`, `vendorContactEmail`, `vendorBrandColor` | String | No | Snapshot of the vendor's profile, copied from `Vendor` at the moment the event is created (see [Vendor logos and profile info](#vendor-logos-and-profile-info)) |
 
 Authorization: guests can `read` (needed to resolve `/e/<slug>` on the public form); authenticated users can `create`/`read`/`update`/`delete`.
 
@@ -124,9 +125,11 @@ These rules are defined in `amplify/data/resource.ts` and enforced by AppSync it
 
 ## Vendor logos and profile info
 
-Vendors upload a required logo/photo and write a required product/service description during registration (`register.html`). Since the account isn't authenticated yet at that point, the logo is held as a base64 data URL in `localStorage` and uploaded to S3 (`vendorAssets` bucket, path `logos/<identity-id>/logo.<ext>`) on the vendor's first successful login, at which point `Vendor.logoKey` is set.
+Vendors upload a required logo/photo, write a required product/service description, and pick a brand color from a preset swatch palette during registration (`register.html`). Since the account isn't authenticated yet at that point, the logo is held as a base64 data URL in `localStorage` and uploaded to S3 (`vendorAssets` bucket, path `logos/<identity-id>/logo.<ext>`) on the vendor's first successful login, at which point `Vendor.logoKey` is set.
 
-The `Vendor` record itself stays fully private (`allow.owner()` only) — there's no public-read access to it. Instead, the vendor's logo key, description, phone, and email are **snapshotted onto each `Event`** at the moment it's created (`dashboard.js`'s `handleAddEvent`), and again onto each `Submission` at the moment a guest submits (`event.js`). The public contact form (`e.html`) reads these fields off the resolved `Event` to render the vendor's logo/description/contact info, and the confirmation-email Lambda reads them off the `Submission` stream record — neither ever queries `Vendor` directly.
+The `Vendor` record itself stays fully private (`allow.owner()` only) — there's no public-read access to it. Instead, the vendor's logo key, description, phone, email, and brand color are **snapshotted onto each `Event`** at the moment it's created (`dashboard.js`'s `handleAddEvent`), and (minus the brand color) again onto each `Submission` at the moment a guest submits (`event.js`). The public contact form (`e.html`) reads these fields off the resolved `Event` to render the vendor's logo/description/contact info and re-tint its header, and the confirmation-email Lambda reads the rest off the `Submission` stream record — neither ever queries `Vendor` directly.
+
+**Brand color:** `e.html` exposes the header/subbar/icon/input-focus/checkbox colors as a `--brand-color` CSS custom property (default `#0C447C`, matching the original design). `event.js` overrides it via `document.documentElement.style.setProperty('--brand-color', ...)` once the event resolves. The subbar/icon use `color-mix(in srgb, var(--brand-color) 75%, white)` to reproduce the original lighter-tint relationship between the header and subbar for whatever color a vendor picks. Registration only offers 8 preset swatches (not a free color picker) specifically so every option stays legible against the header's light text without needing contrast-checking logic.
 
 **Trade-off:** because this is a snapshot, not a live reference, editing a vendor's profile after an event has been created won't update that event's (or any of its submissions') display — there's no "edit profile" UI today, so this hasn't come up in practice, but it's worth knowing before adding one.
 
@@ -223,6 +226,7 @@ This link is shown in the dashboard next to each event once created. Regenerate 
 - **Vendor profile info is snapshotted onto `Event`/`Submission`, not live.** Editing a vendor's profile after an event exists won't retroactively update it (there's no edit-profile UI today, so this is currently theoretical).
 - **Confirmation emails require SES setup outside this repo** (verified sender identity, possibly production access) — see [Submission confirmation email](#submission-confirmation-email). Without it, submissions still succeed; only the email silently doesn't send.
 - **Account deletion is best-effort, not transactional.** If it fails partway through (e.g. after deleting submissions but before deleting the Cognito user), there's no automatic rollback.
+- **Brand color theming relies on CSS `color-mix()`** (Chrome 111+, Safari 16.2+, Firefox 113+ — all in wide use since 2023). On older browsers the subbar/icon just won't tint correctly; the header itself still applies fine since it's a plain `var()`.
 - **No rate limiting.** Since the contact form is public and requires no login, it's technically possible for someone to submit spam entries. Consider AWS WAF on the AppSync API if this becomes a problem at a public event.
 - **Manual Cognito/DynamoDB changes are risky.** Deleting resources directly from the AWS Console (rather than through `amplify` commands or redeploys) can leave the CloudFormation stack in a drifted state, causing `Unauthorized` errors on subsequent guest writes. If this happens, the most reliable fix is a full teardown and redeploy of the affected stack rather than attempting to patch IAM roles by hand.
 - **Sandbox vs. production are entirely separate backends.** A user, login, or data created in one will not appear in the other.
