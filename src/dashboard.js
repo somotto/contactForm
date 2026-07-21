@@ -1,7 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
-import { signIn, getCurrentUser, signOut, fetchAuthSession } from 'aws-amplify/auth';
-import { uploadData } from 'aws-amplify/storage';
+import { signIn, getCurrentUser, signOut, fetchAuthSession, resetPassword, confirmResetPassword, deleteUser } from 'aws-amplify/auth';
+import { uploadData, remove } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
@@ -14,9 +14,24 @@ const loginBtn = document.getElementById('login-btn');
 const errorMsg = document.getElementById('error-msg');
 const errorText = document.getElementById('error-text');
 
+const forgotPasswordCard = document.getElementById('forgot-password-card');
+const forgotPasswordLink = document.getElementById('forgot-password-link');
+const backToLoginLink = document.getElementById('back-to-login-link');
+const forgotRequestForm = document.getElementById('forgot-request-form');
+const forgotConfirmForm = document.getElementById('forgot-confirm-form');
+const forgotSendBtn = document.getElementById('forgot-send-btn');
+const forgotConfirmBtn = document.getElementById('forgot-confirm-btn');
+const forgotErrorMsg = document.getElementById('forgot-error-msg');
+const forgotErrorText = document.getElementById('forgot-error-text');
+const forgotSuccessMsg = document.getElementById('forgot-success-msg');
+const forgotSuccessText = document.getElementById('forgot-success-text');
+
+let pendingResetEmail = '';
+
 let allSubmissions = [];
 let allEvents = [];
 let currentVendorSub = '';
+let currentVendorProfile = null;
 
 try {
   await getCurrentUser();
@@ -58,6 +73,82 @@ logoutBtn.addEventListener('click', async () => {
   await signOut();
   location.reload();
 });
+
+forgotPasswordLink.addEventListener('click', () => {
+  loginCard.style.display = 'none';
+  forgotPasswordCard.style.display = 'block';
+});
+
+backToLoginLink.addEventListener('click', () => {
+  forgotPasswordCard.style.display = 'none';
+  forgotRequestForm.style.display = 'block';
+  forgotConfirmForm.style.display = 'none';
+  forgotErrorMsg.style.display = 'none';
+  forgotSuccessMsg.style.display = 'none';
+  loginCard.style.display = 'block';
+});
+
+forgotSendBtn.addEventListener('click', async () => {
+  const email = document.getElementById('forgot-email').value.trim();
+  forgotErrorMsg.style.display = 'none';
+
+  if (!email) {
+    showForgotError('Please enter your email address.');
+    return;
+  }
+
+  forgotSendBtn.disabled = true;
+  forgotSendBtn.textContent = 'Sending…';
+
+  try {
+    await resetPassword({ username: email });
+    pendingResetEmail = email;
+    forgotRequestForm.style.display = 'none';
+    forgotConfirmForm.style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    showForgotError(err.message || 'Failed to send reset code. Please try again.');
+  } finally {
+    forgotSendBtn.disabled = false;
+    forgotSendBtn.textContent = 'Send reset code';
+  }
+});
+
+forgotConfirmBtn.addEventListener('click', async () => {
+  const code = document.getElementById('forgot-code').value.trim();
+  const newPassword = document.getElementById('forgot-new-password').value;
+  forgotErrorMsg.style.display = 'none';
+
+  if (!code || code.length !== 6) {
+    showForgotError('Please enter the 6-digit code from your email.');
+    return;
+  }
+  if (!newPassword || newPassword.length < 8) {
+    showForgotError('Password must be at least 8 characters.');
+    return;
+  }
+
+  forgotConfirmBtn.disabled = true;
+  forgotConfirmBtn.textContent = 'Resetting…';
+
+  try {
+    await confirmResetPassword({ username: pendingResetEmail, confirmationCode: code, newPassword });
+    forgotConfirmForm.style.display = 'none';
+    forgotSuccessText.textContent = 'Password reset. You can now log in with your new password.';
+    forgotSuccessMsg.style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    showForgotError(err.message || 'Failed to reset password. Please try again.');
+  } finally {
+    forgotConfirmBtn.disabled = false;
+    forgotConfirmBtn.textContent = 'Reset password';
+  }
+});
+
+function showForgotError(message) {
+  forgotErrorText.textContent = message;
+  forgotErrorMsg.style.display = 'block';
+}
 
 function showError(message) {
   errorText.textContent = message;
@@ -170,6 +261,7 @@ async function loadVendorProfile() {
       authMode: 'userPool',
     });
     if (!errors && data && data.length > 0) {
+      currentVendorProfile = data[0];
       companyName = data[0].companyName;
     }
   } catch (err) {
@@ -281,7 +373,57 @@ function renderTable(submissions) {
 document.addEventListener('DOMContentLoaded', () => {
   const addEventBtn = document.getElementById('add-event-btn');
   if (addEventBtn) addEventBtn.addEventListener('click', handleAddEvent);
+
+  const deleteAccountBtn = document.getElementById('delete-account-btn');
+  if (deleteAccountBtn) deleteAccountBtn.addEventListener('click', handleDeleteAccount);
 });
+
+async function handleDeleteAccount() {
+  const msg = document.getElementById('delete-account-msg');
+  const btn = document.getElementById('delete-account-btn');
+
+  const confirmed = window.confirm(
+    'This will permanently delete your account, all of your events, and all submissions. This cannot be undone. Continue?'
+  );
+  if (!confirmed) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Deleting…';
+  msg.style.display = 'none';
+
+  try {
+    const { data: submissions } = await client.models.Submission.list({
+      filter: { vendorId: { eq: currentVendorSub } },
+    });
+    for (const submission of submissions || []) {
+      await client.models.Submission.delete({ id: submission.id });
+    }
+
+    const { data: events } = await client.models.Event.list({
+      filter: { vendorId: { eq: currentVendorSub } },
+    });
+    for (const event of events || []) {
+      await client.models.Event.delete({ id: event.id });
+    }
+
+    if (currentVendorProfile?.logoKey) {
+      await remove({ path: currentVendorProfile.logoKey });
+    }
+
+    if (currentVendorProfile?.id) {
+      await client.models.Vendor.delete({ id: currentVendorProfile.id });
+    }
+
+    await deleteUser();
+    location.reload();
+  } catch (err) {
+    console.error('Failed to delete account:', err);
+    msg.textContent = 'Failed to delete account. Please try again.';
+    msg.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Delete my account';
+  }
+}
 
 async function handleAddEvent() {
   const input = document.getElementById('new-event-name');
@@ -318,6 +460,11 @@ async function handleAddEvent() {
       eventUrl,
       startDate,
       endDate,
+      vendorCompanyName: currentVendorProfile?.companyName,
+      vendorDescription: currentVendorProfile?.description,
+      vendorLogoKey: currentVendorProfile?.logoKey,
+      vendorPhone: currentVendorProfile?.phone,
+      vendorContactEmail: currentVendorProfile?.email,
     });
 
     if (errors) {
