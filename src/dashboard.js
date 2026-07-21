@@ -263,6 +263,9 @@ async function loadVendorProfile() {
     if (!errors && data && data.length > 0) {
       currentVendorProfile = data[0];
       companyName = data[0].companyName;
+      if (data[0].brandColor) {
+        document.documentElement.style.setProperty('--brand-color', data[0].brandColor);
+      }
     }
   } catch (err) {
     console.error('Failed to load vendor profile from DB:', err);
@@ -273,7 +276,11 @@ async function loadVendorProfile() {
     const pending = localStorage.getItem('pendingVendorProfile');
     if (pending) {
       try {
-        companyName = JSON.parse(pending).companyName || null;
+        const profile = JSON.parse(pending);
+        companyName = profile.companyName || null;
+        if (profile.brandColor) {
+          document.documentElement.style.setProperty('--brand-color', profile.brandColor);
+        }
       } catch { /* ignore */ }
     }
   }
