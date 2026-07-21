@@ -64,6 +64,12 @@
     margin-top: 1rem; padding: 0 4px;
   }
   .legal-row p { font-size: 11px; color: #999; margin: 0; }
+  #brand-color-swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  #brand-color-swatches .swatch {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent;
+    cursor: pointer; padding: 0;
+  }
+  #brand-color-swatches .swatch.selected { border-color: #1a1a1a; }
 </style>
 </head>
 <body>
@@ -115,6 +121,21 @@
           style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
                  padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
         <p style="font-size:11px; color:#999; margin:4px 0 0;">PNG, JPG or WebP · max 2 MB</p>
+      </div>
+
+      <div class="field">
+        <label>Brand color <span style="color:#999; font-weight:400; text-transform:none;">(used on your event form's header)</span></label>
+        <div id="brand-color-swatches">
+          <button type="button" class="swatch selected" data-color="#0C447C" style="background:#0C447C" aria-label="Blue"></button>
+          <button type="button" class="swatch" data-color="#0F5132" style="background:#0F5132" aria-label="Forest green"></button>
+          <button type="button" class="swatch" data-color="#6B2C91" style="background:#6B2C91" aria-label="Purple"></button>
+          <button type="button" class="swatch" data-color="#8C2F39" style="background:#8C2F39" aria-label="Maroon"></button>
+          <button type="button" class="swatch" data-color="#B45309" style="background:#B45309" aria-label="Amber"></button>
+          <button type="button" class="swatch" data-color="#0F766E" style="background:#0F766E" aria-label="Teal"></button>
+          <button type="button" class="swatch" data-color="#374151" style="background:#374151" aria-label="Slate"></button>
+          <button type="button" class="swatch" data-color="#9D174D" style="background:#9D174D" aria-label="Rose"></button>
+        </div>
+        <input type="hidden" id="brandColor" value="#0C447C" />
       </div>
 
       <div class="field">
