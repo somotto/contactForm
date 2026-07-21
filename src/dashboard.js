@@ -1,6 +1,6 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
-import { signIn, getCurrentUser, signOut } from 'aws-amplify/auth';
+import { signIn, getCurrentUser, signOut, fetchAuthSession } from 'aws-amplify/auth';
 import { uploadData } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
@@ -79,10 +79,14 @@ async function showDashboard() {
       const pendingLogo = localStorage.getItem('pendingVendorLogo');
       if (pendingLogo) {
         const { data: dataUrl, type, ext } = JSON.parse(pendingLogo);
-        const { userId } = await getCurrentUser();
-        const key = `logos/${userId}/logo.${ext}`;
-        // Convert base64 data URL back to a Blob for upload
-        const blob = await fetch(dataUrl).then(r => r.blob());
+        // Use identityId (Identity Pool ID) — this is what {entity_id} maps to in storage rules
+        const session = await fetchAuthSession();
+        const identityId = session.identityId;
+        const key = `logos/${identityId}/logo.${ext}`;
+        // Decode base64 data URL → Uint8Array → Blob
+        const base64 = dataUrl.split(',')[1];
+        const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const blob = new Blob([binary], { type });
         await uploadData({ path: key, data: blob, options: { contentType: type } }).result;
         profile.logoKey = key;
         localStorage.removeItem('pendingVendorLogo');
@@ -95,6 +99,7 @@ async function showDashboard() {
     }
   }
 
+  // Load vendor profile AFTER the pending profile has been flushed above
   await loadVendorProfile();
 
   try {
