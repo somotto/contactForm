@@ -51,6 +51,35 @@
   #login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .register-link { text-align: center; margin-top: 1.25rem; font-size: 13px; color: #555; }
   .register-link a { color: #0C447C; text-decoration: underline; }
+  .forgot-link { text-align: right; margin: -0.75rem 0 1.25rem; font-size: 12px; }
+  .forgot-link a { color: #0C447C; text-decoration: underline; cursor: pointer; }
+  #forgot-password-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+    display: none;
+  }
+  #forgot-password-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #forgot-password-card .field { margin-bottom: 1.25rem; }
+  #forgot-password-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #forgot-password-card button {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #forgot-password-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+  #forgot-success-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #1e6b2e; background: #eaf6ec;
+    border-left: 3px solid #639922; padding: 10px 14px;
+  }
+  #forgot-error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
 
   /* Dashboard */
   #dashboard-card {
@@ -92,9 +121,38 @@
       <input id="login-password" type="password" placeholder="••••••••" />
     </div>
     <button id="login-btn">Log in</button>
+    <div class="forgot-link"><a id="forgot-password-link">Forgot password?</a></div>
     <div id="error-msg"><span id="error-text"></span></div>
     <div class="register-link">
       Don't have an account? <a href="/register.html">Register here</a>
+    </div>
+  </div>
+
+  <div id="forgot-password-card">
+    <div id="forgot-request-form">
+      <div class="field">
+        <label for="forgot-email">Email</label>
+        <input id="forgot-email" type="email" placeholder="you@yourcompany.com" />
+      </div>
+      <button id="forgot-send-btn">Send reset code</button>
+    </div>
+
+    <div id="forgot-confirm-form" style="display:none;">
+      <div class="field">
+        <label for="forgot-code">Verification code</label>
+        <input id="forgot-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
+      </div>
+      <div class="field">
+        <label for="forgot-new-password">New password</label>
+        <input id="forgot-new-password" type="password" placeholder="Min 8 chars, upper, lower, number, symbol" />
+      </div>
+      <button id="forgot-confirm-btn">Reset password</button>
+    </div>
+
+    <div id="forgot-error-msg"><span id="forgot-error-text"></span></div>
+    <div id="forgot-success-msg"><span id="forgot-success-text"></span></div>
+    <div class="register-link">
+      <a id="back-to-login-link">Back to login</a>
     </div>
   </div>
 
@@ -146,6 +204,19 @@
         </thead>
         <tbody id="submissions-body"></tbody>
       </table>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="danger-zone-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #b42318; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Danger Zone</h2>
+      <div style="border: 0.5px solid #f3c6c4; border-radius: 4px; padding: 16px; background: #fdeeee;">
+        <p style="font-size: 13px; color: #555; margin: 0 0 12px;">
+          Permanently delete your account, all of your events, and all submissions. This cannot be undone.
+        </p>
+        <button id="delete-account-btn" style="padding: 8px 20px; background: #b42318; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Delete my account</button>
+        <div id="delete-account-msg" style="display: none; margin-top: 10px; font-size: 12px; color: #b42318;"></div>
+      </div>
     </div>
 
   </div>
