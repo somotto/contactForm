@@ -11,6 +11,7 @@ const schema = a.schema({
       vendorId: a.string().required(),
       logoKey: a.string(),
       description: a.string().required(),
+      brandColor: a.string(),
     })
     .authorization((allow) => [
       allow.owner(),
@@ -29,6 +30,7 @@ const schema = a.schema({
       vendorLogoKey: a.string(),
       vendorPhone: a.string(),
       vendorContactEmail: a.string(),
+      vendorBrandColor: a.string(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['read']),
