@@ -1,5 +1,6 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
+import { getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
@@ -48,6 +49,8 @@ async function init() {
     document.getElementById('header-title').textContent = 'Contact registration';
     document.title = `Register — ${resolvedEvent.name}`;
 
+    await renderVendorInfo(resolvedEvent);
+
     loadingOverlay.style.display = 'none';
     formContent.style.display = 'block';
   } catch (err) {
@@ -84,6 +87,10 @@ submitBtn.addEventListener('click', async () => {
       eventId: resolvedEvent?.id || null,
       eventName: resolvedEvent?.name || null,
       vendorId: resolvedEvent?.vendorId || null,
+      vendorCompanyName: resolvedEvent?.vendorCompanyName || null,
+      vendorDescription: resolvedEvent?.vendorDescription || null,
+      vendorPhone: resolvedEvent?.vendorPhone || null,
+      vendorContactEmail: resolvedEvent?.vendorContactEmail || null,
     });
 
     if (errors) {
@@ -109,6 +116,36 @@ submitBtn.addEventListener('click', async () => {
 function showError(msg) {
   errorText.textContent = msg;
   errorMsg.style.display = 'block';
+}
+
+async function renderVendorInfo(ev) {
+  const vendorInfo = document.getElementById('vendor-info');
+  const hasVendorInfo = ev.vendorCompanyName || ev.vendorDescription || ev.vendorPhone || ev.vendorContactEmail || ev.vendorLogoKey;
+  if (!hasVendorInfo) return;
+
+  document.getElementById('vendor-company').textContent = ev.vendorCompanyName || '';
+  document.getElementById('vendor-description').textContent = ev.vendorDescription || '';
+
+  const contactParts = [ev.vendorPhone, ev.vendorContactEmail].filter(Boolean);
+  document.getElementById('vendor-contact').textContent = contactParts.length
+    ? `Contact the vendor: ${contactParts.join(' · ')}`
+    : '';
+
+  const logoImg = document.getElementById('vendor-logo');
+  if (ev.vendorLogoKey) {
+    try {
+      const { url } = await getUrl({ path: ev.vendorLogoKey });
+      logoImg.src = url.toString();
+      logoImg.style.display = 'block';
+    } catch (err) {
+      console.error('Failed to load vendor logo:', err);
+      logoImg.style.display = 'none';
+    }
+  } else {
+    logoImg.style.display = 'none';
+  }
+
+  vendorInfo.style.display = 'block';
 }
 
 init();
