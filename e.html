@@ -67,6 +67,12 @@
   }
   .legal-row p { font-size: 11px; color: #999; margin: 0; }
   #loading-overlay { text-align: center; padding: 3rem 0; font-size: 13px; color: #888; }
+  #vendor-info { display: none; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 0.5px solid #e2e3e7; }
+  #vendor-info-top { display: flex; align-items: center; gap: 12px; }
+  #vendor-logo { width: 52px; height: 52px; border-radius: 6px; object-fit: cover; border: 0.5px solid #d8dade; flex-shrink: 0; }
+  #vendor-company { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 0; }
+  #vendor-description { font-size: 13px; color: #555; line-height: 1.5; margin: 10px 0 0; }
+  #vendor-contact { font-size: 12px; color: #888; margin: 6px 0 0; }
 </style>
 </head>
 <body>
@@ -86,6 +92,15 @@
 
   <div class="body-card">
     <div id="loading-overlay">Loading event…</div>
+
+    <div id="vendor-info">
+      <div id="vendor-info-top">
+        <img id="vendor-logo" alt="Vendor logo" />
+        <p id="vendor-company"></p>
+      </div>
+      <p id="vendor-description"></p>
+      <p id="vendor-contact"></p>
+    </div>
 
     <div id="form-content" style="display:none;">
       <div class="field">
