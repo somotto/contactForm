@@ -132,7 +132,7 @@ async function renderVendorInfo(ev) {
 
   const contactParts = [ev.vendorPhone, ev.vendorContactEmail].filter(Boolean);
   document.getElementById('vendor-contact').textContent = contactParts.length
-    ? `Contact the vendor: ${contactParts.join(' · ')}`
+    ? `Contact Us: ${contactParts.join(' · ')}`
     : '';
 
   const logoImg = document.getElementById('vendor-logo');
