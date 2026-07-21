@@ -17,6 +17,7 @@ registerBtn.addEventListener('click', async () => {
   const email       = document.getElementById('email').value.trim();
   const phone       = document.getElementById('phone').value.trim();
   const website     = document.getElementById('website').value.trim();
+  const description = document.getElementById('description').value.trim();
   const password    = document.getElementById('password').value;
   const logoFile    = document.getElementById('logo').files[0] || null;
 
@@ -28,8 +29,10 @@ registerBtn.addEventListener('click', async () => {
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRe.test(email)) { showError('A valid email address is required.'); return; }
   if (!phone)    { showError('Phone number is required.'); return; }
+  if (!description) { showError('Please describe your product or service.'); return; }
   if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
-  if (logoFile && logoFile.size > 2 * 1024 * 1024) { showError('Logo must be 2 MB or smaller.'); return; }
+  if (!logoFile) { showError('A logo or photo is required.'); return; }
+  if (logoFile.size > 2 * 1024 * 1024) { showError('Logo must be 2 MB or smaller.'); return; }
 
   registerBtn.disabled = true;
   registerBtn.textContent = 'Creating account…';
@@ -51,10 +54,7 @@ registerBtn.addEventListener('click', async () => {
 
     // Convert logo to base64 so it survives until the user is authenticated
     // and can actually write to S3. Upload happens on first dashboard load.
-    let logoData = null;
-    if (logoFile) {
-      logoData = await fileToBase64(logoFile);
-    }
+    const logoData = await fileToBase64(logoFile);
 
     localStorage.setItem('pendingVendorProfile', JSON.stringify({
       fullName,
@@ -64,16 +64,14 @@ registerBtn.addEventListener('click', async () => {
       websiteUrl: website || '',
       vendorId,
       logoKey: null,          // filled in by dashboard after authenticated upload
+      description,
     }));
 
-    // Store logo separately — it can be large, keep profile object clean
-    if (logoData) {
-      localStorage.setItem('pendingVendorLogo', JSON.stringify({
-        data: logoData,
-        type: logoFile.type,
-        ext: logoFile.name.split('.').pop(),
-      }));
-    }
+    localStorage.setItem('pendingVendorLogo', JSON.stringify({
+      data: logoData,
+      type: logoFile.type,
+      ext: logoFile.name.split('.').pop(),
+    }));
 
     pendingEmail = email;
     showVerificationForm();
