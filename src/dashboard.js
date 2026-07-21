@@ -465,6 +465,7 @@ async function handleAddEvent() {
       vendorLogoKey: currentVendorProfile?.logoKey,
       vendorPhone: currentVendorProfile?.phone,
       vendorContactEmail: currentVendorProfile?.email,
+      vendorBrandColor: currentVendorProfile?.brandColor,
     });
 
     if (errors) {
