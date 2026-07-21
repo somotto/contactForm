@@ -18,16 +18,13 @@ const backend = defineBackend({
   notifySubmission,
 });
 
-// Enable a stream on the Submission table and trigger notifySubmission on new rows,
-// so guests get a confirmation email without the public form waiting on SES.
+// Enable a stream on the Submission table so notifySubmission can be triggered by it.
+
 const submissionTable = backend.data.resources.tables['Submission'];
 backend.data.resources.cfnResources.amplifyDynamoDbTables['Submission'].streamSpecification = {
   streamViewType: StreamViewType.NEW_IMAGE,
 };
 
-backend.notifySubmission.resources.lambda.addEventSource(
-  new DynamoEventSource(submissionTable, { startingPosition: StartingPosition.LATEST })
-);
 
 backend.notifySubmission.resources.lambda.addToRolePolicy(
   new PolicyStatement({
