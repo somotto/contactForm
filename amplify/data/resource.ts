@@ -10,6 +10,7 @@ const schema = a.schema({
       websiteUrl: a.string().default(''),
       vendorId: a.string().required(),
       logoKey: a.string(),
+      description: a.string().required(),
     })
     .authorization((allow) => [
       allow.owner(),
@@ -23,6 +24,11 @@ const schema = a.schema({
       eventUrl: a.string(),
       startDate: a.date(),
       endDate: a.date(),
+      vendorCompanyName: a.string(),
+      vendorDescription: a.string(),
+      vendorLogoKey: a.string(),
+      vendorPhone: a.string(),
+      vendorContactEmail: a.string(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['read']),
@@ -39,6 +45,10 @@ const schema = a.schema({
       eventId: a.id(),
       eventName: a.string(),
       vendorId: a.string(),
+      vendorCompanyName: a.string(),
+      vendorDescription: a.string(),
+      vendorPhone: a.string(),
+      vendorContactEmail: a.string(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create']),
