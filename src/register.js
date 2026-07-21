@@ -61,7 +61,7 @@ registerBtn.addEventListener('click', async () => {
       companyName,
       email,
       phone,
-      websiteUrl: website || null,
+      websiteUrl: website || '',
       vendorId,
       logoKey: null,          // filled in by dashboard after authenticated upload
     }));

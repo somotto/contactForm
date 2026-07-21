@@ -93,7 +93,11 @@ async function showDashboard() {
       }
 
       const { errors } = await client.models.Vendor.create(profile);
-      if (!errors) localStorage.removeItem('pendingVendorProfile');
+      if (errors) {
+        console.error('Vendor.create errors:', errors);
+      } else {
+        localStorage.removeItem('pendingVendorProfile');
+      }
     } catch (err) {
       console.error('Failed to save vendor profile:', err);
     }
@@ -159,20 +163,36 @@ async function showDashboard() {
 }
 
 async function loadVendorProfile() {
+  let companyName = null;
+
   try {
-    const { data, errors } = await client.models.Vendor.list();
-    if (errors || !data || data.length === 0) return;
-
-    const vendor = data[0];
-    const headerCompany = document.getElementById('header-company');
-    const headerTitle = document.getElementById('header-title');
-
-    if (headerCompany && vendor.companyName) headerCompany.textContent = vendor.companyName;
-    if (headerTitle) headerTitle.textContent = `${vendor.companyName} dashboard`;
-    document.title = `Dashboard — ${vendor.companyName}`;
+    const { data, errors } = await client.models.Vendor.list({
+      authMode: 'userPool',
+    });
+    if (!errors && data && data.length > 0) {
+      companyName = data[0].companyName;
+    }
   } catch (err) {
-    console.error('Failed to load vendor profile:', err);
+    console.error('Failed to load vendor profile from DB:', err);
   }
+
+  // Fallback: read from localStorage if DB returned nothing
+  if (!companyName) {
+    const pending = localStorage.getItem('pendingVendorProfile');
+    if (pending) {
+      try {
+        companyName = JSON.parse(pending).companyName || null;
+      } catch { /* ignore */ }
+    }
+  }
+
+  if (!companyName) return;
+
+  const headerCompany = document.getElementById('header-company');
+  const headerTitle = document.getElementById('header-title');
+  if (headerCompany) headerCompany.textContent = companyName;
+  if (headerTitle) headerTitle.textContent = `${companyName} dashboard`;
+  document.title = `Dashboard — ${companyName}`;
 }
 
 function renderEventFilter() {
