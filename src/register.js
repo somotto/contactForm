@@ -11,12 +11,21 @@ const successMsg = document.getElementById('success-msg');
 
 let pendingEmail = '';
 
+document.querySelectorAll('#brand-color-swatches .swatch').forEach((swatch) => {
+  swatch.addEventListener('click', () => {
+    document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
+    swatch.classList.add('selected');
+    document.getElementById('brandColor').value = swatch.dataset.color;
+  });
+});
+
 registerBtn.addEventListener('click', async () => {
   const fullName    = document.getElementById('fullname').value.trim();
   const companyName = document.getElementById('companyname').value.trim();
   const email       = document.getElementById('email').value.trim();
   const phone       = document.getElementById('phone').value.trim();
   const website     = document.getElementById('website').value.trim();
+  const brandColor  = document.getElementById('brandColor').value;
   const description = document.getElementById('description').value.trim();
   const password    = document.getElementById('password').value;
   const logoFile    = document.getElementById('logo').files[0] || null;
@@ -65,6 +74,7 @@ registerBtn.addEventListener('click', async () => {
       vendorId,
       logoKey: null,          // filled in by dashboard after authenticated upload
       description,
+      brandColor,
     }));
 
     localStorage.setItem('pendingVendorLogo', JSON.stringify({
