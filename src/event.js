@@ -68,6 +68,7 @@ submitBtn.addEventListener('click', async () => {
   const name = document.getElementById('fullname').value.trim();
   const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
+  const comment = document.getElementById('comment').value.trim();
   const consent = document.getElementById('consent').checked;
 
   errorMsg.style.display = 'none';
@@ -86,6 +87,7 @@ submitBtn.addEventListener('click', async () => {
       name,
       email,
       phone,
+      comment: comment || null,
       consent,
       submittedAt: new Date().toISOString(),
       eventId: resolvedEvent?.id || null,
@@ -107,6 +109,7 @@ submitBtn.addEventListener('click', async () => {
     document.getElementById('fullname').value = '';
     document.getElementById('email').value = '';
     document.getElementById('phone').value = '';
+    document.getElementById('comment').value = '';
     document.getElementById('consent').checked = false;
   } catch (err) {
     console.error(err);
