@@ -97,7 +97,7 @@ Authorization: `allow.owner()` — a vendor can only read/write their own record
 | `slug` | String | Yes | URL-friendly, generated from `name`; used in `/e/<slug>` |
 | `vendorId` | String | No | Set to the creating vendor's Cognito `userId` (sub) |
 | `eventUrl` | String | No | Optional vendor-provided link (e.g. event website) |
-| `startDate` / `endDate` | Date | No | |
+| `startDate` / `endDate` | Date | No | Restricted client-side (`dashboard.js`) to today or later, and `endDate` must be on/after `startDate` — not enforced by the schema itself |
 | `vendorCompanyName`, `vendorDescription`, `vendorLogoKey`, `vendorPhone`, `vendorContactEmail`, `vendorBrandColor` | String | No | Snapshot of the vendor's profile, copied from `Vendor` at the moment the event is created (see [Vendor logos and profile info](#vendor-logos-and-profile-info)) |
 
 Authorization: guests can `read` (needed to resolve `/e/<slug>` on the public form); authenticated users can `create`/`read`/`update`/`delete`.
@@ -116,6 +116,7 @@ Authorization: guests can `read` (needed to resolve `/e/<slug>` on the public fo
 | `eventName` | String | No | Denormalized at submit time for easy display in the dashboard |
 | `vendorId` | String | No | The owning vendor's Cognito `userId` (sub), copied from the resolved `Event` |
 | `vendorCompanyName`, `vendorDescription`, `vendorPhone`, `vendorContactEmail` | String | No | Copied from the resolved `Event` at submit time — the `notify-submission` Lambda reads these straight off the Submission stream record to build the confirmation email, with no extra database lookups |
+| `comment` | String | No | Optional free-text comment from the attendee, shown in the dashboard's submissions table; not sent to the vendor's `notify-submission` email |
 
 Authorization: guests can `create` (this is what allows the public form to work without login); authenticated users can `read`/`delete`.
 
@@ -204,6 +205,8 @@ If `SES_SENDER_EMAIL` isn't set, the Lambda logs an error and skips sending — 
 ## Vendor accounts
 
 Vendors create their own account by registering at `/register.html` — there is no manual Cognito setup step. Registration requires email verification (6-digit code) before the vendor can log in. Cognito password policy applies (the UI currently requires 8+ characters; Cognito itself may additionally require uppercase/lowercase/number/symbol depending on pool settings).
+
+**Login MFA:** every vendor login requires a second factor — Cognito's native email MFA (`auth/resource.ts`: `multifactor: { mode: 'REQUIRED', email: true }`). After a correct password, Cognito emails a 6-digit code to the vendor's address automatically (no enrollment step); the dashboard's login form then prompts for it and calls `confirmSignIn` to complete sign-in. This applies to the very first login after registration too.
 
 **Forgot password:** the login screen (`/`) has a "Forgot password?" link that walks the vendor through Cognito's standard reset flow — request a code (`resetPassword`), then submit the code with a new password (`confirmResetPassword`). Both are Amplify Auth APIs; no custom backend code is involved.
 
