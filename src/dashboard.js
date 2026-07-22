@@ -1,6 +1,6 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
-import { signIn, getCurrentUser, signOut, fetchAuthSession, resetPassword, confirmResetPassword, deleteUser } from 'aws-amplify/auth';
+import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, resetPassword, confirmResetPassword, deleteUser } from 'aws-amplify/auth';
 import { uploadData, remove } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
@@ -25,6 +25,12 @@ const forgotErrorMsg = document.getElementById('forgot-error-msg');
 const forgotErrorText = document.getElementById('forgot-error-text');
 const forgotSuccessMsg = document.getElementById('forgot-success-msg');
 const forgotSuccessText = document.getElementById('forgot-success-text');
+
+const otpCard = document.getElementById('otp-card');
+const otpHint = document.getElementById('otp-hint');
+const otpVerifyBtn = document.getElementById('otp-verify-btn');
+const otpErrorMsg = document.getElementById('otp-error-msg');
+const otpErrorText = document.getElementById('otp-error-text');
 
 let pendingResetEmail = '';
 
@@ -57,6 +63,15 @@ loginBtn.addEventListener('click', async () => {
     const result = await signIn({ username: email, password });
     if (result.isSignedIn) {
       showDashboard();
+    } else if (result.nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE') {
+      const destination = result.nextStep.codeDeliveryDetails?.destination;
+      otpHint.textContent = destination
+        ? `Enter the verification code sent to ${destination}.`
+        : 'Enter the verification code sent to your email.';
+      otpErrorMsg.style.display = 'none';
+      document.getElementById('otp-code').value = '';
+      loginCard.style.display = 'none';
+      otpCard.style.display = 'block';
     } else {
       showError('Additional sign-in step required. Please contact the administrator.');
     }
@@ -68,6 +83,40 @@ loginBtn.addEventListener('click', async () => {
     loginBtn.textContent = 'Log in';
   }
 });
+
+otpVerifyBtn.addEventListener('click', async () => {
+  const code = document.getElementById('otp-code').value.trim();
+  otpErrorMsg.style.display = 'none';
+
+  if (!code) {
+    showOtpError('Please enter the verification code.');
+    return;
+  }
+
+  otpVerifyBtn.disabled = true;
+  otpVerifyBtn.textContent = 'Verifying…';
+
+  try {
+    const result = await confirmSignIn({ challengeResponse: code });
+    if (result.isSignedIn) {
+      otpCard.style.display = 'none';
+      showDashboard();
+    } else {
+      showOtpError('Additional sign-in step required. Please contact the administrator.');
+    }
+  } catch (err) {
+    console.error(err);
+    showOtpError('Incorrect or expired code. Please try again.');
+  } finally {
+    otpVerifyBtn.disabled = false;
+    otpVerifyBtn.textContent = 'Verify';
+  }
+});
+
+function showOtpError(message) {
+  otpErrorText.textContent = message;
+  otpErrorMsg.style.display = 'block';
+}
 
 logoutBtn.addEventListener('click', async () => {
   await signOut();
@@ -370,6 +419,7 @@ function renderTable(submissions) {
         <td>${escapeHtml(s.name)}</td>
         <td>${escapeHtml(s.email)}</td>
         <td>${escapeHtml(s.phone)}</td>
+        <td>${escapeHtml(s.comment || '—')}</td>
         <td class="${s.consent ? 'consent-yes' : 'consent-no'}">${s.consent ? 'Yes' : 'No'}</td>
         <td>${submittedDate}</td>
       `;
@@ -383,6 +433,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const deleteAccountBtn = document.getElementById('delete-account-btn');
   if (deleteAccountBtn) deleteAccountBtn.addEventListener('click', handleDeleteAccount);
+
+  const startInput = document.getElementById('new-event-start');
+  const endInput = document.getElementById('new-event-end');
+  if (startInput && endInput) {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    startInput.min = todayStr;
+    endInput.min = todayStr;
+    startInput.addEventListener('change', () => {
+      endInput.min = startInput.value > todayStr ? startInput.value : todayStr;
+    });
+  }
 });
 
 async function handleDeleteAccount() {
@@ -452,6 +513,26 @@ async function handleAddEvent() {
   const duplicate = allEvents.some(e => e.name.toLowerCase() === name.toLowerCase());
   if (duplicate) {
     msg.textContent = 'An event with this name already exists.';
+    msg.style.color = '#b42318';
+    msg.style.display = 'block';
+    return;
+  }
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (startDate && startDate < todayStr) {
+    msg.textContent = 'Start date cannot be in the past.';
+    msg.style.color = '#b42318';
+    msg.style.display = 'block';
+    return;
+  }
+  if (endDate && endDate < todayStr) {
+    msg.textContent = 'End date cannot be in the past.';
+    msg.style.color = '#b42318';
+    msg.style.display = 'block';
+    return;
+  }
+  if (startDate && endDate && endDate < startDate) {
+    msg.textContent = 'End date must be on or after the start date.';
     msg.style.color = '#b42318';
     msg.style.display = 'block';
     return;
