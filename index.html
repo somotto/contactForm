@@ -19,7 +19,8 @@
     color: #1a1a1a;
   }
   :root { --brand-color: #0C447C; --brand-color-light: color-mix(in srgb, var(--brand-color) 75%, white); }
-  .wrap { max-width: 900px; margin: 0 auto; }
+  .wrap { max-width: 420px; margin: 0 auto; transition: max-width 0.2s ease; }
+  .wrap.dashboard-active { max-width: 900px; }
   .header {
     background: var(--brand-color); border-radius: 10px 10px 0 0; padding: 1.5rem 2rem;
     display: flex; align-items: center; justify-content: space-between;
