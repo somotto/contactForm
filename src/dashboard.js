@@ -7,6 +7,7 @@ import outputs from '../amplify_outputs.json' with { type: 'json' };
 Amplify.configure(outputs);
 const client = generateClient({ authMode: 'userPool' });
 
+const wrapEl = document.querySelector('.wrap');
 const loginCard = document.getElementById('login-card');
 const dashboardCard = document.getElementById('dashboard-card');
 const logoutBtn = document.getElementById('logout-btn');
@@ -208,6 +209,7 @@ async function showDashboard() {
   loginCard.style.display = 'none';
   dashboardCard.style.display = 'block';
   logoutBtn.style.display = 'inline-block';
+  wrapEl.classList.add('dashboard-active');
 
   // Complete vendor profile creation if pending from registration
   const pending = localStorage.getItem('pendingVendorProfile');
