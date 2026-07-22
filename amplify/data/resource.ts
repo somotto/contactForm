@@ -51,6 +51,7 @@ const schema = a.schema({
       vendorDescription: a.string(),
       vendorPhone: a.string(),
       vendorContactEmail: a.string(),
+      comment: a.string(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create']),
