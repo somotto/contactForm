@@ -81,6 +81,29 @@
     display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
     border-left: 3px solid #E24B4A; padding: 10px 14px;
   }
+  #otp-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+    display: none;
+  }
+  #otp-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #otp-card .field { margin-bottom: 1.25rem; }
+  #otp-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #otp-verify-btn {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #otp-verify-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  #otp-error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
 
   /* Dashboard */
   #dashboard-card {
@@ -157,6 +180,16 @@
     </div>
   </div>
 
+  <div id="otp-card">
+    <p id="otp-hint" style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter the verification code sent to your email.</p>
+    <div class="field">
+      <label for="otp-code">Verification code</label>
+      <input id="otp-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
+    </div>
+    <button id="otp-verify-btn">Verify</button>
+    <div id="otp-error-msg"><span id="otp-error-text"></span></div>
+  </div>
+
   <div id="dashboard-card">
 
     <div id="add-event-section">
@@ -188,7 +221,7 @@
     <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
 
     <div id="view-submissions-section">
-      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Submissions</h2>
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Event Submissions</h2>
       <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
       <div id="loading-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">Loading submissions…</div>
       <div id="empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0; display: none;">No submissions yet.</div>
@@ -199,6 +232,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Comment</th>
             <th>Consent</th>
             <th>Submitted at</th>
           </tr>
@@ -210,7 +244,6 @@
     <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
 
     <div id="danger-zone-section">
-      <h2 style="font-size: 14px; font-weight: 600; color: #b42318; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Danger Zone</h2>
       <div style="border: 0.5px solid #f3c6c4; border-radius: 4px; padding: 16px; background: #fdeeee;">
         <p style="font-size: 13px; color: #555; margin: 0 0 12px;">
           Permanently delete your account, all of your events, and all submissions. This cannot be undone.
