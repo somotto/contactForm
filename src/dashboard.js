@@ -1,6 +1,6 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
-import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, resetPassword, confirmResetPassword, deleteUser, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
+import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, deleteUser, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import { uploadData, remove, getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
@@ -140,10 +140,10 @@ function showOtpError(message) {
 }
 
 // Self-service flow for accounts that registered but never completed email
-// confirmation — Cognito otherwise leaves them stuck (can't log in, and
-// resetPassword fails with "no registered/verified email or phone_number"
-// since nothing is verified yet). Reuses confirmSignUp/resendSignUpCode,
-// the same APIs register.js uses right after signUp.
+// confirmation — Cognito otherwise leaves them stuck (can't log in, and can't
+// use the custom password-reset flow either, since requestPasswordReset
+// requires a CONFIRMED account). Reuses confirmSignUp/resendSignUpCode, the
+// same APIs register.js uses right after signUp.
 async function startVerifyEmailFlow(email, { autoSend = false } = {}) {
   loginCard.style.display = 'none';
   otpCard.style.display = 'none';
@@ -296,20 +296,30 @@ forgotSendBtn.addEventListener('click', async () => {
   forgotSendBtn.textContent = 'Sending…';
 
   try {
-    await resetPassword({ username: email });
-    pendingResetEmail = email;
-    forgotRequestForm.style.display = 'none';
-    forgotConfirmForm.style.display = 'block';
-  } catch (err) {
-    console.error(err);
-    if (err.name === 'InvalidParameterException') {
-      // Thrown when the account has no verified email/phone yet — i.e. registration
-      // was never confirmed, so there's nothing for Cognito to send a reset code to.
+    const { errors } = await client.mutations.requestPasswordReset(
+      { email },
+      { authMode: 'apiKey' }
+    );
+    const message = errors?.[0]?.message || '';
+
+    if (!errors) {
+      pendingResetEmail = email;
+      forgotRequestForm.style.display = 'none';
+      forgotConfirmForm.style.display = 'block';
+    } else if (message.includes('AccountNotConfirmed')) {
+      // Registration was never confirmed, so there's no password to reset yet.
       forgotPasswordCard.style.display = 'none';
       await startVerifyEmailFlow(email, { autoSend: true });
+    } else if (message.includes('NoAccountFound')) {
+      showForgotError('No account found with that email address.');
+    } else if (message.includes('TooManyRequests')) {
+      showForgotError('A code was already sent recently. Check your email, or wait a minute and try again.');
     } else {
-      showForgotError(err.message || 'Failed to send reset code. Please try again.');
+      showForgotError(message || 'Failed to send reset code. Please try again.');
     }
+  } catch (err) {
+    console.error(err);
+    showForgotError(err.message || 'Failed to send reset code. Please try again.');
   } finally {
     forgotSendBtn.disabled = false;
     forgotSendBtn.textContent = 'Send reset code';
@@ -334,10 +344,25 @@ forgotConfirmBtn.addEventListener('click', async () => {
   forgotConfirmBtn.textContent = 'Resetting…';
 
   try {
-    await confirmResetPassword({ username: pendingResetEmail, confirmationCode: code, newPassword });
-    forgotConfirmForm.style.display = 'none';
-    forgotSuccessText.textContent = 'Password reset. You can now log in with your new password.';
-    forgotSuccessMsg.style.display = 'block';
+    const { errors } = await client.mutations.confirmPasswordReset(
+      { email: pendingResetEmail, code, newPassword },
+      { authMode: 'apiKey' }
+    );
+    const message = errors?.[0]?.message || '';
+
+    if (!errors) {
+      forgotConfirmForm.style.display = 'none';
+      forgotSuccessText.textContent = 'Password reset. You can now log in with your new password.';
+      forgotSuccessMsg.style.display = 'block';
+    } else if (message.includes('CodeMismatch')) {
+      showForgotError('Incorrect code. Please check your email and try again.');
+    } else if (message.includes('CodeExpiredOrInvalid')) {
+      showForgotError('Code has expired. Please request a new one.');
+    } else if (message.includes('TooManyAttempts')) {
+      showForgotError('Too many incorrect attempts. Please request a new code.');
+    } else {
+      showForgotError(message || 'Failed to reset password. Please try again.');
+    }
   } catch (err) {
     console.error(err);
     showForgotError(err.message || 'Failed to reset password. Please try again.');
