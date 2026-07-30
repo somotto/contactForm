@@ -70,6 +70,16 @@
     cursor: pointer; padding: 0;
   }
   #brand-color-swatches .swatch.selected { border-color: #1a1a1a; }
+  .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .product-row input { flex: 1; }
+  .product-row button {
+    flex-shrink: 0; width: 36px; border-radius: 4px; border: 1px solid #c7c9cf;
+    background: #fff; color: #b42318; font-size: 16px; cursor: pointer;
+  }
+  #add-product-btn {
+    background: none; border: none; color: #0C447C; font-size: 13px; font-weight: 500;
+    cursor: pointer; padding: 4px 0;
+  }
 </style>
 </head>
 <body>
@@ -121,6 +131,7 @@
           style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
                  padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
         <p style="font-size:11px; color:#999; margin:4px 0 0;">PNG, JPG or WebP · max 2 MB</p>
+        <img id="logo-preview" alt="Logo preview" style="display:none; width:64px; height:64px; object-fit:cover; border-radius:4px; border:1px solid #c7c9cf; margin-top:8px;" />
       </div>
 
       <div class="field">
@@ -139,10 +150,14 @@
       </div>
 
       <div class="field">
-        <label for="description">Describe your product or service <span class="req">*</span></label>
-        <textarea id="description" rows="3" placeholder="A brief description shown to attendees on your event form"
-          style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
-                 padding:10px 12px; font-size:14px; font-family:inherit; resize:vertical;"></textarea>
+        <label>Products / services <span class="req">*</span> <span style="color:#999; font-weight:400; text-transform:none;">(shown as a list on your event form)</span></label>
+        <div id="products-container">
+          <div class="product-row">
+            <input type="text" class="product-input" placeholder="e.g. Mpesa" />
+            <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
+          </div>
+        </div>
+        <button type="button" id="add-product-btn">+ Add another</button>
       </div>
 
       <div class="field">
