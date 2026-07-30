@@ -27,6 +27,8 @@
   }
   .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
   .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  #header-logo { display: none; width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
   #logout-btn {
     background: var(--brand-color-light); border: none; color: #E6F1FB; padding: 8px 14px;
     border-radius: 4px; font-size: 13px; cursor: pointer; display: none;
@@ -55,6 +57,33 @@
   .register-link a { color: #0C447C; text-decoration: underline; }
   .forgot-link { text-align: right; margin: 0.6rem 0 1.25rem; font-size: 12px; }
   .forgot-link a { color: #0C447C; text-decoration: underline; cursor: pointer; }
+  #verify-email-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+    display: none;
+  }
+  #verify-email-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #verify-email-card .field { margin-bottom: 1.25rem; }
+  #verify-email-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #verify-email-card button {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #verify-email-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+  #verify-success-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #1e6b2e; background: #eaf6ec;
+    border-left: 3px solid #639922; padding: 10px 14px;
+  }
+  #verify-error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
   #forgot-password-card {
     background: #fff; border: 0.5px solid #d8dade; border-top: none;
     border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
@@ -129,9 +158,12 @@
 
 <div class="wrap">
   <div class="header">
-    <div>
-      <p id="header-company">Lead Capture Platform</p>
-      <h1 id="header-title">Vendor dashboard</h1>
+    <div class="header-left">
+      <img id="header-logo" alt="" />
+      <div>
+        <p id="header-company">Lead Capture Platform</p>
+        <h1 id="header-title">Vendor dashboard</h1>
+      </div>
     </div>
     <button id="logout-btn">Log out</button>
   </div>
@@ -147,9 +179,37 @@
     </div>
     <button id="login-btn">Log in</button>
     <div class="forgot-link"><a id="forgot-password-link">Forgot password?</a></div>
+    <div class="forgot-link"><a id="verify-email-link">Need to verify your email?</a></div>
     <div id="error-msg"><span id="error-text"></span></div>
     <div class="register-link">
       Don't have an account? <a href="/register.html">Register here</a>
+    </div>
+  </div>
+
+  <div id="verify-email-card">
+    <div id="verify-request-form">
+      <p style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter your email and we'll send you a verification code.</p>
+      <div class="field">
+        <label for="verify-email">Email</label>
+        <input id="verify-email" type="email" placeholder="you@yourcompany.com" />
+      </div>
+      <button id="verify-send-btn">Send verification code</button>
+    </div>
+
+    <div id="verify-confirm-form" style="display:none;">
+      <p id="verify-hint" style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter the verification code sent to your email.</p>
+      <div class="field">
+        <label for="verify-code">Verification code</label>
+        <input id="verify-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
+      </div>
+      <button id="verify-confirm-btn">Verify email</button>
+      <div class="forgot-link"><a id="verify-resend-link">Resend code</a></div>
+    </div>
+
+    <div id="verify-error-msg"><span id="verify-error-text"></span></div>
+    <div id="verify-success-msg"><span id="verify-success-text"></span></div>
+    <div class="register-link">
+      <a id="back-to-login-from-verify-link">Back to login</a>
     </div>
   </div>
 
@@ -224,6 +284,7 @@
     <div id="view-submissions-section">
       <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Event Submissions</h2>
       <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
+      <div id="submission-count" style="font-size: 12px; color: #666; margin-bottom: 0.5rem; display: none;"></div>
       <div id="loading-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">Loading submissions…</div>
       <div id="empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0; display: none;">No submissions yet.</div>
       <table id="submissions-table" style="display:none;">
