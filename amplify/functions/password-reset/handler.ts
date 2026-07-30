@@ -1,4 +1,3 @@
-import type { AppSyncResolverEvent } from 'aws-lambda';
 import { randomInt, createHash } from 'crypto';
 import {
   CognitoIdentityProviderClient,
@@ -30,10 +29,21 @@ const MAX_ATTEMPTS = 5;
 type RequestArgs = { email: string };
 type ConfirmArgs = { email: string; code: string; newPassword: string };
 
+// Amplify Gen2's a.handler.function() invokes the Lambda directly with a flat
+// payload (confirmed via `aws appsync get-function` on the deployed pipeline
+// resolver) — fieldName/arguments/etc. are top-level, not nested under `.info`
+// the way the generic AppSyncResolverEvent (@types/aws-lambda, modeled on the
+// $ctx object used inside VTL/JS resolver templates) would suggest.
+type DirectLambdaEvent<TArguments> = {
+  typeName: string;
+  fieldName: string;
+  arguments: TArguments;
+};
+
 export const handler = async (
-  event: AppSyncResolverEvent<RequestArgs | ConfirmArgs>
+  event: DirectLambdaEvent<RequestArgs | ConfirmArgs>
 ): Promise<boolean> => {
-  switch (event.info.fieldName) {
+  switch (event.fieldName) {
     case 'requestPasswordReset':
       return requestPasswordReset((event.arguments as RequestArgs).email);
     case 'confirmPasswordReset': {
@@ -41,7 +51,7 @@ export const handler = async (
       return confirmPasswordReset(email, code, newPassword);
     }
     default:
-      throw new Error(`Unsupported field: ${event.info.fieldName}`);
+      throw new Error(`Unsupported field: ${event.fieldName}`);
   }
 };
 
