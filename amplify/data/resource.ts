@@ -11,6 +11,7 @@ const schema = a.schema({
       vendorId: a.string().required(),
       logoKey: a.string(),
       description: a.string().required(),
+      products: a.string().array(),
       brandColor: a.string(),
     })
     .authorization((allow) => [
@@ -27,6 +28,7 @@ const schema = a.schema({
       endDate: a.date(),
       vendorCompanyName: a.string(),
       vendorDescription: a.string(),
+      vendorProducts: a.string().array(),
       vendorLogoKey: a.string(),
       vendorPhone: a.string(),
       vendorContactEmail: a.string(),
@@ -49,6 +51,7 @@ const schema = a.schema({
       vendorId: a.string(),
       vendorCompanyName: a.string(),
       vendorDescription: a.string(),
+      vendorProducts: a.string().array(),
       vendorPhone: a.string(),
       vendorContactEmail: a.string(),
       comment: a.string(),
