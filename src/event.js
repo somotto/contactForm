@@ -95,6 +95,7 @@ submitBtn.addEventListener('click', async () => {
       vendorId: resolvedEvent?.vendorId || null,
       vendorCompanyName: resolvedEvent?.vendorCompanyName || null,
       vendorDescription: resolvedEvent?.vendorDescription || null,
+      vendorProducts: resolvedEvent?.vendorProducts || null,
       vendorPhone: resolvedEvent?.vendorPhone || null,
       vendorContactEmail: resolvedEvent?.vendorContactEmail || null,
     });
@@ -125,13 +126,26 @@ function showError(msg) {
   errorMsg.style.display = 'block';
 }
 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
 async function renderVendorInfo(ev) {
   const vendorInfo = document.getElementById('vendor-info');
-  const hasVendorInfo = ev.vendorCompanyName || ev.vendorDescription || ev.vendorPhone || ev.vendorContactEmail || ev.vendorLogoKey;
+  const hasVendorInfo = ev.vendorCompanyName || ev.vendorDescription || ev.vendorProducts?.length || ev.vendorPhone || ev.vendorContactEmail || ev.vendorLogoKey;
   if (!hasVendorInfo) return;
 
   document.getElementById('vendor-company').textContent = ev.vendorCompanyName || '';
-  document.getElementById('vendor-description').textContent = ev.vendorDescription || '';
+
+  const descriptionEl = document.getElementById('vendor-description');
+  const products = (ev.vendorProducts || []).filter(Boolean);
+  if (products.length > 0) {
+    descriptionEl.innerHTML = `<ul>${products.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>`;
+  } else {
+    descriptionEl.textContent = ev.vendorDescription || '';
+  }
 
   const contactParts = [ev.vendorPhone, ev.vendorContactEmail].filter(Boolean);
   document.getElementById('vendor-contact').textContent = contactParts.length
