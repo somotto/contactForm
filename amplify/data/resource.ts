@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { passwordReset } from '../functions/password-reset/resource';
 
 const schema = a.schema({
   Vendor: a
@@ -60,6 +61,26 @@ const schema = a.schema({
       allow.publicApiKey().to(['create']),
       allow.authenticated().to(['read', 'delete']),
     ]),
+
+  // Custom password-reset flow — see functions/password-reset/resource.ts for
+  // why Cognito's own ForgotPassword can't be used here (email MFA blocks it).
+  requestPasswordReset: a
+    .mutation()
+    .arguments({ email: a.string().required() })
+    .returns(a.boolean())
+    .authorization((allow) => [allow.publicApiKey()])
+    .handler(a.handler.function(passwordReset)),
+
+  confirmPasswordReset: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+      code: a.string().required(),
+      newPassword: a.string().required(),
+    })
+    .returns(a.boolean())
+    .authorization((allow) => [allow.publicApiKey()])
+    .handler(a.handler.function(passwordReset)),
 });
 
 export type Schema = ClientSchema<typeof schema>;
