@@ -1,7 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
-import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, resetPassword, confirmResetPassword, deleteUser } from 'aws-amplify/auth';
-import { uploadData, remove } from 'aws-amplify/storage';
+import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, resetPassword, confirmResetPassword, deleteUser, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
+import { uploadData, remove, getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 
 Amplify.configure(outputs);
@@ -33,12 +33,28 @@ const otpVerifyBtn = document.getElementById('otp-verify-btn');
 const otpErrorMsg = document.getElementById('otp-error-msg');
 const otpErrorText = document.getElementById('otp-error-text');
 
+const verifyEmailCard = document.getElementById('verify-email-card');
+const verifyEmailLink = document.getElementById('verify-email-link');
+const backToLoginFromVerifyLink = document.getElementById('back-to-login-from-verify-link');
+const verifyRequestForm = document.getElementById('verify-request-form');
+const verifyConfirmForm = document.getElementById('verify-confirm-form');
+const verifySendBtn = document.getElementById('verify-send-btn');
+const verifyConfirmBtn = document.getElementById('verify-confirm-btn');
+const verifyResendLink = document.getElementById('verify-resend-link');
+const verifyHint = document.getElementById('verify-hint');
+const verifyErrorMsg = document.getElementById('verify-error-msg');
+const verifyErrorText = document.getElementById('verify-error-text');
+const verifySuccessMsg = document.getElementById('verify-success-msg');
+const verifySuccessText = document.getElementById('verify-success-text');
+
 let pendingResetEmail = '';
+let pendingVerifyEmail = '';
 
 let allSubmissions = [];
 let allEvents = [];
 let currentVendorSub = '';
 let currentVendorProfile = null;
+let submissionSubscription = null;
 
 try {
   await getCurrentUser();
@@ -78,7 +94,11 @@ loginBtn.addEventListener('click', async () => {
     }
   } catch (err) {
     console.error(err);
-    showError('Incorrect email or password.');
+    if (err.name === 'UserNotConfirmedException') {
+      await startVerifyEmailFlow(email, { autoSend: true });
+    } else {
+      showError('Incorrect email or password.');
+    }
   } finally {
     loginBtn.disabled = false;
     loginBtn.textContent = 'Log in';
@@ -119,7 +139,132 @@ function showOtpError(message) {
   otpErrorMsg.style.display = 'block';
 }
 
+// Self-service flow for accounts that registered but never completed email
+// confirmation — Cognito otherwise leaves them stuck (can't log in, and
+// resetPassword fails with "no registered/verified email or phone_number"
+// since nothing is verified yet). Reuses confirmSignUp/resendSignUpCode,
+// the same APIs register.js uses right after signUp.
+async function startVerifyEmailFlow(email, { autoSend = false } = {}) {
+  loginCard.style.display = 'none';
+  otpCard.style.display = 'none';
+  forgotPasswordCard.style.display = 'none';
+  verifyEmailCard.style.display = 'block';
+  verifyErrorMsg.style.display = 'none';
+  verifySuccessMsg.style.display = 'none';
+  document.getElementById('verify-email').value = email;
+  pendingVerifyEmail = email;
+
+  if (autoSend) {
+    const sent = await sendVerificationCode(email);
+    verifyRequestForm.style.display = sent ? 'none' : 'block';
+    verifyConfirmForm.style.display = sent ? 'block' : 'none';
+  } else {
+    verifyRequestForm.style.display = 'block';
+    verifyConfirmForm.style.display = 'none';
+  }
+}
+
+async function sendVerificationCode(email) {
+  try {
+    const result = await resendSignUpCode({ username: email });
+    const destination = result?.destination;
+    verifyHint.textContent = destination
+      ? `Your email isn't verified yet. Enter the code sent to ${destination}.`
+      : "Your email isn't verified yet. Enter the code we just sent you.";
+    return true;
+  } catch (err) {
+    console.error(err);
+    if (err.name === 'InvalidParameterException') {
+      showVerifyError('This account is already verified — try logging in, or use "Forgot password?" instead.');
+    } else if (err.name === 'UserNotFoundException') {
+      showVerifyError('No account found with that email address.');
+    } else {
+      showVerifyError(err.message || 'Failed to send verification code. Please try again.');
+    }
+    return false;
+  }
+}
+
+function showVerifyError(message) {
+  verifyErrorText.textContent = message;
+  verifyErrorMsg.style.display = 'block';
+}
+
+verifyEmailLink.addEventListener('click', () => {
+  startVerifyEmailFlow(document.getElementById('login-email').value.trim());
+});
+
+backToLoginFromVerifyLink.addEventListener('click', () => {
+  verifyEmailCard.style.display = 'none';
+  verifyErrorMsg.style.display = 'none';
+  verifySuccessMsg.style.display = 'none';
+  loginCard.style.display = 'block';
+});
+
+verifySendBtn.addEventListener('click', async () => {
+  const email = document.getElementById('verify-email').value.trim();
+  verifyErrorMsg.style.display = 'none';
+
+  if (!email) {
+    showVerifyError('Please enter your email address.');
+    return;
+  }
+
+  verifySendBtn.disabled = true;
+  verifySendBtn.textContent = 'Sending…';
+
+  pendingVerifyEmail = email;
+  const sent = await sendVerificationCode(email);
+  if (sent) {
+    verifyRequestForm.style.display = 'none';
+    verifyConfirmForm.style.display = 'block';
+  }
+
+  verifySendBtn.disabled = false;
+  verifySendBtn.textContent = 'Send verification code';
+});
+
+verifyResendLink.addEventListener('click', async () => {
+  await sendVerificationCode(pendingVerifyEmail);
+});
+
+verifyConfirmBtn.addEventListener('click', async () => {
+  const code = document.getElementById('verify-code').value.trim();
+  verifyErrorMsg.style.display = 'none';
+
+  if (!code || code.length !== 6) {
+    showVerifyError('Please enter the 6-digit code from your email.');
+    return;
+  }
+
+  verifyConfirmBtn.disabled = true;
+  verifyConfirmBtn.textContent = 'Verifying…';
+
+  try {
+    await confirmSignUp({ username: pendingVerifyEmail, confirmationCode: code });
+    verifyConfirmForm.style.display = 'none';
+    verifySuccessText.textContent = 'Email verified! You can now log in.';
+    verifySuccessMsg.style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    if (err.name === 'CodeMismatchException') {
+      showVerifyError('Incorrect code. Please check your email and try again.');
+    } else if (err.name === 'ExpiredCodeException') {
+      showVerifyError('Code has expired. Click "Resend code" to get a new one.');
+    } else {
+      showVerifyError(err.message || 'Verification failed. Please try again.');
+    }
+  } finally {
+    verifyConfirmBtn.disabled = false;
+    verifyConfirmBtn.textContent = 'Verify email';
+  }
+});
+
 logoutBtn.addEventListener('click', async () => {
+  if (submissionSubscription) {
+    submissionSubscription.unsubscribe();
+    submissionSubscription = null;
+  }
   await signOut();
   location.reload();
 });
@@ -157,7 +302,14 @@ forgotSendBtn.addEventListener('click', async () => {
     forgotConfirmForm.style.display = 'block';
   } catch (err) {
     console.error(err);
-    showForgotError(err.message || 'Failed to send reset code. Please try again.');
+    if (err.name === 'InvalidParameterException') {
+      // Thrown when the account has no verified email/phone yet — i.e. registration
+      // was never confirmed, so there's nothing for Cognito to send a reset code to.
+      forgotPasswordCard.style.display = 'none';
+      await startVerifyEmailFlow(email, { autoSend: true });
+    } else {
+      showForgotError(err.message || 'Failed to send reset code. Please try again.');
+    }
   } finally {
     forgotSendBtn.disabled = false;
     forgotSendBtn.textContent = 'Send reset code';
@@ -289,6 +441,7 @@ async function showDashboard() {
 
     loadingMsg.style.display = 'none';
     renderEventFilter();
+    subscribeToNewSubmissions();
 
     if (allSubmissions.length === 0) {
       emptyMsg.style.display = 'block';
@@ -316,6 +469,18 @@ async function loadVendorProfile() {
       companyName = data[0].companyName;
       if (data[0].brandColor) {
         document.documentElement.style.setProperty('--brand-color', data[0].brandColor);
+      }
+      if (data[0].logoKey) {
+        try {
+          const { url } = await getUrl({ path: data[0].logoKey });
+          const headerLogo = document.getElementById('header-logo');
+          if (headerLogo) {
+            headerLogo.src = url.toString();
+            headerLogo.style.display = 'block';
+          }
+        } catch (err) {
+          console.error('Failed to load vendor logo:', err);
+        }
       }
     }
   } catch (err) {
@@ -349,19 +514,19 @@ function renderEventFilter() {
   const filterContainer = document.getElementById('event-filter-container');
   if (!filterContainer) return;
 
-  // Unique events from submissions
-  const uniqueEvents = [...new Map(
-    allSubmissions
-      .filter(s => s.eventId && s.eventName)
-      .map(s => [s.eventId, { id: s.eventId, name: s.eventName, slug: s.eventSlug || null }])
-  ).values()];
+  // Start from allEvents, which always has the real slug (Submission has no
+  // eventSlug field, so deriving slugs from submissions is what caused /e/null links).
+  const uniqueEvents = allEvents.map(e => ({ id: e.id, name: e.name, slug: e.slug }));
 
-  // Include events with no submissions yet, using their stored slug
-  allEvents.forEach(e => {
-    if (!uniqueEvents.find(u => u.id === e.id)) {
-      uniqueEvents.push({ id: e.id, name: e.name, slug: e.slug });
-    }
-  });
+  // Include events referenced by submissions but no longer present in allEvents
+  // (e.g. the event was deleted after submissions came in) — slug is unknown for these.
+  allSubmissions
+    .filter(s => s.eventId && s.eventName)
+    .forEach(s => {
+      if (!uniqueEvents.find(u => u.id === s.eventId)) {
+        uniqueEvents.push({ id: s.eventId, name: s.eventName, slug: null });
+      }
+    });
 
   const baseUrl = window.location.origin;
 
@@ -374,6 +539,14 @@ function renderEventFilter() {
     <div style="margin-top: 8px; font-size: 11px; color: #666;">
       Event form URLs (use these for QR codes):
       ${uniqueEvents.map(e => {
+        if (!e.slug) {
+          return `
+            <div style="margin-top: 4px;">
+              <strong>${escapeHtml(e.name)}:</strong>
+              <span style="color: #999;">link unavailable</span>
+            </div>
+          `;
+        }
         const url = `${baseUrl}/e/${encodeURIComponent(e.slug)}`;
         return `
           <div style="margin-top: 4px;">
@@ -386,11 +559,44 @@ function renderEventFilter() {
   `;
 
   document.getElementById('event-filter').addEventListener('change', (ev) => {
-    const name = ev.target.value;
-    const filtered = name
-      ? allSubmissions.filter(s => s.eventName === name)
-      : allSubmissions;
-    renderTable(filtered);
+    renderTable(filterSubmissions(ev.target.value));
+  });
+}
+
+// Applies the currently-selected event filter (or "all") to allSubmissions.
+function filterSubmissions(eventName) {
+  return eventName
+    ? allSubmissions.filter(s => s.eventName === eventName)
+    : allSubmissions;
+}
+
+function getActiveEventFilter() {
+  return document.getElementById('event-filter')?.value || '';
+}
+
+// Live-updates the table as new submissions arrive, so vendors don't have to
+// reload the page to see them. Runs once per dashboard session.
+function subscribeToNewSubmissions() {
+  if (submissionSubscription) return;
+
+  submissionSubscription = client.models.Submission.onCreate({
+    filter: {
+      or: [
+        { vendorId: { eq: currentVendorSub } },
+        { vendorId: { attributeExists: false } },
+      ],
+    },
+  }).subscribe({
+    next: (newSubmission) => {
+      if (allSubmissions.some(s => s.id === newSubmission.id)) return;
+      allSubmissions.push(newSubmission);
+      // Don't rebuild the filter dropdown here — it would reset the vendor's
+      // current selection, and the new submission can't add an event that
+      // wasn't already in allEvents (submissions only target existing events).
+      document.getElementById('loading-msg').style.display = 'none';
+      renderTable(filterSubmissions(getActiveEventFilter()));
+    },
+    error: (err) => console.error('Submission subscription error:', err),
   });
 }
 
@@ -398,8 +604,14 @@ function renderTable(submissions) {
   const tbody = document.getElementById('submissions-body');
   const table = document.getElementById('submissions-table');
   const emptyMsg = document.getElementById('empty-msg');
+  const countEl = document.getElementById('submission-count');
 
   tbody.innerHTML = '';
+
+  if (countEl) {
+    countEl.textContent = `${submissions.length} submission${submissions.length === 1 ? '' : 's'}`;
+    countEl.style.display = 'block';
+  }
 
   if (submissions.length === 0) {
     table.style.display = 'none';
@@ -552,6 +764,7 @@ async function handleAddEvent() {
       endDate,
       vendorCompanyName: currentVendorProfile?.companyName,
       vendorDescription: currentVendorProfile?.description,
+      vendorProducts: currentVendorProfile?.products,
       vendorLogoKey: currentVendorProfile?.logoKey,
       vendorPhone: currentVendorProfile?.phone,
       vendorContactEmail: currentVendorProfile?.email,
