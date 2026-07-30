@@ -1,7 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
-import { Stack } from 'aws-cdk-lib';
-import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
-import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import { RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnFunction, StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
@@ -9,6 +9,7 @@ import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { notifySubmission } from './functions/notify-submission/resource';
+import { passwordReset } from './functions/password-reset/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/
@@ -18,6 +19,7 @@ const backend = defineBackend({
   data,
   storage,
   notifySubmission,
+  passwordReset,
 });
 
 // Enable a stream on the Submission table so notifySubmission can be triggered by it.
@@ -55,3 +57,42 @@ backend.notifySubmission.resources.lambda.addToRolePolicy(
     resources: ['*'],
   })
 );
+
+// Backing store for password-reset codes (see functions/password-reset/resource.ts).
+// Provisioned directly via CDK rather than as an a.model() in data/resource.ts so
+// it's never reachable through the GraphQL API under any auth mode — only the
+// passwordReset Lambda can read/write it, via the IAM grant below. TTL on
+// expiresAt lets DynamoDB clean up expired codes automatically.
+const resetCodesTable = new Table(backend.passwordReset.resources.lambda, 'PasswordResetCodesTable', {
+  partitionKey: { name: 'email', type: AttributeType.STRING },
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  timeToLiveAttribute: 'expiresAt',
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+resetCodesTable.grantReadWriteData(backend.passwordReset.resources.lambda);
+
+backend.passwordReset.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['cognito-idp:AdminGetUser', 'cognito-idp:AdminSetUserPassword'],
+    resources: [backend.auth.resources.userPool.userPoolArn],
+  })
+);
+
+backend.passwordReset.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+    resources: ['*'],
+  })
+);
+
+const passwordResetCfnFunction = backend.passwordReset.resources.cfnResources.cfnFunction;
+const existingPasswordResetEnv = passwordResetCfnFunction.environment as
+  | CfnFunction.EnvironmentProperty
+  | undefined;
+passwordResetCfnFunction.environment = {
+  variables: {
+    ...existingPasswordResetEnv?.variables,
+    USER_POOL_ID: backend.auth.resources.userPool.userPoolId,
+    RESET_CODES_TABLE_NAME: resetCodesTable.tableName,
+  },
+};
