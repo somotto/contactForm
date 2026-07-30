@@ -11,6 +11,36 @@ const successMsg = document.getElementById('success-msg');
 
 let pendingEmail = '';
 
+document.getElementById('add-product-btn').addEventListener('click', () => {
+  const container = document.getElementById('products-container');
+  const row = document.createElement('div');
+  row.className = 'product-row';
+  row.innerHTML = `
+    <input type="text" class="product-input" placeholder="e.g. Mpesa" />
+    <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
+  `;
+  container.appendChild(row);
+});
+
+document.getElementById('products-container').addEventListener('click', (ev) => {
+  if (!ev.target.classList.contains('remove-product-btn')) return;
+  const container = document.getElementById('products-container');
+  if (container.children.length > 1) {
+    ev.target.closest('.product-row').remove();
+  }
+});
+
+document.getElementById('logo').addEventListener('change', async (ev) => {
+  const preview = document.getElementById('logo-preview');
+  const file = ev.target.files[0];
+  if (!file) {
+    preview.style.display = 'none';
+    return;
+  }
+  preview.src = await fileToBase64(file);
+  preview.style.display = 'block';
+});
+
 document.querySelectorAll('#brand-color-swatches .swatch').forEach((swatch) => {
   swatch.addEventListener('click', () => {
     document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
@@ -26,7 +56,9 @@ registerBtn.addEventListener('click', async () => {
   const phone       = document.getElementById('phone').value.trim();
   const website     = document.getElementById('website').value.trim();
   const brandColor  = document.getElementById('brandColor').value;
-  const description = document.getElementById('description').value.trim();
+  const products    = [...document.querySelectorAll('.product-input')]
+    .map((input) => input.value.trim())
+    .filter(Boolean);
   const password    = document.getElementById('password').value;
   const logoFile    = document.getElementById('logo').files[0] || null;
 
@@ -38,7 +70,7 @@ registerBtn.addEventListener('click', async () => {
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRe.test(email)) { showError('A valid email address is required.'); return; }
   if (!phone)    { showError('Phone number is required.'); return; }
-  if (!description) { showError('Please describe your product or service.'); return; }
+  if (products.length === 0) { showError('Please add at least one product or service.'); return; }
   if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
   if (!logoFile) { showError('A logo or photo is required.'); return; }
   if (logoFile.size > 2 * 1024 * 1024) { showError('Logo must be 2 MB or smaller.'); return; }
@@ -73,7 +105,8 @@ registerBtn.addEventListener('click', async () => {
       websiteUrl: website || '',
       vendorId,
       logoKey: null,          // filled in by dashboard after authenticated upload
-      description,
+      description: products.join(', '), // kept for older single-string consumers (email fallback, etc.)
+      products,
       brandColor,
     }));
 
