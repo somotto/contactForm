@@ -1,7 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { CfnFunction, StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import { Function as LambdaFunction, StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
@@ -85,14 +85,13 @@ backend.passwordReset.resources.lambda.addToRolePolicy(
   })
 );
 
-const passwordResetCfnFunction = backend.passwordReset.resources.cfnResources.cfnFunction;
-const existingPasswordResetEnv = passwordResetCfnFunction.environment as
-  | CfnFunction.EnvironmentProperty
-  | undefined;
-passwordResetCfnFunction.environment = {
-  variables: {
-    ...existingPasswordResetEnv?.variables,
-    USER_POOL_ID: backend.auth.resources.userPool.userPoolId,
-    RESET_CODES_TABLE_NAME: resetCodesTable.tableName,
-  },
-};
+// Use the L2 addEnvironment() API, not the L1 cfnResources.cfnFunction.environment
+// property — defineFunction's own `environment: { SES_SENDER_EMAIL }` (resource.ts)
+// is applied to the L2 construct and only rendered into the L1 property lazily at
+// synth time. Reading and overwriting cfnFunction.environment directly here ran
+// before that sync happened and silently wiped SES_SENDER_EMAIL from the deployed
+// function (confirmed via `aws lambda get-function-configuration` showing only
+// USER_POOL_ID/RESET_CODES_TABLE_NAME present). addEnvironment() merges instead.
+const passwordResetFunction = backend.passwordReset.resources.lambda as LambdaFunction;
+passwordResetFunction.addEnvironment('USER_POOL_ID', backend.auth.resources.userPool.userPoolId);
+passwordResetFunction.addEnvironment('RESET_CODES_TABLE_NAME', resetCodesTable.tableName);
