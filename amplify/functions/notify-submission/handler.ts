@@ -33,16 +33,20 @@ async function sendConfirmationEmail(submission: Record<string, unknown>) {
   const eventName = (submission.eventName as string) || 'the event';
   const vendorCompanyName = (submission.vendorCompanyName as string) || '';
   const vendorDescription = (submission.vendorDescription as string) || '';
+  const vendorProducts = ((submission.vendorProducts as string[]) || []).filter(Boolean);
   const vendorPhone = (submission.vendorPhone as string) || '';
   const vendorContactEmail = (submission.vendorContactEmail as string) || '';
 
   const contactLine = [vendorPhone, vendorContactEmail].filter(Boolean).join(' · ');
+  const productsLine = vendorProducts.length > 0
+    ? vendorProducts.map((p) => `  - ${p}`).join('\n')
+    : vendorDescription;
 
   const bodyLines = [
     `Hi ${submission.name || ''},`,
     '',
     `Thanks for registering at ${eventName}${vendorCompanyName ? ` with ${vendorCompanyName}` : ''}.`,
-    vendorDescription ? `\n${vendorCompanyName || 'The vendor'}: ${vendorDescription}` : '',
+    productsLine ? `\n${vendorCompanyName || 'The vendor'}:\n${productsLine}` : '',
     contactLine ? `\nYou can reach them at: ${contactLine}` : '',
   ].filter(Boolean);
 
