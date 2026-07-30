@@ -579,13 +579,14 @@ function getActiveEventFilter() {
 function subscribeToNewSubmissions() {
   if (submissionSubscription) return;
 
+  // Subscription filters use ModelSubscriptionStringInput, which (unlike the
+  // ModelStringInput used by list()) has no `attributeExists` operator — so
+  // this can't also match legacy submissions with no vendorId the way the
+  // initial list() load does. New submissions always have vendorId set
+  // (handleAddEvent always stamps it on the Event), so this only matters for
+  // catching up on very old data, which the initial load already covers.
   submissionSubscription = client.models.Submission.onCreate({
-    filter: {
-      or: [
-        { vendorId: { eq: currentVendorSub } },
-        { vendorId: { attributeExists: false } },
-      ],
-    },
+    filter: { vendorId: { eq: currentVendorSub } },
   }).subscribe({
     next: (newSubmission) => {
       if (allSubmissions.some(s => s.id === newSubmission.id)) return;
