@@ -541,7 +541,11 @@ function renderEventFilter() {
 
   // Start from allEvents, which always has the real slug (Submission has no
   // eventSlug field, so deriving slugs from submissions is what caused /e/null links).
-  const uniqueEvents = allEvents.map(e => ({ id: e.id, name: e.name, slug: e.slug }));
+  // Sorted newest-created-first so the most recently added event is on top.
+  const sortedEvents = [...allEvents].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  const uniqueEvents = sortedEvents.map(e => ({ id: e.id, name: e.name, slug: e.slug }));
 
   // Include events referenced by submissions but no longer present in allEvents
   // (e.g. the event was deleted after submissions came in) — slug is unknown for these.
