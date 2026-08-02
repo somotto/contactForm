@@ -50,7 +50,6 @@ async function init() {
 
     // Update header with event name
     document.getElementById('header-event-label').textContent = resolvedEvent.name;
-    document.getElementById('header-title').textContent = 'Contact registration';
     document.title = `Register — ${resolvedEvent.name}`;
 
     await renderVendorInfo(resolvedEvent);
