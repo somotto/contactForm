@@ -16,7 +16,7 @@ document.getElementById('add-product-btn').addEventListener('click', () => {
   const row = document.createElement('div');
   row.className = 'product-row';
   row.innerHTML = `
-    <input type="text" class="product-input" placeholder="e.g. Mpesa" />
+    <input type="text" class="product-input" />
     <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
   `;
   container.appendChild(row);
