@@ -25,6 +25,7 @@ const schema = a.schema({
       slug: a.string().required(),
       vendorId: a.string(),
       eventUrl: a.string(),
+      venue: a.string(),
       startDate: a.date(),
       endDate: a.date(),
       vendorCompanyName: a.string(),

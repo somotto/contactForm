@@ -52,6 +52,13 @@ async function init() {
     document.getElementById('header-event-label').textContent = resolvedEvent.name;
     document.title = `Register — ${resolvedEvent.name}`;
 
+    const metaParts = [resolvedEvent.venue, formatDateRange(resolvedEvent.startDate, resolvedEvent.endDate)].filter(Boolean);
+    const metaEl = document.getElementById('header-event-meta');
+    if (metaParts.length) {
+      metaEl.textContent = metaParts.join(' · ');
+      metaEl.style.display = 'block';
+    }
+
     await renderVendorInfo(resolvedEvent);
 
     loadingOverlay.style.display = 'none';
@@ -131,6 +138,17 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+function formatDate(dateStr) {
+  if (!dateStr) return null;
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatDateRange(start, end) {
+  const s = formatDate(start), e = formatDate(end);
+  if (s && e && start !== end) return `${s} – ${e}`;
+  return s || e || null;
+}
+
 async function renderVendorInfo(ev) {
   const vendorInfo = document.getElementById('vendor-info');
   const hasVendorInfo = ev.vendorCompanyName || ev.vendorDescription || ev.vendorProducts?.length || ev.vendorPhone || ev.vendorContactEmail || ev.vendorLogoKey;
@@ -141,7 +159,7 @@ async function renderVendorInfo(ev) {
   const descriptionEl = document.getElementById('vendor-description');
   const products = (ev.vendorProducts || []).filter(Boolean);
   if (products.length > 0) {
-    descriptionEl.innerHTML = `<ul>${products.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>`;
+    descriptionEl.innerHTML = `<p class="services-intro">These are the services we offer:</p><ul>${products.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>`;
   } else {
     descriptionEl.textContent = ev.vendorDescription || '';
   }

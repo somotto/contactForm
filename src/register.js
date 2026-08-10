@@ -41,12 +41,18 @@ document.getElementById('logo').addEventListener('change', async (ev) => {
   preview.style.display = 'block';
 });
 
-document.querySelectorAll('#brand-color-swatches .swatch').forEach((swatch) => {
+document.querySelectorAll('#brand-color-swatches button.swatch').forEach((swatch) => {
   swatch.addEventListener('click', () => {
     document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
     swatch.classList.add('selected');
     document.getElementById('brandColor').value = swatch.dataset.color;
   });
+});
+
+document.getElementById('custom-color-input').addEventListener('input', (ev) => {
+  document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
+  ev.target.classList.add('selected');
+  document.getElementById('brandColor').value = ev.target.value;
 });
 
 registerBtn.addEventListener('click', async () => {

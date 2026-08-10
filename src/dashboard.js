@@ -742,6 +742,7 @@ async function handleAddEvent() {
   const msg = document.getElementById('add-event-msg');
   const name = input.value.trim();
   const eventUrl = document.getElementById('new-event-url').value.trim() || null;
+  const venue = document.getElementById('new-event-venue').value.trim() || null;
   const startDate = document.getElementById('new-event-start').value || null;
   const endDate = document.getElementById('new-event-end').value || null;
 
@@ -790,6 +791,7 @@ async function handleAddEvent() {
       slug,
       vendorId: currentVendorSub,
       eventUrl,
+      venue,
       startDate,
       endDate,
       vendorCompanyName: currentVendorProfile?.companyName,
@@ -813,6 +815,7 @@ async function handleAddEvent() {
     renderEventFilter();
     input.value = '';
     document.getElementById('new-event-url').value = '';
+    document.getElementById('new-event-venue').value = '';
     document.getElementById('new-event-start').value = '';
     document.getElementById('new-event-end').value = '';
 
