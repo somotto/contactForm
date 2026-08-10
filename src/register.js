@@ -41,18 +41,21 @@ document.getElementById('logo').addEventListener('change', async (ev) => {
   preview.style.display = 'block';
 });
 
+function selectSwatch(el, color) {
+  document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
+  document.getElementById('custom-swatch').style.background = '';
+  el.classList.add('selected');
+  document.getElementById('brandColor').value = color;
+}
+
 document.querySelectorAll('#brand-color-swatches button.swatch').forEach((swatch) => {
-  swatch.addEventListener('click', () => {
-    document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
-    swatch.classList.add('selected');
-    document.getElementById('brandColor').value = swatch.dataset.color;
-  });
+  swatch.addEventListener('click', () => selectSwatch(swatch, swatch.dataset.color));
 });
 
 document.getElementById('custom-color-input').addEventListener('input', (ev) => {
-  document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
-  ev.target.classList.add('selected');
-  document.getElementById('brandColor').value = ev.target.value;
+  const customSwatch = document.getElementById('custom-swatch');
+  selectSwatch(customSwatch, ev.target.value);
+  customSwatch.style.background = ev.target.value;
 });
 
 registerBtn.addEventListener('click', async () => {
