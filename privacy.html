@@ -86,7 +86,12 @@
 <script>
   document.getElementById('back-link').addEventListener('click', (e) => {
     e.preventDefault();
-    history.back();
+    if (history.length > 1) {
+      history.back();
+    } else {
+      // Opened in a new tab (e.g. target="_blank") with no history to go back to.
+      window.close();
+    }
   });
 </script>
 </body>
