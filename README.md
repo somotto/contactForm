@@ -85,7 +85,7 @@ One record per vendor account, created after their first login.
 | `vendorId` | String | Yes | Slug generated from company name at registration time (not currently used for filtering — see `Event`/`Submission` below) |
 | `logoKey` | String | No | S3 key for the uploaded logo, set after the first authenticated login |
 | `description` | String | Yes | Brief description of the vendor's product/service, shown to attendees on the public event form |
-| `brandColor` | String | No | Hex color chosen from a preset swatch palette at registration; re-tints the header/subbar on the public event form |
+| `brandColor` | String | No | Hex color chosen at registration from a preset swatch palette or a free color picker; re-tints the header/subbar on the public event form |
 
 Authorization: `allow.owner()` — a vendor can only read/write their own record.
 
@@ -97,6 +97,7 @@ Authorization: `allow.owner()` — a vendor can only read/write their own record
 | `slug` | String | Yes | URL-friendly, generated from `name`; used in `/e/<slug>` |
 | `vendorId` | String | No | Set to the creating vendor's Cognito `userId` (sub) |
 | `eventUrl` | String | No | Optional vendor-provided link (e.g. event website) |
+| `venue` | String | No | Optional vendor-provided venue name, shown alongside the date range in the public form's header banner |
 | `startDate` / `endDate` | Date | No | Restricted client-side (`dashboard.js`) to today or later, and `endDate` must be on/after `startDate` — not enforced by the schema itself |
 | `vendorCompanyName`, `vendorDescription`, `vendorLogoKey`, `vendorPhone`, `vendorContactEmail`, `vendorBrandColor` | String | No | Snapshot of the vendor's profile, copied from `Vendor` at the moment the event is created (see [Vendor logos and profile info](#vendor-logos-and-profile-info)) |
 
@@ -130,7 +131,7 @@ Vendors upload a required logo/photo, write a required product/service descripti
 
 The `Vendor` record itself stays fully private (`allow.owner()` only) — there's no public-read access to it. Instead, the vendor's logo key, description, phone, email, and brand color are **snapshotted onto each `Event`** at the moment it's created (`dashboard.js`'s `handleAddEvent`), and (minus the brand color) again onto each `Submission` at the moment a guest submits (`event.js`). The public contact form (`e.html`) reads these fields off the resolved `Event` to render the vendor's logo/description/contact info and re-tint its header, and the confirmation-email Lambda reads the rest off the `Submission` stream record — neither ever queries `Vendor` directly.
 
-**Brand color:** `e.html` exposes the header/subbar/icon/input-focus/checkbox colors as a `--brand-color` CSS custom property (default `#0C447C`, matching the original design). `event.js` overrides it via `document.documentElement.style.setProperty('--brand-color', ...)` once the event resolves. The subbar/icon use `color-mix(in srgb, var(--brand-color) 75%, white)` to reproduce the original lighter-tint relationship between the header and subbar for whatever color a vendor picks. Registration only offers 8 preset swatches (not a free color picker) specifically so every option stays legible against the header's light text without needing contrast-checking logic.
+**Brand color:** `e.html` exposes the header/subbar/icon/input-focus/checkbox colors as a `--brand-color` CSS custom property (default `#0C447C`, matching the original design). `event.js` overrides it via `document.documentElement.style.setProperty('--brand-color', ...)` once the event resolves. The subbar/icon use `color-mix(in srgb, var(--brand-color) 75%, white)` to reproduce the original lighter-tint relationship between the header and subbar for whatever color a vendor picks. Registration offers 8 preset swatches, each chosen to stay legible against the header's light text, plus a free `<input type="color">` picker (the last swatch slot, styled as a rainbow circle with a "+" until a color is picked) — since that custom option isn't contrast-checked, a vendor can pick a color too light for the header's white text.
 
 **Trade-off:** because this is a snapshot, not a live reference, editing a vendor's profile after an event has been created won't update that event's (or any of its submissions') display — there's no "edit profile" UI today, so this hasn't come up in practice, but it's worth knowing before adding one.
 
