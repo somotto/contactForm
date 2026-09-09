@@ -151,6 +151,19 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eceef1; }
   th { background: #f7f8fa; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #666; }
   tr:hover { background: #fafbfc; }
+  .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .product-row .product-input {
+    flex: 1; box-sizing: border-box; padding: 8px 10px; border-radius: 4px;
+    border: 1px solid #c7c9cf; font-size: 13px;
+  }
+  .product-row .remove-product-btn {
+    flex-shrink: 0; width: 32px; border-radius: 4px; border: 1px solid #c7c9cf;
+    background: #fff; color: #b42318; font-size: 15px; cursor: pointer;
+  }
+  #add-event-product-btn {
+    background: none; border: none; color: #0C447C; font-size: 12px; font-weight: 500;
+    cursor: pointer; padding: 4px 0;
+  }
   .consent-yes { color: #1e6b2e; font-weight: 500; }
   .consent-no { color: #999; }
   #error-msg {
@@ -261,7 +274,7 @@
   <div id="dashboard-card">
 
     <div id="add-event-section">
-      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Add an Event</h2>
+      <h2 id="add-event-heading" style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Add an Event</h2>
       <div style="border: 0.5px solid #d8dade; border-radius: 4px; padding: 16px; background: #f7f8fa;">
         <div style="margin-bottom: 10px;">
           <label for="new-event-name" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event name <span style="color:#d23b3b;">*</span></label>
@@ -285,9 +298,39 @@
             <input id="new-event-end" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
           </div>
         </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Services offered for this event <span style="color:#999; font-weight:400;">(optional)</span></label>
+          <div id="event-products-container">
+            <div class="product-row">
+              <input type="text" class="product-input" />
+              <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
+            </div>
+          </div>
+          <button type="button" id="add-event-product-btn">+ Add another</button>
+        </div>
         <button id="add-event-btn" style="padding: 8px 20px; background: var(--brand-color); color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Add event</button>
+        <button id="cancel-edit-event-btn" type="button" style="display:none; margin-left: 8px; padding: 8px 20px; background: #fff; color: #555; border: 1px solid #c7c9cf; border-radius: 4px; font-size: 13px; cursor: pointer;">Cancel</button>
         <div id="add-event-msg" style="display: none; margin-top: 10px; font-size: 12px;"></div>
       </div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="events-list-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Your Events</h2>
+      <table id="events-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Venue</th>
+            <th>Dates</th>
+            <th>Form link</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="events-body"></tbody>
+      </table>
+      <div id="events-empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">No events yet — add one above.</div>
     </div>
 
     <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />

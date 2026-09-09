@@ -55,6 +55,7 @@ let allEvents = [];
 let currentVendorSub = '';
 let currentVendorProfile = null;
 let submissionSubscription = null;
+let editingEventId = null;
 
 try {
   await getCurrentUser();
@@ -456,6 +457,8 @@ async function showDashboard() {
 
     loadingMsg.style.display = 'none';
     renderEventFilter();
+    renderEventsList();
+    resetEventForm();
     subscribeToNewSubmissions();
 
     if (allSubmissions.length === 0) {
@@ -547,39 +550,68 @@ function renderEventFilter() {
       }
     });
 
-  const baseUrl = window.location.origin;
-
+  // Form URLs now live in the "Your Events" table (renderEventsList) instead
+  // of being duplicated here — this dropdown is just for filtering submissions.
   filterContainer.innerHTML = `
     <label for="event-filter" style="font-size: 12px; font-weight: 500; color: #666; margin-right: 8px;">View Submissions by Event:</label>
     <select id="event-filter" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;">
       <option value="">All events</option>
       ${uniqueEvents.map(e => `<option value="${escapeHtml(e.name)}">${escapeHtml(e.name)}</option>`).join('')}
     </select>
-    <div style="margin-top: 8px; font-size: 11px; color: #666;">
-      Event form URLs (use these for QR codes):
-      ${uniqueEvents.map(e => {
-        if (!e.slug) {
-          return `
-            <div style="margin-top: 4px;">
-              <strong>${escapeHtml(e.name)}:</strong>
-              <span style="color: #999;">link unavailable</span>
-            </div>
-          `;
-        }
-        const url = `${baseUrl}/e/${encodeURIComponent(e.slug)}`;
-        return `
-          <div style="margin-top: 4px;">
-            <strong>${escapeHtml(e.name)}:</strong>
-            <a href="${url}" target="_blank" style="color: #0C447C; word-break: break-all;">${url}</a>
-          </div>
-        `;
-      }).join('')}
-    </div>
   `;
 
   document.getElementById('event-filter').addEventListener('change', (ev) => {
     renderTable(filterSubmissions(ev.target.value));
   });
+}
+
+// Renders the vendor's own events (name, venue, dates, form link, Edit
+// button) in the dashboard. This is the only place events can be edited from.
+function renderEventsList() {
+  const table = document.getElementById('events-table');
+  const emptyMsg = document.getElementById('events-empty-msg');
+  const tbody = document.getElementById('events-body');
+  if (!table) return;
+
+  const sortedEvents = [...allEvents].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  if (sortedEvents.length === 0) {
+    table.style.display = 'none';
+    emptyMsg.style.display = 'block';
+    return;
+  }
+
+  emptyMsg.style.display = 'none';
+  table.style.display = 'table';
+
+  const baseUrl = window.location.origin;
+  tbody.innerHTML = '';
+  sortedEvents.forEach((ev) => {
+    const url = ev.slug ? `${baseUrl}/e/${encodeURIComponent(ev.slug)}` : null;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${escapeHtml(ev.name)}</td>
+      <td>${escapeHtml(ev.venue || '—')}</td>
+      <td>${formatDateRange(ev.startDate, ev.endDate) || '—'}</td>
+      <td>${url ? `<a href="${url}" target="_blank" style="color:#0C447C; word-break: break-all;">Open link</a>` : '—'}</td>
+      <td><button type="button" class="edit-event-btn" style="padding:4px 10px; font-size:12px; border:1px solid #c7c9cf; border-radius:4px; background:#fff; cursor:pointer;">Edit</button></td>
+    `;
+    row.querySelector('.edit-event-btn').addEventListener('click', () => startEditEvent(ev));
+    tbody.appendChild(row);
+  });
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return null;
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatDateRange(start, end) {
+  const s = formatDate(start), e = formatDate(end);
+  if (s && e && start !== end) return `${s} – ${e}`;
+  return s || e || null;
 }
 
 // Applies the currently-selected event filter (or "all") to allSubmissions.
@@ -658,7 +690,23 @@ function renderTable(submissions) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const addEventBtn = document.getElementById('add-event-btn');
-  if (addEventBtn) addEventBtn.addEventListener('click', handleAddEvent);
+  if (addEventBtn) addEventBtn.addEventListener('click', handleSaveEvent);
+
+  const cancelEditBtn = document.getElementById('cancel-edit-event-btn');
+  if (cancelEditBtn) cancelEditBtn.addEventListener('click', resetEventForm);
+
+  const addProductBtn = document.getElementById('add-event-product-btn');
+  if (addProductBtn) addProductBtn.addEventListener('click', () => addEventProductRow());
+
+  const productsContainer = document.getElementById('event-products-container');
+  if (productsContainer) {
+    productsContainer.addEventListener('click', (ev) => {
+      if (!ev.target.classList.contains('remove-product-btn')) return;
+      if (productsContainer.children.length > 1) {
+        ev.target.closest('.product-row').remove();
+      }
+    });
+  }
 
   const deleteAccountBtn = document.getElementById('delete-account-btn');
   if (deleteAccountBtn) deleteAccountBtn.addEventListener('click', handleDeleteAccount);
@@ -720,7 +768,61 @@ async function handleDeleteAccount() {
   }
 }
 
-async function handleAddEvent() {
+// Populates the Add/Edit form from an existing event and switches it into
+// edit mode. The same form and handleSaveEvent() are used for both add and
+// edit — editingEventId is what tells them apart.
+function startEditEvent(event) {
+  editingEventId = event.id;
+  document.getElementById('new-event-name').value = event.name || '';
+  document.getElementById('new-event-url').value = event.eventUrl || '';
+  document.getElementById('new-event-venue').value = event.venue || '';
+  document.getElementById('new-event-start').value = event.startDate || '';
+  document.getElementById('new-event-end').value = event.endDate || '';
+  setEventProductRows(event.vendorProducts || []);
+
+  document.getElementById('add-event-heading').textContent = 'Edit Event';
+  document.getElementById('add-event-btn').textContent = 'Save changes';
+  document.getElementById('cancel-edit-event-btn').style.display = 'inline-block';
+  document.getElementById('add-event-msg').style.display = 'none';
+
+  document.getElementById('add-event-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Resets the Add/Edit form back to "add a new event" mode. Services default
+// to the vendor's profile products as a starting point, editable per event.
+function resetEventForm() {
+  editingEventId = null;
+  document.getElementById('new-event-name').value = '';
+  document.getElementById('new-event-url').value = '';
+  document.getElementById('new-event-venue').value = '';
+  document.getElementById('new-event-start').value = '';
+  document.getElementById('new-event-end').value = '';
+  setEventProductRows(currentVendorProfile?.products || []);
+
+  document.getElementById('add-event-heading').textContent = 'Add an Event';
+  document.getElementById('add-event-btn').textContent = 'Add event';
+  document.getElementById('cancel-edit-event-btn').style.display = 'none';
+}
+
+function addEventProductRow(value = '') {
+  const container = document.getElementById('event-products-container');
+  const row = document.createElement('div');
+  row.className = 'product-row';
+  row.innerHTML = `
+    <input type="text" class="product-input" value="${escapeHtml(value)}" />
+    <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
+  `;
+  container.appendChild(row);
+}
+
+function setEventProductRows(values) {
+  const container = document.getElementById('event-products-container');
+  container.innerHTML = '';
+  const rows = values && values.length > 0 ? values : [''];
+  rows.forEach((v) => addEventProductRow(v));
+}
+
+async function handleSaveEvent() {
   const input = document.getElementById('new-event-name');
   const msg = document.getElementById('add-event-msg');
   const name = input.value.trim();
@@ -728,6 +830,9 @@ async function handleAddEvent() {
   const venue = document.getElementById('new-event-venue').value.trim() || null;
   const startDate = document.getElementById('new-event-start').value || null;
   const endDate = document.getElementById('new-event-end').value || null;
+  const vendorProducts = [...document.querySelectorAll('#event-products-container .product-input')]
+    .map((el) => el.value.trim())
+    .filter(Boolean);
 
   msg.style.display = 'none';
 
@@ -738,7 +843,9 @@ async function handleAddEvent() {
     return;
   }
 
-  const duplicate = allEvents.some(e => e.name.toLowerCase() === name.toLowerCase());
+  const duplicate = allEvents.some(
+    (e) => e.id !== editingEventId && e.name.toLowerCase() === name.toLowerCase()
+  );
   if (duplicate) {
     msg.textContent = 'An event with this name already exists.';
     msg.style.color = '#b42318';
@@ -746,18 +853,23 @@ async function handleAddEvent() {
     return;
   }
 
-  const todayStr = new Date().toISOString().slice(0, 10);
-  if (startDate && startDate < todayStr) {
-    msg.textContent = 'Start date cannot be in the past.';
-    msg.style.color = '#b42318';
-    msg.style.display = 'block';
-    return;
-  }
-  if (endDate && endDate < todayStr) {
-    msg.textContent = 'End date cannot be in the past.';
-    msg.style.color = '#b42318';
-    msg.style.display = 'block';
-    return;
+  // Past-date validation only applies when creating a new event — an
+  // existing event's dates naturally move into the past over time, and
+  // editing e.g. its venue shouldn't be blocked by that.
+  if (!editingEventId) {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (startDate && startDate < todayStr) {
+      msg.textContent = 'Start date cannot be in the past.';
+      msg.style.color = '#b42318';
+      msg.style.display = 'block';
+      return;
+    }
+    if (endDate && endDate < todayStr) {
+      msg.textContent = 'End date cannot be in the past.';
+      msg.style.color = '#b42318';
+      msg.style.display = 'block';
+      return;
+    }
   }
   if (startDate && endDate && endDate < startDate) {
     msg.textContent = 'End date must be on or after the start date.';
@@ -766,49 +878,75 @@ async function handleAddEvent() {
     return;
   }
 
-  const slug = generateSlug(name);
-
   try {
-    const { data, errors } = await client.models.Event.create({
-      name,
-      slug,
-      vendorId: currentVendorSub,
-      eventUrl,
-      venue,
-      startDate,
-      endDate,
-      vendorCompanyName: currentVendorProfile?.companyName,
-      vendorDescription: currentVendorProfile?.description,
-      vendorProducts: currentVendorProfile?.products,
-      vendorLogoKey: currentVendorProfile?.logoKey,
-      vendorPhone: currentVendorProfile?.phone,
-      vendorContactEmail: currentVendorProfile?.email,
-      vendorBrandColor: currentVendorProfile?.brandColor,
-    });
+    if (editingEventId) {
+      const { data, errors } = await client.models.Event.update({
+        id: editingEventId,
+        name,
+        eventUrl,
+        venue,
+        startDate,
+        endDate,
+        vendorProducts,
+      });
 
-    if (errors) {
-      console.error(errors);
-      msg.textContent = 'Failed to create event.';
-      msg.style.color = '#b42318';
+      if (errors) {
+        console.error(errors);
+        msg.textContent = 'Failed to save changes.';
+        msg.style.color = '#b42318';
+        msg.style.display = 'block';
+        return;
+      }
+
+      const idx = allEvents.findIndex((e) => e.id === editingEventId);
+      if (idx !== -1) allEvents[idx] = data;
+      renderEventsList();
+      renderEventFilter();
+      resetEventForm();
+
+      msg.textContent = `"${name}" updated.`;
+      msg.style.color = '#1e6b2e';
       msg.style.display = 'block';
-      return;
+    } else {
+      const slug = generateSlug(name);
+      const { data, errors } = await client.models.Event.create({
+        name,
+        slug,
+        vendorId: currentVendorSub,
+        eventUrl,
+        venue,
+        startDate,
+        endDate,
+        vendorCompanyName: currentVendorProfile?.companyName,
+        vendorDescription: currentVendorProfile?.description,
+        vendorProducts,
+        vendorLogoKey: currentVendorProfile?.logoKey,
+        vendorPhone: currentVendorProfile?.phone,
+        vendorContactEmail: currentVendorProfile?.email,
+        vendorBrandColor: currentVendorProfile?.brandColor,
+      });
+
+      if (errors) {
+        console.error(errors);
+        msg.textContent = 'Failed to create event.';
+        msg.style.color = '#b42318';
+        msg.style.display = 'block';
+        return;
+      }
+
+      allEvents.push(data);
+      renderEventsList();
+      renderEventFilter();
+      resetEventForm();
+
+      const shortUrl = `${window.location.origin}/e/${encodeURIComponent(slug)}`;
+      msg.textContent = `"${name}" added. Share link: ${shortUrl}`;
+      msg.style.color = '#1e6b2e';
+      msg.style.display = 'block';
     }
-
-    allEvents.push(data);
-    renderEventFilter();
-    input.value = '';
-    document.getElementById('new-event-url').value = '';
-    document.getElementById('new-event-venue').value = '';
-    document.getElementById('new-event-start').value = '';
-    document.getElementById('new-event-end').value = '';
-
-    const shortUrl = `${window.location.origin}/e/${encodeURIComponent(slug)}`;
-    msg.textContent = `"${name}" added. Share link: ${shortUrl}`;
-    msg.style.color = '#1e6b2e';
-    msg.style.display = 'block';
   } catch (err) {
     console.error(err);
-    msg.textContent = 'Failed to create event.';
+    msg.textContent = editingEventId ? 'Failed to save changes.' : 'Failed to create event.';
     msg.style.color = '#b42318';
     msg.style.display = 'block';
   }
