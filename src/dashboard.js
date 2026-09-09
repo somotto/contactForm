@@ -387,6 +387,7 @@ async function showDashboard() {
   dashboardCard.style.display = 'block';
   logoutBtn.style.display = 'inline-block';
   wrapEl.classList.add('dashboard-active');
+  document.body.classList.add('dashboard-active');
 
   // Complete vendor profile creation if pending from registration
   const pending = localStorage.getItem('pendingVendorProfile');
