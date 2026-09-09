@@ -38,7 +38,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['read']),
-      allow.authenticated().to(['create', 'read', 'update', 'delete']),
+      allow.ownerDefinedIn('vendorId').identityClaim('sub').to(['create', 'read', 'update', 'delete']),
     ]),
 
   Submission: a
@@ -60,7 +60,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['create']),
-      allow.authenticated().to(['read', 'delete']),
+      allow.ownerDefinedIn('vendorId').identityClaim('sub').to(['read', 'delete']),
     ]),
 
   // Custom password-reset flow — see functions/password-reset/resource.ts for

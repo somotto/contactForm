@@ -438,23 +438,12 @@ async function showDashboard() {
   const table = document.getElementById('submissions-table');
 
   try {
+    // Event/Submission authorization is owner-scoped by vendorId (see
+    // amplify/data/resource.ts), so list() already returns only this
+    // vendor's own rows server-side — no client-side filter needed.
     const [eventsResult, submissionsResult] = await Promise.all([
-      client.models.Event.list({
-        filter: {
-          or: [
-            { vendorId: { eq: currentVendorSub } },
-            { vendorId: { attributeExists: false } },
-          ]
-        }
-      }),
-      client.models.Submission.list({
-        filter: {
-          or: [
-            { vendorId: { eq: currentVendorSub } },
-            { vendorId: { attributeExists: false } },
-          ]
-        }
-      }),
+      client.models.Event.list(),
+      client.models.Submission.list(),
     ]);
 
     if (eventsResult.errors || submissionsResult.errors) {
@@ -609,15 +598,10 @@ function getActiveEventFilter() {
 function subscribeToNewSubmissions() {
   if (submissionSubscription) return;
 
-  // Subscription filters use ModelSubscriptionStringInput, which (unlike the
-  // ModelStringInput used by list()) has no `attributeExists` operator — so
-  // this can't also match legacy submissions with no vendorId the way the
-  // initial list() load does. New submissions always have vendorId set
-  // (handleAddEvent always stamps it on the Event), so this only matters for
-  // catching up on very old data, which the initial load already covers.
-  submissionSubscription = client.models.Submission.onCreate({
-    filter: { vendorId: { eq: currentVendorSub } },
-  }).subscribe({
+  // Submission authorization is owner-scoped by vendorId (see
+  // amplify/data/resource.ts), so onCreate only ever delivers this vendor's
+  // own rows server-side — no client-side filter needed.
+  submissionSubscription = client.models.Submission.onCreate().subscribe({
     next: (newSubmission) => {
       if (allSubmissions.some(s => s.id === newSubmission.id)) return;
       allSubmissions.push(newSubmission);
@@ -705,16 +689,14 @@ async function handleDeleteAccount() {
   msg.style.display = 'none';
 
   try {
-    const { data: submissions } = await client.models.Submission.list({
-      filter: { vendorId: { eq: currentVendorSub } },
-    });
+    // Owner-scoped authorization (amplify/data/resource.ts) means these
+    // list() calls already only return this vendor's own rows.
+    const { data: submissions } = await client.models.Submission.list();
     for (const submission of submissions || []) {
       await client.models.Submission.delete({ id: submission.id });
     }
 
-    const { data: events } = await client.models.Event.list({
-      filter: { vendorId: { eq: currentVendorSub } },
-    });
+    const { data: events } = await client.models.Event.list();
     for (const event of events || []) {
       await client.models.Event.delete({ id: event.id });
     }
