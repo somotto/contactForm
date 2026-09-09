@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Terms of Use — TheEventConnector</title>
+<title>Terms and Conditions — TheEventConnector</title>
 <style>
   body {
     background: #f4f5f7;
@@ -12,7 +12,7 @@
     padding: 2rem 1rem;
     color: #1a1a1a;
   }
-  .card-wrap { max-width: 640px; margin: 0 auto; }
+  .card-wrap { max-width: 720px; margin: 0 auto; }
   .header {
     background: #0C447C; border-radius: 10px 10px 0 0; padding: 1.75rem 2rem;
   }
@@ -24,16 +24,36 @@
   }
   .body-card h2 { font-size: 15px; margin: 1.75rem 0 0.6rem; color: #1a1a1a; }
   .body-card h2:first-child { margin-top: 0; }
+  .body-card h3 { font-size: 13.5px; margin: 1.1rem 0 0.4rem; color: #1a1a1a; }
   .body-card p, .body-card li { font-size: 14px; line-height: 1.6; color: #333; }
   .body-card ul { margin: 0.4rem 0; padding-left: 1.3em; }
   .body-card li { margin: 0.3rem 0; }
-  .effective-date { font-size: 12px; color: #888; margin: 0 0 1.5rem; }
+  .effective-date { font-size: 12px; color: #888; margin: 0 0 0.4rem; }
+  .intro-note { font-size: 13px; color: #666; font-style: italic; margin: 0 0 1.5rem; }
   a { color: #0C447C; }
   .back-link { display: inline-block; margin-top: 1.5rem; font-size: 13px; }
   .legal-row {
     margin-top: 1rem; padding: 0 4px; text-align: center;
   }
   .legal-row p { font-size: 11px; color: #999; margin: 0; }
+  .toc { font-size: 13px; padding-left: 1.2em; margin: 0 0 1.5rem; }
+  .toc li { margin: 0.25rem 0; }
+  .toc a { text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .notice {
+    background: #f0f6fc; border-left: 3px solid #0C447C; border-radius: 4px;
+    padding: 0.7rem 1rem; margin: 0.9rem 0; font-size: 13.5px;
+  }
+  .notice p { margin: 0; font-size: 13.5px; }
+  .contact-block {
+    background: #f4f5f7; border-radius: 6px; padding: 0.9rem 1.1rem; margin: 0.7rem 0; font-size: 13.5px;
+  }
+  .contact-block p { margin: 0.2rem 0; font-size: 13.5px; }
+  .caps { font-size: 12.5px; }
+  .body-card table { width: 100%; border-collapse: collapse; margin: 0.6rem 0 1.1rem; }
+  .body-card th, .body-card td { border: 1px solid #e2e4e9; padding: 0.5rem 0.6rem; text-align: left; vertical-align: top; font-size: 12.5px; }
+  .body-card th { background: #f4f5f7; font-weight: 600; }
+  .table-scroll { overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -41,49 +61,385 @@
 <div class="card-wrap">
   <div class="header">
     <p>TheEventConnector</p>
-    <h1>Terms of Use</h1>
+    <h1>Terms and Conditions</h1>
   </div>
 
   <div class="body-card">
-    <p class="effective-date">Effective Date: August 24, 2026</p>
+    <p class="effective-date">Effective Date: September 2, 2026</p>
+    <p class="intro-note">Please read these Terms and Conditions carefully before using the Platform.</p>
 
-    <h2>1. Acceptance of These Terms</h2>
-    <p>By accessing or using TheEventConnector.com — whether as a registered vendor or as an attendee submitting a contact form — you agree to be bound by these Terms of Use. If you do not agree, do not use the platform.</p>
-
-    <h2>2. What TheEventConnector Provides</h2>
-    <p>TheEventConnector is a lead-capture platform: registered vendors create events and share a per-event link or QR code, and attendees submit their contact information through a public form tied to that event. We provide the platform itself; we are not a party to, and do not control, the business relationship between a vendor and the attendees who submit a form to them.</p>
-
-    <h2>3. Vendor Accounts</h2>
-    <ul>
-      <li>You must provide accurate registration information and keep your login credentials confidential.</li>
-      <li>You are responsible for the content you attach to your events and public forms (company description, products, contact details, branding).</li>
-      <li>You are responsible for how you use the lead data your events collect, including complying with applicable telemarketing, email, and data protection laws in your own outreach to attendees.</li>
-      <li>We may suspend or terminate a vendor account that misuses the platform, including to collect data unrelated to a legitimate event or to contact attendees for purposes other than what was disclosed at submission.</li>
+    <ul class="toc">
+      <li><a href="#s1">1. Introduction and Acceptance of Terms</a></li>
+      <li><a href="#s2">2. Definitions</a></li>
+      <li><a href="#s3">3. Account Registration and Eligibility</a></li>
+      <li><a href="#s4">4. Vendor Registration and Listings</a></li>
+      <li><a href="#s5">5. Organizer Responsibilities</a></li>
+      <li><a href="#s6">6. Platform Role and Limitations</a></li>
+      <li><a href="#s7">7. Fees, Payments, and Billing</a></li>
+      <li><a href="#s8">8. Cancellations and Refund Policy</a></li>
+      <li><a href="#s9">9. User Content and Conduct</a></li>
+      <li><a href="#s10">10. Intellectual Property Rights</a></li>
+      <li><a href="#s11">11. Privacy and Data Protection</a></li>
+      <li><a href="#s12">12. Third-Party Links, Services, and Integrations</a></li>
+      <li><a href="#s13">13. Reviews and Ratings</a></li>
+      <li><a href="#s14">14. Disclaimers and Limitation of Liability</a></li>
+      <li><a href="#s15">15. Indemnification</a></li>
+      <li><a href="#s16">16. Suspension and Termination</a></li>
+      <li><a href="#s17">17. Modifications to the Platform and Terms</a></li>
+      <li><a href="#s18">18. Dispute Resolution</a></li>
+      <li><a href="#s19">19. Governing Law and Jurisdiction</a></li>
+      <li><a href="#s20">20. Force Majeure</a></li>
+      <li><a href="#s21">21. General Provisions</a></li>
+      <li><a href="#s22">22. Contact Information</a></li>
     </ul>
 
-    <h2>4. Attendee Submissions</h2>
-    <p>Submitting a public contact form is optional and requires your affirmative consent to be contacted, as described at the point of submission. Submitted information is shared with the specific vendor hosting that event — see our <a href="./privacy.html">Privacy Policy</a> for how it's collected, used, and protected.</p>
+    <h2 id="s1">1. Introduction and Acceptance of Terms</h2>
+    <h3>1.1 Overview</h3>
+    <p>Welcome to TheEventConnector.com (the "Platform"). TheEventConnector.com is an online marketplace and discovery platform designed to connect event vendors, event attendees, and other event industry professionals. Through the Platform, event organizers can discover, evaluate, and engage vendors, while vendors can register, list their services, and grow their businesses by reaching a wide audience of event professionals and consumers.</p>
+    <h3>1.2 Acceptance of Terms</h3>
+    <p>By accessing, browsing, registering on, or otherwise using the Platform or any of its Services in any manner, you ("User") acknowledge that you have read, understood, and agree to be legally bound by these Terms and Conditions ("Terms"), together with the TheEventConnector.com <a href="./privacy.html">Privacy Policy</a> and any other policies or guidelines incorporated herein by reference. These Terms constitute a legally binding agreement between you and TheEventConnector.com.</p>
+    <h3>1.3 Refusal of Terms</h3>
+    <p>If you do not agree with any part of these Terms, you must immediately discontinue all access to and use of the Platform and its Services. Your continued use of the Platform following publication of these Terms constitutes your affirmative acceptance of them.</p>
+    <h3>1.4 Legal Capacity</h3>
+    <p>You represent and warrant that you are of legal age in your jurisdiction to enter into binding contracts. Individuals who are minors or otherwise lack legal capacity to contract under the laws of their jurisdiction are not permitted to use the Platform. If you are using the Platform on behalf of a business entity, you represent that you have the authority to bind that entity to these Terms.</p>
+    <h3>1.5 Global Application</h3>
+    <p>These Terms apply globally to all Users regardless of geographic location. By using the Platform, international Users acknowledge that they do so voluntarily and accept responsibility for compliance with their local laws. Where mandatory local consumer protection laws apply, these Terms shall be interpreted to comply with such laws to the extent required.</p>
 
-    <h2>5. Acceptable Use</h2>
-    <p>You agree not to:</p>
+    <h2 id="s2">2. Definitions</h2>
+    <p>For the purposes of these Terms and Conditions, the following terms shall have the meanings ascribed to them below:</p>
     <ul>
-      <li>Submit false, misleading, or fraudulent information through any form on the platform.</li>
-      <li>Use the platform to collect data for spam, unsolicited bulk contact, or any purpose beyond legitimate event lead capture.</li>
-      <li>Attempt to access another vendor's account, data, or events without authorization.</li>
-      <li>Interfere with or disrupt the platform's normal operation.</li>
+      <li><strong>2.1 "Platform"</strong> means the TheEventConnector.com website, any associated mobile applications, APIs, and all related tools, features, and services made available by TheEventConnector.com, as updated and modified from time to time.</li>
+      <li><strong>2.2 "User"</strong> means any individual, business, or legal entity that accesses, browses, registers on, or otherwise uses the Platform in any capacity, including Vendors and Organizers.</li>
+      <li><strong>2.3 "Vendor"</strong> means any business or individual who has registered on the Platform to offer, advertise, or provide event-related products, services, or expertise, including but not limited to caterers, photographers, venues, entertainers, decorators, and event planners.</li>
+      <li><strong>2.4 "Organizer"</strong> means any User who accesses or uses the Platform to discover, contact, or engage Vendors in connection with planning, organizing, managing, or executing an event.</li>
+      <li><strong>2.5 "Account"</strong> means a registered user profile created by a User on the Platform, through which the User may access features, manage Listings, and interact with other Users.</li>
+      <li><strong>2.6 "Content"</strong> means any text, photographs, images, videos, audio, data, listings, descriptions, reviews, ratings, messages, or other material submitted, posted, uploaded, transmitted, or otherwise made available through the Platform by a User.</li>
+      <li><strong>2.7 "Services"</strong> means all features, tools, functionalities, communications channels, and other services offered to Users through the Platform, including but not limited to search and discovery tools, messaging, booking facilitation, and review systems.</li>
+      <li><strong>2.8 "Listing"</strong> means a vendor profile, service description, event posting, or any other public-facing advertisement published on the Platform by a Vendor or Organizer.</li>
+      <li><strong>2.9 "Transaction"</strong> means any booking, inquiry, payment, agreement, or other exchange of value facilitated, initiated, or completed through or in connection with the Platform, between an Organizer and a Vendor.</li>
+      <li><strong>2.10 "Intellectual Property"</strong> means all trademarks, service marks, trade names, logos, copyrights, patents, trade secrets, domain names, software, databases, and all other proprietary rights, whether registered or unregistered, owned by or licensed to TheEventConnector.com.</li>
     </ul>
 
-    <h2>6. Disclaimer of Warranties</h2>
-    <p>The platform is provided "as is" and "as available," without warranties of any kind, express or implied. We do not guarantee that the service will be uninterrupted, error-free, or that data submitted through it will always be delivered or retained.</p>
+    <h2 id="s3">3. Account Registration and Eligibility</h2>
+    <h3>3.1 Eligibility Requirements</h3>
+    <p>To register for an Account, you must:</p>
+    <ul>
+      <li>Be of legal age in your jurisdiction to enter into binding agreements;</li>
+      <li>Have full legal capacity to contract;</li>
+      <li>Not have been previously suspended or permanently banned from the Platform; and</li>
+      <li>Comply with all applicable local, national, and international laws and regulations.</li>
+    </ul>
+    <h3>3.2 Accurate Information</h3>
+    <p>When registering an Account, you agree to provide accurate, current, complete, and truthful information. You further agree to promptly update your Account information to maintain its accuracy and completeness at all times. Providing false, misleading, or outdated registration information constitutes a material breach of these Terms.</p>
+    <h3>3.3 Account Credentials</h3>
+    <p>You are solely responsible for maintaining the confidentiality of your Account login credentials, including your username and password. You agree not to share your credentials with any third party. TheEventConnector.com will not be responsible for any unauthorized use of your Account resulting from your failure to safeguard your credentials.</p>
+    <h3>3.4 Account Responsibility</h3>
+    <p>You are fully responsible for all activity that occurs under your Account, whether or not authorized by you. TheEventConnector.com shall not be liable for any loss or damage arising from unauthorized access to your Account resulting from your failure to maintain account security.</p>
+    <h3>3.5 One Account Per User</h3>
+    <p>Each User or business entity is permitted to maintain only one Account on the Platform, unless TheEventConnector.com has granted express prior written approval for additional Accounts. Creating duplicate or multiple Accounts to circumvent restrictions or bans is strictly prohibited.</p>
+    <h3>3.6 Unauthorized Access Notification</h3>
+    <p>You agree to notify TheEventConnector.com promptly at <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a> upon becoming aware of any unauthorized access to or use of your Account, or any other breach of Account security.</p>
+    <h3>3.7 Right to Refuse or Terminate</h3>
+    <p>TheEventConnector.com reserves the right, at its sole discretion, to refuse registration to any applicant, or to suspend or terminate any existing Account, at any time and for any reason, including but not limited to violations of these Terms, suspected fraud, or conduct deemed harmful to the Platform or its Users.</p>
 
-    <h2>7. Limitation of Liability</h2>
-    <p>To the fullest extent permitted by law, TheEventConnector is not liable for indirect, incidental, or consequential damages arising from your use of the platform, including disputes between vendors and attendees, lost leads, or business decisions made based on submitted data.</p>
+    <h2 id="s4">4. Vendor Registration and Listings</h2>
+    <h3>4.1 Accurate Business Information</h3>
+    <p>Vendors must provide accurate, truthful, and complete business information when registering on the Platform, including but not limited to business name, legal structure, contact details, service categories, geographic coverage, pricing, and availability. All such information must be kept current and updated promptly when changes occur.</p>
+    <h3>4.2 Truthful Listings</h3>
+    <p>All Listings posted by Vendors must be truthful, accurate, not misleading, and in full compliance with all applicable local, national, and international laws and regulations. Listings must fairly represent the services, products, pricing, and terms that the Vendor offers.</p>
+    <h3>4.3 Prohibited Listing Content</h3>
+    <p>The following content is expressly prohibited in any Listing or Vendor communication on the Platform:</p>
+    <ul>
+      <li>False, exaggerated, or misleading claims about services, credentials, or pricing;</li>
+      <li>Offers or descriptions of illegal products or services;</li>
+      <li>Discriminatory content based on race, religion, gender, sexual orientation, disability, national origin, or any other protected characteristic;</li>
+      <li>Adult, sexually explicit, or otherwise offensive material;</li>
+      <li>Content that violates any third-party rights, including intellectual property rights; and</li>
+      <li>Any content that violates these Terms or applicable law.</li>
+    </ul>
+    <h3>4.4 Platform Discretion</h3>
+    <p>TheEventConnector.com reserves the right, at its sole discretion and at any time without prior notice, to review, approve, edit, refuse to publish, or remove any Listing that it determines, in its sole judgment, to be in violation of these Terms, inaccurate, misleading, or otherwise harmful to the Platform or its Users.</p>
+    <h3>4.5 Vendor Responsibility for Listings</h3>
+    <p>Vendors are solely and exclusively responsible for the accuracy, legality, and completeness of their Listings and all Content associated with their Accounts. TheEventConnector.com's review or approval of a Listing does not constitute an endorsement of, or warranty regarding, the Vendor or its services.</p>
+    <h3>4.6 Licensing, Certifications, and Insurance</h3>
+    <p>Vendors must, at all times, maintain all licenses, certifications, permits, and insurance coverage required by applicable law in the jurisdictions in which they operate. Upon request by TheEventConnector.com or an Organizer, Vendors agree to provide reasonable evidence of such credentials. Failure to maintain required credentials is a material breach of these Terms.</p>
+    <h3>4.7 Fulfillment of Bookings</h3>
+    <p>Vendors must honor and fulfill all bookings accepted through the Platform in accordance with the terms and descriptions set out in their Listings. Failure to fulfill accepted bookings without reasonable cause or adequate notice may result in suspension or termination of the Vendor's Account.</p>
+    <h3>4.8 Timely Response to Inquiries</h3>
+    <p>Vendors are expected to respond to all legitimate inquiries submitted through the Platform within a reasonable time, generally within two (2) business days, unless circumstances beyond their control prevent timely response. Consistent non-responsiveness may result in account review or removal of Listings.</p>
 
-    <h2>8. Changes to These Terms</h2>
-    <p>We may update these Terms from time to time. Continued use of the platform after a change is posted constitutes acceptance of the revised Terms.</p>
+    <h2 id="s5">5. Organizer Responsibilities</h2>
+    <h3>5.1 Accurate Event Details</h3>
+    <p>Organizers must provide accurate, complete, and truthful information about their events when seeking Vendors through the Platform, including event type, estimated attendance, location, date, and specific service requirements. Providing misleading or incomplete event details is a violation of these Terms.</p>
+    <h3>5.2 Due Diligence</h3>
+    <p>Organizers are solely responsible for conducting their own independent due diligence prior to engaging any Vendor, including verifying the Vendor's credentials, licenses, insurance, references, and suitability for the event. TheEventConnector.com does not vet or endorse Vendors, and Organizers must not rely solely on Platform Listings when making engagement decisions.</p>
+    <h3>5.3 Responsibility for Agreements</h3>
+    <p>Organizers are solely responsible for all agreements, bookings, payments, and obligations entered into with Vendors, whether facilitated through the Platform or otherwise. TheEventConnector.com is not a party to any such agreements and assumes no responsibility or liability in connection therewith.</p>
+    <h3>5.4 No Misrepresentation</h3>
+    <p>Organizers must not misrepresent to Vendors the nature, size, budget, scope, or requirements of their events. Material misrepresentations that result in harm to a Vendor may result in suspension or termination of the Organizer's Account and may expose the Organizer to legal liability.</p>
+    <h3>5.5 Regulatory Compliance</h3>
+    <p>Organizers are solely responsible for ensuring that their events comply with all applicable permits, licenses, zoning regulations, health and safety requirements, and local laws. TheEventConnector.com assumes no responsibility for the Organizer's compliance with event-specific legal obligations.</p>
 
-    <h2>9. Contact</h2>
-    <p>Questions about these Terms can be sent to <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>.</p>
+    <h2 id="s6">6. Platform Role and Limitations</h2>
+    <div class="notice">
+      <p><strong>Important Notice:</strong> TheEventConnector.com is a marketplace and intermediary platform only. It does not itself provide event services and is not a party to any agreement between Organizers and Vendors.</p>
+    </div>
+    <h3>6.1 Marketplace Role</h3>
+    <p>TheEventConnector.com operates solely as an online marketplace and discovery platform. It facilitates connections between Organizers and Vendors but does not itself provide, perform, manage, or supervise any event-related products or services. All such services are provided directly and exclusively by Vendors.</p>
+    <h3>6.2 Not a Party to Agreements</h3>
+    <p>TheEventConnector.com is not a party to any contract, booking, agreement, or Transaction between an Organizer and a Vendor. Any agreement formed between an Organizer and a Vendor is solely between those parties, and TheEventConnector.com assumes no rights, obligations, or liabilities under any such agreement.</p>
+    <h3>6.3 No Vetting or Endorsement</h3>
+    <p>TheEventConnector.com does not vet, screen, endorse, recommend, guarantee, or warrant any Vendor, Organizer, Listing, or Content on the Platform. The presence of a Vendor or Listing on the Platform does not constitute any form of certification, approval, or endorsement by TheEventConnector.com.</p>
+    <h3>6.4 User Risk</h3>
+    <p>All Users transact with one another entirely at their own risk. TheEventConnector.com strongly encourages all Users to conduct thorough independent due diligence before entering into any agreement or making any payment in connection with a Transaction.</p>
+    <h3>6.5 No Guarantee of Services</h3>
+    <p>TheEventConnector.com does not guarantee the availability, quality, safety, suitability, legality, or accuracy of any Vendor's services or any Listing posted on the Platform. Users rely on Platform Listings entirely at their own discretion.</p>
+    <h3>6.6 Discretionary Dispute Assistance</h3>
+    <p>TheEventConnector.com may, at its sole discretion, offer informal dispute resolution assistance to Users involved in disputes arising from Transactions. However, TheEventConnector.com is under no obligation to provide dispute resolution services and any assistance provided does not create any liability or responsibility on the part of TheEventConnector.com.</p>
+
+    <h2 id="s7">7. Fees, Payments, and Billing</h2>
+    <h3>7.1 Fee Structure</h3>
+    <p>TheEventConnector.com may charge Users fees in connection with use of the Platform, which may include subscription fees, listing fees, transaction or commission fees, premium feature charges, or other charges as published and described on the Platform from time to time. Users should review the current fee schedule, available on the Platform, before registering or initiating any Transaction.</p>
+    <h3>7.2 Changes to Fees</h3>
+    <p>All fees are as stated on the Platform and are subject to change. TheEventConnector.com will provide Users with reasonable advance notice of any material changes to the fee structure, which notice may be provided by email, Platform notification, or update to this section. Continued use of the Platform after a fee change constitutes acceptance of the new fees.</p>
+    <h3>7.3 Payment Processing</h3>
+    <p>Payments on the Platform are processed through one or more third-party payment processors. By making a payment through the Platform, you agree to be bound by the applicable payment processor's terms of service and privacy policy, in addition to these Terms. TheEventConnector.com does not store full payment card information.</p>
+    <h3>7.4 Non-Refundable Fees</h3>
+    <p>Unless expressly stated otherwise in these Terms or required by applicable law, all fees paid to TheEventConnector.com are non-refundable, including in cases of account suspension or termination initiated by TheEventConnector.com for cause.</p>
+    <h3>7.5 Taxes</h3>
+    <p>Users are solely responsible for the determination, reporting, collection, and remittance of all applicable taxes (including but not limited to sales tax, VAT, GST, and income tax) arising from their use of the Platform and any Transactions conducted thereon. TheEventConnector.com may be required by applicable law to collect and remit certain taxes, in which case such taxes will be disclosed and charged at the point of sale.</p>
+    <h3>7.6 Late or Failed Payments</h3>
+    <p>Late, declined, or failed payments may result in the immediate suspension of the User's Account and access to Platform features until the outstanding balance is settled. TheEventConnector.com reserves the right to pursue collection of outstanding amounts through all available legal means.</p>
+    <h3>7.7 Commission and Service Fees</h3>
+    <p>Vendors acknowledge and agree that TheEventConnector.com may charge a commission, service fee, or platform usage fee on Transactions facilitated through the Platform. The applicable commission rate or service fee will be disclosed to Vendors in the fee schedule available on the Platform. Vendors agree that the applicable commission is earned upon completion of a Transaction and may be deducted from amounts owed to Vendors, as applicable.</p>
+    <h3>7.8 Payment Disputes Between Users</h3>
+    <p>Disputes regarding payments between Organizers and Vendors are primarily a matter between those parties. Users are encouraged to first attempt resolution of any such payment dispute directly and in good faith between themselves before escalating to TheEventConnector.com or any third party.</p>
+
+    <h2 id="s8">8. Cancellations and Refund Policy</h2>
+    <h3>8.1 Subscription and Listing Cancellations</h3>
+    <p>Users may cancel their subscriptions or Listings at any time by following the cancellation procedure set out in their Account settings. Cancellation of a subscription will take effect at the end of the then-current billing cycle; no prorated refunds will be issued for unused portions of a billing period unless required by applicable law.</p>
+    <h3>8.2 Booking Cancellation Terms</h3>
+    <p>Cancellation and refund terms for individual bookings made through the Platform are governed exclusively by the Vendor's own cancellation and refund policy, as stated in the Vendor's Listing at the time of booking. Organizers are strongly encouraged to review a Vendor's cancellation policy before completing a booking. TheEventConnector.com is not responsible for enforcing or fulfilling any Vendor's stated cancellation policy.</p>
+    <h3>8.3 Non-Refundability of Platform Fees</h3>
+    <p>Unless expressly stated otherwise, TheEventConnector.com's platform fees — including subscription fees, listing fees, and commission or service fees — are non-refundable upon cancellation of a booking or termination of an Account. This applies regardless of the outcome of any dispute between a Vendor and an Organizer.</p>
+    <h3>8.4 Refund Requests</h3>
+    <p>To request a refund for any fee charged directly by TheEventConnector.com, Users must submit a written refund request to <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>, clearly stating the reason for the request and including all relevant booking or transaction details. Refund requests will be evaluated on a case-by-case basis and must be submitted within thirty (30) days of the charge in question.</p>
+    <h3>8.5 Discretionary Refunds</h3>
+    <p>TheEventConnector.com reserves the right, at its sole discretion, to issue full or partial refunds of platform fees in cases of confirmed fraud, billing errors, or platform malfunction. Issuance of a discretionary refund in one instance does not obligate TheEventConnector.com to issue refunds in similar future circumstances.</p>
+
+    <h2 id="s9">9. User Content and Conduct</h2>
+    <h3>9.1 Ownership and License</h3>
+    <p>Users retain ownership of all Content they submit to the Platform. By submitting Content, however, each User grants TheEventConnector.com a worldwide, perpetual, royalty-free, non-exclusive, sublicensable license to use, store, display, reproduce, modify, adapt, distribute, transmit, and create derivative works from such Content for the purposes of operating, improving, promoting, and marketing the Platform. This license continues even after a User terminates their Account, to the extent Content has been incorporated into Platform operations or marketing materials, subject to the Privacy Policy.</p>
+    <h3>9.2 User Representations</h3>
+    <p>By submitting Content to the Platform, you represent and warrant that: (a) you own the Content or have all necessary rights, licenses, consents, and permissions to submit and license it as described herein; (b) the Content does not infringe any third-party intellectual property rights, privacy rights, or publicity rights; and (c) the Content complies in all respects with these Terms and applicable law.</p>
+    <h3>9.3 Prohibited Conduct</h3>
+    <p>The following conduct is strictly prohibited on the Platform:</p>
+    <ul>
+      <li>Posting false, misleading, fraudulent, or deceptive information or Content;</li>
+      <li>Harassing, threatening, abusing, defaming, or discriminating against other Users;</li>
+      <li>Sending unsolicited commercial communications (spam) to other Users;</li>
+      <li>Scraping, crawling, data-mining, or otherwise collecting Platform data without express written authorization from TheEventConnector.com;</li>
+      <li>Circumventing or attempting to circumvent Platform fees, payment systems, or security measures;</li>
+      <li>Reverse engineering, decompiling, or disassembling any portion of the Platform;</li>
+      <li>Posting or transmitting illegal, obscene, offensive, or harmful Content;</li>
+      <li>Impersonating any person, business, or entity;</li>
+      <li>Introducing malware, viruses, or other harmful code into the Platform;</li>
+      <li>Interfering with or disrupting the integrity, security, or performance of the Platform; and</li>
+      <li>Any other conduct that violates applicable law or these Terms.</li>
+    </ul>
+    <h3>9.4 Content Moderation</h3>
+    <p>TheEventConnector.com reserves the right, but not the obligation, to monitor, review, moderate, edit, remove, or refuse to publish any Content at any time and for any reason, in its sole discretion, without notice or liability. Removal of Content does not relieve Users of their obligations under these Terms with respect to such Content.</p>
+    <h3>9.5 Reporting Violations</h3>
+    <p>Users who become aware of Content or conduct that appears to violate these Terms or applicable law are encouraged to promptly report such violations to TheEventConnector.com at <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>. TheEventConnector.com will review all good-faith reports and take appropriate action at its discretion.</p>
+
+    <h2 id="s10">10. Intellectual Property Rights</h2>
+    <h3>10.1 Platform Ownership</h3>
+    <p>All content, features, software, technology, trademarks, service marks, trade names, logos, graphics, design elements, user interfaces, text, and other materials comprising or associated with the Platform are owned by or licensed to TheEventConnector.com and are protected by applicable intellectual property laws, including copyright, trademark, and patent laws, both domestically and internationally. All rights are reserved.</p>
+    <h3>10.2 Limited User License</h3>
+    <p>Subject to your compliance with these Terms, TheEventConnector.com grants you a limited, non-exclusive, non-transferable, non-sublicensable, revocable license to access and use the Platform solely for its intended purposes — namely, to connect Organizers with Vendors and use the Services as a registered User. This license does not include any rights not expressly stated herein.</p>
+    <h3>10.3 Restrictions on Use</h3>
+    <p>You may not, without the express prior written permission of TheEventConnector.com:</p>
+    <ul>
+      <li>Copy, reproduce, download, or duplicate any portion of the Platform or its Content;</li>
+      <li>Modify, adapt, translate, or create derivative works based on the Platform;</li>
+      <li>Distribute, sell, sublicense, or transfer access to the Platform;</li>
+      <li>Use Platform Content for any commercial purpose outside of your authorized use of the Services; or</li>
+      <li>Remove, alter, or obscure any intellectual property notices, labels, or legends on the Platform.</li>
+    </ul>
+    <h3>10.4 Respect for Third-Party IP</h3>
+    <p>TheEventConnector.com respects the intellectual property rights of third parties and expects all Users to do the same. You agree not to post, upload, or transmit any Content that infringes any copyright, trademark, patent, trade secret, or other proprietary right of any third party.</p>
+    <h3>10.5 Reporting IP Infringement</h3>
+    <p>If you believe that any Content on the Platform infringes your intellectual property rights, please submit a written notice to TheEventConnector.com at <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>, including: (a) identification of the copyrighted work or other IP right claimed to be infringed; (b) identification of the allegedly infringing Content and its location on the Platform; (c) your contact information; and (d) a statement of good faith belief that the use is unauthorized and accurate, made under penalty of perjury.</p>
+    <h3>10.6 Repeat Infringers</h3>
+    <p>TheEventConnector.com reserves the right to terminate the Accounts of Users who are found to be repeat infringers of third-party intellectual property rights, in accordance with applicable law.</p>
+
+    <h2 id="s11">11. Privacy and Data Protection</h2>
+    <h3>11.1 Privacy Policy</h3>
+    <p>The collection, use, storage, and disclosure of personal data by TheEventConnector.com are governed by the TheEventConnector.com <a href="./privacy.html">Privacy Policy</a>, which is incorporated into these Terms by reference and forms an integral part of this agreement. By using the Platform, you agree to the collection and use of your data as described in the Privacy Policy. You are encouraged to read the Privacy Policy carefully before using the Platform.</p>
+    <h3>11.2 Consent to Data Processing</h3>
+    <p>By creating an Account and using the Platform, you consent to the processing of your personal data as described in the Privacy Policy, including for the purposes of operating the Platform, personalizing your experience, facilitating Transactions, communicating with you, and complying with applicable legal obligations. Where applicable law requires explicit consent, TheEventConnector.com will seek such consent separately.</p>
+    <h3>11.3 Security Measures</h3>
+    <p>TheEventConnector.com implements industry-standard technical and organizational security measures designed to protect User personal data against unauthorized access, disclosure, alteration, and destruction. These measures include, but are not limited to, encryption, access controls, and regular security assessments.</p>
+    <h3>11.4 Limitation of Security Guarantees</h3>
+    <p>While TheEventConnector.com takes reasonable precautions to protect User data, no data transmission over the internet or electronic storage system can be guaranteed to be completely secure. By using the Platform, Users acknowledge and accept the inherent risks associated with transmitting personal information online.</p>
+
+    <h2 id="s12">12. Third-Party Links, Services, and Integrations</h2>
+    <h3>12.1 Third-Party Links</h3>
+    <p>The Platform may contain hyperlinks to third-party websites, applications, or resources that are not owned or operated by TheEventConnector.com. These links are provided solely for convenience and informational purposes. TheEventConnector.com does not endorse, control, or assume any responsibility for the content, privacy practices, or accuracy of any third-party website or resource.</p>
+    <h3>12.2 No Responsibility for Third Parties</h3>
+    <p>TheEventConnector.com is not responsible for, and expressly disclaims all liability arising from, your access to or use of any third-party website, service, or resource linked to or integrated with the Platform. You access third-party services entirely at your own risk.</p>
+    <h3>12.3 Third-Party Terms</h3>
+    <p>When accessing or using any third-party service through or in connection with the Platform, you are subject to that third party's own terms of service and privacy policy. You are responsible for reviewing and complying with any applicable third-party terms.</p>
+    <h3>12.4 Third-Party Integrations</h3>
+    <p>The Platform may integrate with or utilize third-party services to deliver its features and functionality, including but not limited to third-party payment processors, mapping and geolocation services, social media platforms, email delivery services, and analytics providers. TheEventConnector.com does not warrant the continuous availability or performance of any such third-party integration. Interruption or discontinuation of a third-party service may affect certain Platform features, and TheEventConnector.com shall not be liable for any such disruption.</p>
+
+    <h2 id="s13">13. Reviews and Ratings</h2>
+    <h3>13.1 Submission of Reviews</h3>
+    <p>Users who have completed a genuine Transaction through the Platform may submit reviews and ratings of Vendors or Organizers they have transacted with. Reviews are intended to provide honest, fair, and constructive feedback to the Platform community.</p>
+    <h3>13.2 Review Standards</h3>
+    <p>All reviews submitted to the Platform must be:</p>
+    <ul>
+      <li>Honest, accurate, and based on the reviewer's genuine, first-hand experience;</li>
+      <li>Fair, relevant, and respectful in tone;</li>
+      <li>Related to a genuine Transaction conducted through the Platform; and</li>
+      <li>Compliant with all applicable laws, including defamation law.</li>
+    </ul>
+    <h3>13.3 Prohibited Review Conduct</h3>
+    <p>The following review-related conduct is expressly prohibited:</p>
+    <ul>
+      <li>Submitting false, fabricated, or fraudulent reviews;</li>
+      <li>Submitting incentivized, compensated, or biased reviews;</li>
+      <li>Posting defamatory, harassing, or abusive statements;</li>
+      <li>Submitting reviews that are unrelated to an actual Transaction on the Platform; and</li>
+      <li>Coordinating with other Users to artificially inflate or deflate ratings.</li>
+    </ul>
+    <h3>13.4 Removal of Reviews</h3>
+    <p>TheEventConnector.com reserves the right to remove or edit any review that, in its sole judgment, violates these Terms, applicable law, or the Platform's community standards. Removal of a review does not constitute any admission of wrongdoing by either party to the underlying Transaction.</p>
+    <h3>13.5 Disclaimer of Review Accuracy</h3>
+    <p>TheEventConnector.com does not verify the accuracy or authenticity of reviews submitted to the Platform and is not responsible for the content of any review. Reviews reflect the individual opinions of their authors and do not represent the views of TheEventConnector.com.</p>
+    <h3>13.6 No Retaliation</h3>
+    <p>Vendors are strictly prohibited from threatening, intimidating, or retaliating against any User in response to a negative or critical review. Any such conduct may result in immediate Account suspension or termination.</p>
+
+    <h2 id="s14">14. Disclaimers and Limitation of Liability</h2>
+    <h3 class="caps">14.1 "As Is" Basis</h3>
+    <p class="caps">THE PLATFORM AND ALL SERVICES, CONTENT, AND FEATURES MADE AVAILABLE THROUGH THE PLATFORM ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE.</p>
+    <h3 class="caps">14.2 Disclaimer of Warranties</h3>
+    <p class="caps">TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, THEEVENTCONNECTOR.COM EXPRESSLY DISCLAIMS ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO: ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND ANY WARRANTIES ARISING OUT OF COURSE OF DEALING OR USAGE OF TRADE. THEEVENTCONNECTOR.COM MAKES NO WARRANTY THAT THE PLATFORM WILL MEET YOUR REQUIREMENTS OR EXPECTATIONS, NOR THAT IT WILL OPERATE IN AN UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE MANNER.</p>
+    <h3 class="caps">14.3 No Warranty as to Harmful Components</h3>
+    <p class="caps">THEEVENTCONNECTOR.COM DOES NOT WARRANT THAT THE PLATFORM, ITS SERVERS, OR ANY COMMUNICATIONS SENT FROM THE PLATFORM ARE FREE OF VIRUSES, MALWARE, BUGS, OR OTHER HARMFUL OR DESTRUCTIVE COMPONENTS. YOU ARE SOLELY RESPONSIBLE FOR IMPLEMENTING ADEQUATE PROTECTION FOR YOUR DEVICES AND DATA.</p>
+    <h3 class="caps">14.4 Exclusion of Consequential Damages</h3>
+    <p class="caps">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THEEVENTCONNECTOR.COM, ITS AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, LICENSORS, AND SERVICE PROVIDERS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO: LOSS OF PROFITS, LOSS OF REVENUE, LOSS OF DATA, LOSS OF GOODWILL, LOSS OF BUSINESS OPPORTUNITY, COST OF SUBSTITUTE SERVICES, OR ANY OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OR INABILITY TO USE THE PLATFORM OR SERVICES, EVEN IF THEEVENTCONNECTOR.COM HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+    <h3 class="caps">14.5 Aggregate Liability Cap</h3>
+    <p class="caps">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THEEVENTCONNECTOR.COM'S TOTAL CUMULATIVE LIABILITY TO ANY USER FOR ANY AND ALL CLAIMS ARISING OUT OF OR RELATING TO THESE TERMS OR THE USE OF THE PLATFORM SHALL NOT EXCEED THE GREATER OF: (A) THE TOTAL FEES ACTUALLY PAID BY THAT USER TO THEEVENTCONNECTOR.COM DURING THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE CLAIM GIVING RISE TO LIABILITY; OR (B) ONE HUNDRED UNITED STATES DOLLARS (USD $100.00).</p>
+    <h3>14.6 Jurisdictional Variations</h3>
+    <p>Some jurisdictions do not permit the exclusion of implied warranties, or the limitation or exclusion of liability for incidental or consequential damages. To the extent that such restrictions apply under mandatory law in your jurisdiction, the exclusions and limitations set forth in this Section 14 shall apply to the maximum extent permitted by the law of that jurisdiction. Nothing in these Terms affects any non-waivable statutory rights you may have as a consumer under applicable law.</p>
+
+    <h2 id="s15">15. Indemnification</h2>
+    <h3>15.1 User Indemnification Obligation</h3>
+    <p>To the fullest extent permitted by applicable law, you agree to defend, indemnify, and hold harmless TheEventConnector.com and its parent companies, subsidiaries, affiliates, officers, directors, shareholders, employees, contractors, agents, licensors, and successors from and against any and all claims, demands, actions, liabilities, damages, losses, judgments, settlements, costs, and expenses (including reasonable legal fees and court costs) arising out of or in connection with:</p>
+    <ul>
+      <li>Your access to or use of the Platform or Services;</li>
+      <li>Your breach or alleged breach of any provision of these Terms;</li>
+      <li>Any Content you submit, post, or transmit through the Platform;</li>
+      <li>Your interactions, agreements, or disputes with other Users;</li>
+      <li>Your violation of any applicable law, regulation, or third-party right, including intellectual property rights and privacy rights; or</li>
+      <li>Any event you organize or any service you provide through or in connection with the Platform.</li>
+    </ul>
+    <h3>15.2 Cooperation</h3>
+    <p>TheEventConnector.com reserves the right, at its own expense, to assume exclusive defense and control of any matter subject to indemnification by you, in which case you agree to cooperate fully with TheEventConnector.com in the defense of such matter. You may not settle any claim subject to indemnification hereunder without TheEventConnector.com's prior written consent.</p>
+
+    <h2 id="s16">16. Suspension and Termination</h2>
+    <h3>16.1 Termination by TheEventConnector.com</h3>
+    <p>TheEventConnector.com may, at its sole discretion and without prior notice or liability, suspend, restrict access to, or permanently terminate any User's Account and access to the Platform at any time, for any reason, including but not limited to:</p>
+    <ul>
+      <li>Violation of any provision of these Terms;</li>
+      <li>Suspected fraudulent, abusive, or harmful conduct;</li>
+      <li>Non-payment of fees;</li>
+      <li>Conduct that is deemed by TheEventConnector.com to be harmful to other Users, third parties, or the Platform; or</li>
+      <li>Any other reason at TheEventConnector.com's sole discretion.</li>
+    </ul>
+    <h3>16.2 Termination by User</h3>
+    <p>Users may terminate their Accounts at any time by following the account closure procedure available in Account settings or by submitting a written request to <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>. Account closure does not relieve Users of any outstanding payment obligations or other duties accrued prior to termination.</p>
+    <h3>16.3 Effect of Termination</h3>
+    <p>Upon termination of a User's Account, whether by the User or by TheEventConnector.com:</p>
+    <ul>
+      <li>The User's license to access and use the Platform immediately ceases;</li>
+      <li>All outstanding fees, commissions, or other financial obligations remain due and payable;</li>
+      <li>TheEventConnector.com may, at its discretion, delete the User's Account data in accordance with its data retention policies and the Privacy Policy; and</li>
+      <li>The following provisions of these Terms shall survive termination and remain in full force and effect: Definitions (Section 2), Intellectual Property Rights (Section 10), User Content license (Section 9.1), Disclaimers and Limitation of Liability (Section 14), Indemnification (Section 15), Dispute Resolution (Section 18), Governing Law (Section 19), and General Provisions (Section 21).</li>
+    </ul>
+    <h3>16.4 No Liability for Termination</h3>
+    <p>TheEventConnector.com shall not be liable to any User, third party, or business for any termination of Account access or cessation of Services, whether or not such termination was made with or without prior notice or cause.</p>
+
+    <h2 id="s17">17. Modifications to the Platform and Terms</h2>
+    <h3>17.1 Platform Modifications</h3>
+    <p>TheEventConnector.com reserves the right, at any time and without prior notice or liability, to modify, update, enhance, suspend, or discontinue — temporarily or permanently — any aspect, feature, or functionality of the Platform. TheEventConnector.com shall not be liable to any User for any modification, suspension, or discontinuation of the Platform or any part thereof.</p>
+    <h3>17.2 Updates to Terms</h3>
+    <p>TheEventConnector.com may update or revise these Terms at any time. In the case of material changes, TheEventConnector.com will provide advance notice to registered Users via email to the address on file or via a prominent notification within the Platform, with reasonable advance notice before the changes take effect.</p>
+    <h3>17.3 Acceptance of Updated Terms</h3>
+    <p>Your continued access to or use of the Platform after any updated Terms take effect constitutes your binding acceptance of the updated Terms. If you do not agree with any updated Terms, you must cease using the Platform immediately and may terminate your Account as described in Section 16.2.</p>
+    <h3>17.4 Prior Versions</h3>
+    <p>Prior versions of these Terms are available upon written request submitted to <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>. TheEventConnector.com will use reasonable efforts to provide prior versions upon request, subject to any applicable legal obligations regarding record retention.</p>
+
+    <h2 id="s18">18. Dispute Resolution</h2>
+    <h3>18.1 Informal Resolution</h3>
+    <p>If you have a dispute with TheEventConnector.com, you agree to first contact us at <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a> and attempt to resolve the dispute informally in good faith. TheEventConnector.com will endeavor to address all good-faith complaints within a reasonable time. Both parties agree to make genuine and reasonable efforts to resolve disputes informally before initiating formal proceedings.</p>
+    <h3>18.2 Disputes Between Users</h3>
+    <p>Disputes arising directly between Organizers and Vendors — including disputes regarding the quality of services, fulfillment of bookings, or payment obligations — are matters to be resolved directly between those parties. TheEventConnector.com is not obligated to mediate or adjudicate such disputes. TheEventConnector.com may, at its sole discretion, provide limited facilitation assistance, but such assistance creates no liability on TheEventConnector.com's part.</p>
+    <h3>18.3 Binding Arbitration</h3>
+    <p>If informal resolution fails, any dispute, claim, or controversy between a User and TheEventConnector.com arising out of or relating to these Terms, or the use of the Platform, shall be submitted to and finally resolved by binding arbitration administered under the arbitration rules of either the International Chamber of Commerce (ICC) or the United Nations Commission on International Trade Law (UNCITRAL), as agreed between the parties or, in the absence of agreement, as determined by TheEventConnector.com. The arbitration shall be conducted in the English language. The arbitrator's award shall be final and binding and may be entered as a judgment in any court of competent jurisdiction.</p>
+    <h3>18.4 Emergency Relief</h3>
+    <p>Notwithstanding the foregoing arbitration clause, nothing in this Section 18 shall prevent either party from seeking emergency injunctive relief, a temporary restraining order, or other equitable relief from a court of competent jurisdiction where necessary to prevent irreparable harm pending the resolution of a dispute by arbitration.</p>
+    <h3 class="caps">18.5 Class Action Waiver</h3>
+    <p class="caps">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, YOU AGREE TO BRING ANY DISPUTE AGAINST THEEVENTCONNECTOR.COM SOLELY IN YOUR INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS ACTION, COLLECTIVE ACTION, OR REPRESENTATIVE PROCEEDING. The arbitrator shall have no authority to consolidate or join the claims of multiple individuals or entities or to otherwise preside over any form of class or representative proceeding. If this class action waiver is found to be unenforceable, the arbitration clause in Section 18.3 shall be null and void in its entirety with respect to the claim for which such waiver is unenforceable.</p>
+
+    <h2 id="s19">19. Governing Law and Jurisdiction</h2>
+    <h3>19.1 Governing Law</h3>
+    <p>These Terms and any dispute or claim arising out of or in connection with them (including non-contractual disputes and claims) shall be governed by and construed in accordance with the laws of the jurisdiction in which TheEventConnector.com is incorporated, without regard to any conflict of law principles that would result in the application of the laws of any other jurisdiction.</p>
+    <h3>19.2 Mandatory Consumer Protections</h3>
+    <p>For Users located in jurisdictions that provide mandatory consumer protection rights under applicable law, nothing in these Terms is intended to, nor shall it operate to, deprive such Users of the protections afforded to them by mandatory provisions of applicable local consumer law. In the event of any conflict between these Terms and such mandatory protections, the mandatory protections shall prevail to the extent of the conflict.</p>
+    <h3>19.3 Non-Exclusive Jurisdiction</h3>
+    <p>For any disputes that cannot be, or are not, resolved through arbitration as described in Section 18, the parties consent to the non-exclusive jurisdiction of the courts located in the governing jurisdiction for the purpose of resolving any such disputes. Nothing in this section limits TheEventConnector.com's right to bring proceedings against a User in any other jurisdiction where that User carries on business or resides.</p>
+    <h3>19.4 International Users</h3>
+    <p>International Users acknowledge that they access the Platform voluntarily and of their own accord. Such Users are solely responsible for ensuring their use of the Platform complies with all applicable laws and regulations in their respective jurisdictions. TheEventConnector.com makes no representation that the Platform or its Services are appropriate, lawful, or available for use in all countries or territories.</p>
+
+    <h2 id="s20">20. Force Majeure</h2>
+    <h3>20.1 Excused Performance</h3>
+    <p>TheEventConnector.com shall not be liable for any failure, delay, or interruption in performing its obligations under these Terms where such failure or delay is caused by events or circumstances beyond its reasonable control, including but not limited to acts of God, natural disasters, earthquakes, floods, fire, severe weather events, pandemic or epidemic, war, terrorism, civil unrest, government actions or regulatory changes, internet service outages, power outages, telecommunications failures, strikes or labor disputes, or failure of third-party service providers.</p>
+    <h3>20.2 Notice and Resumption</h3>
+    <p>In the event of a force majeure occurrence, TheEventConnector.com will endeavor to notify affected Users as soon as reasonably practicable of the nature and expected duration of the disruption and will use commercially reasonable efforts to resume normal Platform operations as quickly as circumstances permit. Force majeure events shall not excuse Users from any payment obligations that have accrued prior to the event.</p>
+
+    <h2 id="s21">21. General Provisions</h2>
+    <h3>21.1 Entire Agreement</h3>
+    <p>These Terms, together with the TheEventConnector.com Privacy Policy and any other policies, guidelines, or supplemental terms published on the Platform and incorporated herein by reference, constitute the entire and exclusive agreement between you and TheEventConnector.com with respect to your use of the Platform. These Terms supersede all prior and contemporaneous understandings, agreements, representations, and negotiations, whether written or oral, relating to the subject matter hereof.</p>
+    <h3>21.2 Severability</h3>
+    <p>If any provision of these Terms is held by a court or arbitrator of competent jurisdiction to be invalid, illegal, or unenforceable for any reason, such provision shall be modified to the minimum extent necessary to make it enforceable, or, if modification is not possible, shall be severed from these Terms. The invalidity or unenforceability of any provision shall not affect the validity, legality, or enforceability of any other provision of these Terms, which shall remain in full force and effect.</p>
+    <h3>21.3 Waiver</h3>
+    <p>No failure or delay by TheEventConnector.com in exercising any right, power, or remedy under these Terms shall operate as a waiver of that right, power, or remedy. No single or partial exercise of any right, power, or remedy shall preclude any further or other exercise of that or any other right, power, or remedy. Any waiver by TheEventConnector.com must be in writing and signed by an authorized representative to be effective.</p>
+    <h3>21.4 Assignment</h3>
+    <p>You may not assign, transfer, delegate, or sublicense any of your rights or obligations under these Terms to any third party without the express prior written consent of TheEventConnector.com. Any purported assignment in violation of this provision is null and void. TheEventConnector.com may freely assign, transfer, or delegate any or all of its rights and obligations under these Terms without restriction, including in connection with a merger, acquisition, restructuring, or sale of all or substantially all of its assets.</p>
+    <h3>21.5 Notices</h3>
+    <p>All legal notices or demands to TheEventConnector.com must be in writing and sent to <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>. Notices to Users will be sent to the email address associated with the User's Account. Notices sent by email shall be deemed received upon the next business day after sending, provided no delivery failure notification is received by the sender. Users are responsible for keeping their contact information current in their Account settings.</p>
+    <h3>21.6 Relationship of Parties</h3>
+    <p>Nothing in these Terms is intended to, nor shall it be construed to, create any partnership, joint venture, employment relationship, franchise, or agency relationship between you and TheEventConnector.com. You acknowledge that you are an independent User of the Platform and that you have no authority to bind, represent, or obligate TheEventConnector.com in any manner.</p>
+    <h3>21.7 Language</h3>
+    <p>These Terms are drafted in the English language. Any translation of these Terms into another language is provided for convenience purposes only. In the event of any inconsistency, ambiguity, or conflict between the English version and any translation, the English language version shall prevail and control in all respects, to the maximum extent permitted by applicable law.</p>
+
+    <h2 id="s22">22. Contact Information</h2>
+    <p>If you have any questions, concerns, or inquiries regarding these Terms or the Platform, please contact us using the appropriate channel below. We are committed to responding to all inquiries in a timely and professional manner.</p>
+    <div class="table-scroll">
+    <table>
+      <tr><th>Purpose</th><th>Contact</th></tr>
+      <tr><td>General Inquiries &amp; User Support</td><td><a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a></td></tr>
+      <tr><td>Legal Matters &amp; Intellectual Property</td><td><a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a></td></tr>
+      <tr><td>Privacy &amp; Data Protection Matters</td><td><a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a></td></tr>
+    </table>
+    </div>
+    <div class="contact-block">
+      <p><strong>Response Time:</strong> Within 30 business days of receipt</p>
+    </div>
+    <p>For urgent account security issues, please contact <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a> and clearly mark your message as URGENT in the subject line.</p>
+    <p>These Terms and Conditions were last updated and published on September 2, 2026. Prior versions are available upon written request to <a href="mailto:info@theeventconnector.com">info@theeventconnector.com</a>.</p>
 
     <a class="back-link" id="back-link" href="#">&larr; Back</a>
   </div>
