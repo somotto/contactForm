@@ -80,10 +80,10 @@ submitBtn.addEventListener('click', async () => {
   errorMsg.style.display = 'none';
   successMsg.style.display = 'none';
 
-  if (!name) { showError('Full legal name is required.'); return; }
+  if (!name) { showError('Name is required.'); return; }
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRe.test(email)) { showError('A valid corporate email address is required.'); return; }
-  if (!phone) { showError('A direct telephone number is required.'); return; }
+  if (!email || !emailRe.test(email)) { showError('A valid email address is required.'); return; }
+  if (!phone) { showError('A telephone number is required.'); return; }
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting…';
