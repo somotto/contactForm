@@ -51,6 +51,15 @@ if (senderEmail) {
 }
 
 
+// Login MFA (auth/resource.ts) delivers its 6-digit email code as part of the
+// CUSTOM_CHALLENGE/EmailOtp auth flow, whose validity window is governed by the
+// user pool client's AuthSessionValidity — not by any property on the code/message
+// itself. Cognito defaults this to 3 minutes; raise it to 10 to match the
+// password-reset code's expiry (functions/password-reset/handler.ts). Amplify Gen 2's
+// `defineAuth` doesn't expose this setting, so it's set via the L1 escape hatch.
+// Valid range is 3-15 minutes.
+backend.auth.resources.cfnResources.cfnUserPoolClient.authSessionValidity = 10;
+
 backend.notifySubmission.resources.lambda.addToRolePolicy(
   new PolicyStatement({
     actions: ['ses:SendEmail', 'ses:SendRawEmail'],
