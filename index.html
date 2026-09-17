@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vendor Dashboard</title>
+<link rel="icon" type="image/jpeg" href="./src/assets/favicon.jpg" />
 <!-- Route /e/* to the event contact form before any JS loads -->
 <script>
   if (window.location.pathname.startsWith('/e/')) {
@@ -35,7 +36,7 @@
   .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
   .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
   .header-left { display: flex; align-items: center; gap: 12px; }
-  #header-logo { display: none; width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
+  #header-logo { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
   #logout-btn {
     background: var(--brand-color-light); border: none; color: #E6F1FB; padding: 8px 14px;
     border-radius: 4px; font-size: 13px; cursor: pointer; display: none;
@@ -179,9 +180,9 @@
 <div class="wrap">
   <div class="header">
     <div class="header-left">
-      <img id="header-logo" alt="" />
+      <img id="header-logo" src="./src/assets/logo.jpg" alt="" />
       <div>
-        <p id="header-company">Lead Capture Platform</p>
+        <p id="header-company">TheEventConnector Platform</p>
         <h1 id="header-title">Vendor dashboard</h1>
       </div>
     </div>
