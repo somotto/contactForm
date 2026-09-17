@@ -10,6 +10,7 @@ export default defineConfig({
         register: resolve(__dirname, 'register.html'), // vendor registration
         privacy: resolve(__dirname, 'privacy.html'),   // privacy policy
         terms: resolve(__dirname, 'terms.html'),       // terms of use
+        faq: resolve(__dirname, 'faq.html'),           // frequently asked questions
       },
     },
   },
