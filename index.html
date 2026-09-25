@@ -46,8 +46,6 @@
   .btn:hover { transform: translateY(-1px); }
   .btn-primary { background: var(--orange); color: var(--navy); border: 2px solid var(--orange); }
   .btn-primary:hover { background: #F79B55; border-color: #F79B55; }
-  .btn-outline { color: #fff; border: 2px solid rgba(255, 255, 255, 0.85); }
-  .btn-outline:hover { background: rgba(255, 255, 255, 0.08); }
 
   /* ── Hero ────────────────────────────────────────────── */
   .hero {
@@ -117,21 +115,13 @@
     background: var(--navy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 20px no-repeat;
   }
 
-  .cta-band {
-    background: var(--navy); color: #fff; border-radius: 20px; padding: 56px 48px;
-    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
-  }
-  .cta-band h2 { font-size: clamp(24px, 2.8vw, 32px); margin: 0 0 8px; letter-spacing: -0.015em; }
-  .cta-band p { margin: 0; color: #D3DEEC; font-size: 16px; }
 
   footer {
     border-top: 1px solid var(--line); padding: 28px 0; margin-top: 88px;
   }
-  footer .container {
-    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-    font-size: 13px; color: #7A8699;
-  }
-  footer a { color: #7A8699; }
+  footer .container { display: flex; justify-content: center; }
+  footer p { font-size: 14px; font-weight: 600; color: #1f2937; margin: 0; text-align: center; }
+  footer a { color: #0C447C; font-weight: 600; }
 
   @media (max-width: 900px) {
     .hero { padding: 48px 0 64px; }
@@ -141,7 +131,6 @@
     .steps { grid-template-columns: minmax(0, 1fr); }
     section.block { padding: 64px 0; }
     .feature + .feature { margin-top: 64px; }
-    .cta-band { padding: 40px 28px; }
   }
 </style>
 </head>
@@ -167,7 +156,6 @@
       <p class="hero-sub"><strong>No app, no login for attendees — every lead lands in your dashboard.</strong></p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/register.html">Register as a vendor</a>
-        <a class="btn btn-outline" href="/login.html">Log in</a>
       </div>
     </div>
 
@@ -329,23 +317,11 @@
     </div>
   </section>
 
-  <section class="block" style="padding-top:0; padding-bottom:0;">
-    <div class="container">
-      <div class="cta-band">
-        <div>
-          <h2>Ready for your next event?</h2>
-          <p>Set up your company profile and first event link today.</p>
-        </div>
-        <a class="btn btn-primary" href="/register.html">Register as a vendor</a>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer>
   <div class="container">
-    <span>© 2026 TheEventConnector. All rights reserved.</span>
-    <span><a href="./privacy.html">Privacy Policy</a> · <a href="./terms.html">Terms of Use</a> · <a href="./faq.html">FAQ</a></span>
+    <p>© 2026 TheEventConnector. All rights reserved. · <a href="./privacy.html">Privacy Policy</a> · <a href="./terms.html">Terms of Use</a></p>
   </div>
 </footer>
 
