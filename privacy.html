@@ -34,7 +34,14 @@
   .body-card li { margin: 0.3rem 0; }
   .effective-date { font-size: 12px; color: #888; margin: 0 0 1.5rem; }
   a { color: #0C447C; }
-  .back-link { display: inline-block; margin-top: 1.5rem; font-size: 13px; }
+  /* Same shape as the nav's Log in button (src/nav.css .site-cta), inverted
+     to navy-on-white since it sits on the white card. */
+  .back-link {
+    display: inline-block; margin-top: 1.5rem; padding: 6px 14px;
+    font-size: 13px; font-weight: 500; color: #0C447C; text-decoration: none;
+    border: 1px solid #0C447C; border-radius: 6px; transition: background 0.15s ease;
+  }
+  .back-link:hover { background: rgba(12, 68, 124, 0.08); }
   .legal-row {
     display: flex; justify-content: center; margin-top: 1rem; padding: 10px 16px;
     background: rgba(255, 255, 255, 0.9); border-radius: 8px;
