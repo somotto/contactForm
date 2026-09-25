@@ -3,6 +3,7 @@ import { signUp, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 import { putPendingFile, clearPendingFiles } from './pendingFiles.js';
 import { parseYouTubeId } from './youtube.js';
+import { phoneExample } from './phoneExample.js';
 
 Amplify.configure(outputs);
 
@@ -12,6 +13,14 @@ const errorText = document.getElementById('error-text');
 const successMsg = document.getElementById('success-msg');
 
 let pendingEmail = '';
+
+const localPhone = phoneExample();
+if (localPhone) {
+  document.getElementById('phone').placeholder = localPhone.example;
+  document.getElementById('phone-hint').textContent = localPhone.countryName
+    ? `Include your country code, e.g. ${localPhone.example} in ${localPhone.countryName}`
+    : `Include your country code, e.g. ${localPhone.example}`;
+}
 
 document.getElementById('add-product-btn').addEventListener('click', () => {
   const container = document.getElementById('products-container');
@@ -84,6 +93,12 @@ registerBtn.addEventListener('click', async () => {
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRe.test(email)) { showError('A valid email address is required.'); return; }
   if (!phone)    { showError('Phone number is required.'); return; }
+  // Cognito needs strict E.164 (+ and digits only), but vendors naturally type
+  // spaces/dashes/brackets — especially copying the placeholder example.
+  const phoneDigits = phone.replace(/\D/g, '');
+  const countryCodeHint = `Please include your country code, e.g. ${localPhone?.example || '+1 201 555 0123'}.`;
+  if (!phone.startsWith('+') && phoneDigits.startsWith('0')) { showError(countryCodeHint); return; }
+  if (phoneDigits.length < 8 || phoneDigits.length > 15) { showError(`That doesn't look like a valid phone number. ${countryCodeHint}`); return; }
   if (products.length === 0) { showError('Please add at least one product or service.'); return; }
   if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
   if (!logoFile) { showError('A logo or photo is required.'); return; }
@@ -92,12 +107,12 @@ registerBtn.addEventListener('click', async () => {
   let videoUrl = null;
   if (videoInput) {
     const videoId = parseYouTubeId(videoInput);
-    if (!videoId) { showError('Please enter a valid YouTube video link.'); return; }
+    if (!videoId) { showError('Please enter a valid YouTube video link.', { optional: true }); return; }
     videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
   }
-  if (videoUrl && videoFile) { showError('Please provide either a YouTube link or a video file, not both.'); return; }
-  if (videoFile && videoFile.size > 50 * 1024 * 1024) { showError('Video must be 50 MB or smaller.'); return; }
-  if (profileDoc && profileDoc.size > 10 * 1024 * 1024) { showError('Company profile document must be 10 MB or smaller.'); return; }
+  if (videoUrl && videoFile) { showError('Please provide either a YouTube link or a video file, not both.', { optional: true }); return; }
+  if (videoFile && videoFile.size > 50 * 1024 * 1024) { showError('Video must be 50 MB or smaller.', { optional: true }); return; }
+  if (profileDoc && profileDoc.size > 10 * 1024 * 1024) { showError('Company profile document must be 10 MB or smaller.', { optional: true }); return; }
 
   registerBtn.disabled = true;
   registerBtn.textContent = 'Creating account…';
@@ -125,7 +140,7 @@ registerBtn.addEventListener('click', async () => {
         userAttributes: {
           email,
           name: fullName,
-          phone_number: phone.startsWith('+') ? phone : `+${phone}`,
+          phone_number: `+${phoneDigits}`,
         },
       },
     });
@@ -263,7 +278,10 @@ function generateVendorId(companyName) {
   return `${slug}-${suffix}`;
 }
 
-function showError(message) {
+// { optional: true } for errors about fields inside the collapsed "Add optional
+// details" section, so it opens and the vendor can see what to fix.
+function showError(message, { optional = false } = {}) {
+  if (optional) document.getElementById('optional-details').open = true;
   errorText.textContent = message;
   errorMsg.style.display = 'block';
 }

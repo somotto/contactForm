@@ -41,7 +41,7 @@
     letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 6px;
   }
   label .req { color: #d23b3b; }
-  input[type="text"], input[type="email"], input[type="tel"], input[type="url"] {
+  input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="password"] {
     width: 100%; box-sizing: border-box; border-radius: 4px;
     border: 1px solid #c7c9cf; padding: 10px 12px; font-size: 14px;
   }
@@ -94,6 +94,27 @@
     flex-shrink: 0; width: 36px; border-radius: 4px; border: 1px solid #c7c9cf;
     background: #fff; color: #b42318; font-size: 16px; cursor: pointer;
   }
+  .field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .field-pair > .field { min-width: 0; }
+  @media (max-width: 480px) { .field-pair { grid-template-columns: 1fr; } }
+  #optional-details {
+    border: 1px solid #d8dade; border-radius: 6px; margin-bottom: 1.5rem; background: #fafbfc;
+  }
+  #optional-details summary {
+    list-style: none; cursor: pointer; padding: 12px 14px;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+    font-size: 13px; font-weight: 600; color: #0C447C;
+  }
+  #optional-details summary::-webkit-details-marker { display: none; }
+  #optional-details summary::before {
+    content: '+'; display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%; border: 1px solid #0C447C;
+    font-size: 14px; line-height: 1; align-self: center;
+  }
+  #optional-details[open] summary::before { content: '\2212'; }
+  #optional-details .summary-hint { font-size: 12px; font-weight: 400; color: #888; }
+  #optional-details .optional-body { padding: 4px 14px 0; border-top: 1px solid #e2e3e7; background: #fff; border-radius: 0 0 6px 6px; }
+  #optional-details .optional-body .field:first-child { margin-top: 1rem; }
   #add-product-btn {
     background: none; border: none; color: #0C447C; font-size: 13px; font-weight: 500;
     cursor: pointer; padding: 4px 0;
@@ -129,29 +150,27 @@
   <div class="body-card">
 
     <div id="registration-form">
+      <div class="field-pair">
       <div class="field">
         <label for="fullname">Full name <span class="req">*</span></label>
         <input id="fullname" type="text" />
       </div>
-
       <div class="field">
         <label for="companyname">Company name <span class="req">*</span></label>
         <input id="companyname" type="text" />
       </div>
+      </div>
 
+      <div class="field-pair">
       <div class="field">
         <label for="email">Email address <span class="req">*</span></label>
         <input id="email" type="email" />
       </div>
-
       <div class="field">
         <label for="phone">Phone number <span class="req">*</span></label>
-        <input id="phone" type="tel" />
+        <input id="phone" type="tel" autocomplete="tel" placeholder="+1 201 555 0123" />
+        <p id="phone-hint" style="font-size:11px; color:#999; margin:4px 0 0;">Include your country code, starting with +</p>
       </div>
-
-      <div class="field">
-        <label for="website">Company website</label>
-        <input id="website" type="url" />
       </div>
 
       <div class="field">
@@ -161,44 +180,6 @@
                  padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
         <p style="font-size:11px; color:#999; margin:4px 0 0;">PNG, JPG or WebP · max 2 MB</p>
         <img id="logo-preview" alt="Logo preview" style="display:none; width:64px; height:64px; object-fit:cover; border-radius:4px; border:1px solid #c7c9cf; margin-top:8px;" />
-      </div>
-
-      <div class="field">
-        <label for="video-url">Company video <span style="color:#999; font-weight:400; text-transform:none;">(optional · YouTube link or upload a video)</span></label>
-        <input id="video-url" type="url" placeholder="https://www.youtube.com/watch?v=…" />
-        <p style="font-size:11px; color:#999; margin:8px 0 4px;">or upload a video file instead</p>
-        <input id="video-file" type="file" accept="video/mp4,video/webm,video/quicktime"
-          style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
-                 padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
-        <p style="font-size:11px; color:#999; margin:4px 0 0;">MP4, WebM or MOV · max 50 MB</p>
-      </div>
-
-      <div class="field">
-        <label for="profile-doc">Company profile document <span style="color:#999; font-weight:400; text-transform:none;">(optional)</span></label>
-        <input id="profile-doc" type="file"
-          accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-          style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
-                 padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
-        <p style="font-size:11px; color:#999; margin:4px 0 0;">PDF, Word or PowerPoint · max 10 MB</p>
-      </div>
-
-      <div class="field">
-        <label>Brand color <span style="color:#999; font-weight:400; text-transform:none;">(used on your event form's header)</span></label>
-        <div id="brand-color-swatches">
-          <button type="button" class="swatch selected" data-color="#0C447C" style="background:#0C447C" aria-label="Blue"></button>
-          <button type="button" class="swatch" data-color="#0F5132" style="background:#0F5132" aria-label="Forest green"></button>
-          <button type="button" class="swatch" data-color="#6B2C91" style="background:#6B2C91" aria-label="Purple"></button>
-          <button type="button" class="swatch" data-color="#8C2F39" style="background:#8C2F39" aria-label="Maroon"></button>
-          <button type="button" class="swatch" data-color="#B45309" style="background:#B45309" aria-label="Amber"></button>
-          <button type="button" class="swatch" data-color="#0F766E" style="background:#0F766E" aria-label="Teal"></button>
-          <button type="button" class="swatch" data-color="#374151" style="background:#374151" aria-label="Slate"></button>
-          <button type="button" class="swatch" data-color="#9D174D" style="background:#9D174D" aria-label="Rose"></button>
-          <label id="custom-swatch" class="swatch custom-swatch" title="Choose a custom color">
-            <input type="color" id="custom-color-input" value="#0C447C" aria-label="Custom color" />
-            <span class="custom-swatch-plus" aria-hidden="true">+</span>
-          </label>
-        </div>
-        <input type="hidden" id="brandColor" value="#0C447C" />
       </div>
 
       <div class="field">
@@ -216,6 +197,57 @@
         <label for="password">Password <span class="req">*</span></label>
         <input id="password" type="password" placeholder="Min 8 chars, upper, lower, number, symbol" />
       </div>
+
+      <details id="optional-details">
+        <summary>
+          <span>Add optional details</span>
+          <span class="summary-hint">Website, brand color, company video, company profile</span>
+        </summary>
+        <div class="optional-body">
+        <div class="field">
+          <label for="website">Company website</label>
+          <input id="website" type="url" />
+        </div>
+
+        <div class="field">
+          <label>Brand color <span style="color:#999; font-weight:400; text-transform:none;">(used on your event form's header)</span></label>
+          <div id="brand-color-swatches">
+            <button type="button" class="swatch selected" data-color="#0C447C" style="background:#0C447C" aria-label="Blue"></button>
+            <button type="button" class="swatch" data-color="#0F5132" style="background:#0F5132" aria-label="Forest green"></button>
+            <button type="button" class="swatch" data-color="#6B2C91" style="background:#6B2C91" aria-label="Purple"></button>
+            <button type="button" class="swatch" data-color="#8C2F39" style="background:#8C2F39" aria-label="Maroon"></button>
+            <button type="button" class="swatch" data-color="#B45309" style="background:#B45309" aria-label="Amber"></button>
+            <button type="button" class="swatch" data-color="#0F766E" style="background:#0F766E" aria-label="Teal"></button>
+            <button type="button" class="swatch" data-color="#374151" style="background:#374151" aria-label="Slate"></button>
+            <button type="button" class="swatch" data-color="#9D174D" style="background:#9D174D" aria-label="Rose"></button>
+            <label id="custom-swatch" class="swatch custom-swatch" title="Choose a custom color">
+              <input type="color" id="custom-color-input" value="#0C447C" aria-label="Custom color" />
+              <span class="custom-swatch-plus" aria-hidden="true">+</span>
+            </label>
+          </div>
+          <input type="hidden" id="brandColor" value="#0C447C" />
+        </div>
+
+        <div class="field">
+          <label for="video-url">Company video <span style="color:#999; font-weight:400; text-transform:none;">(YouTube link or upload a video)</span></label>
+          <input id="video-url" type="url" placeholder="https://www.youtube.com/watch?v=…" />
+          <p style="font-size:11px; color:#999; margin:8px 0 4px;">or upload a video file instead</p>
+          <input id="video-file" type="file" accept="video/mp4,video/webm,video/quicktime"
+            style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
+                   padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
+          <p style="font-size:11px; color:#999; margin:4px 0 0;">MP4, WebM or MOV · max 50 MB</p>
+        </div>
+
+        <div class="field">
+          <label for="profile-doc">Company profile document</label>
+          <input id="profile-doc" type="file"
+            accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
+                   padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
+          <p style="font-size:11px; color:#999; margin:4px 0 0;">PDF, Word or PowerPoint · max 10 MB</p>
+        </div>
+        </div>
+      </details>
 
       <div id="error-msg"><span id="error-text"></span></div>
 
