@@ -2,6 +2,7 @@ import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import { getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
+import { applyBrandColor } from './brandColor.js';
 
 Amplify.configure(outputs);
 
@@ -45,7 +46,7 @@ async function init() {
     resolvedEvent = data[0];
 
     if (resolvedEvent.vendorBrandColor) {
-      document.documentElement.style.setProperty('--brand-color', resolvedEvent.vendorBrandColor);
+      applyBrandColor(resolvedEvent.vendorBrandColor);
     }
 
     // Update header with event name

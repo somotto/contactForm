@@ -6,6 +6,7 @@ import {
 import { uploadData, remove, getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 import { parseYouTubeId } from './youtube.js';
+import { applyBrandColor, DEFAULT_BRAND_COLOR } from './brandColor.js';
 
 Amplify.configure(outputs);
 const client = generateClient({ authMode: 'userPool' });
@@ -63,7 +64,7 @@ async function populateForm() {
   document.getElementById('remove-doc').checked = false;
 
   setProductRows(vendor.products || []);
-  setBrandColor(vendor.brandColor || '#0C447C');
+  setBrandColor(vendor.brandColor || DEFAULT_BRAND_COLOR);
   applyHeader();
 
   const logoPreview = document.getElementById('logo-preview');
@@ -105,7 +106,7 @@ async function populateForm() {
 function applyHeader() {
   document.getElementById('header-company').textContent = vendor.companyName || 'TheEventConnector';
   document.title = `Edit Profile — ${vendor.companyName}`;
-  document.documentElement.style.setProperty('--brand-color', vendor.brandColor || '#0C447C');
+  applyBrandColor(vendor.brandColor);
 }
 
 // ── Profile details ──────────────────────────────────────────────────────────
@@ -435,11 +436,22 @@ document.getElementById('products-container').addEventListener('click', (ev) => 
   }
 });
 
+// Stores the readable version of the color (see brandColor.js), previews it,
+// and tells the vendor when a too-light custom color had to be darkened.
 function selectSwatch(el, color) {
   document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
   document.getElementById('custom-swatch').style.background = '';
   el.classList.add('selected');
-  document.getElementById('brandColor').value = color;
+  const applied = applyBrandColor(color, document.getElementById('brand-preview'));
+  document.getElementById('brandColor').value = applied;
+  const note = document.getElementById('brand-color-note');
+  if (applied !== color.toUpperCase()) {
+    note.textContent = `Darkened to ${applied} so white text stays clear on your event form.`;
+    note.style.display = 'block';
+  } else {
+    note.style.display = 'none';
+  }
+  return applied;
 }
 
 function setBrandColor(color) {
@@ -450,8 +462,7 @@ function setBrandColor(color) {
   } else {
     const customSwatch = document.getElementById('custom-swatch');
     document.getElementById('custom-color-input').value = color;
-    selectSwatch(customSwatch, color);
-    customSwatch.style.background = color;
+    customSwatch.style.background = selectSwatch(customSwatch, color);
   }
 }
 
@@ -461,8 +472,7 @@ document.querySelectorAll('#brand-color-swatches button.swatch').forEach((swatch
 
 document.getElementById('custom-color-input').addEventListener('input', (ev) => {
   const customSwatch = document.getElementById('custom-swatch');
-  selectSwatch(customSwatch, ev.target.value);
-  customSwatch.style.background = ev.target.value;
+  customSwatch.style.background = selectSwatch(customSwatch, ev.target.value);
 });
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

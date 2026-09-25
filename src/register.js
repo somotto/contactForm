@@ -4,6 +4,7 @@ import outputs from '../amplify_outputs.json' with { type: 'json' };
 import { putPendingFile, clearPendingFiles } from './pendingFiles.js';
 import { parseYouTubeId } from './youtube.js';
 import { phoneExample } from './phoneExample.js';
+import { applyBrandColor } from './brandColor.js';
 
 Amplify.configure(outputs);
 
@@ -52,12 +53,26 @@ document.getElementById('logo').addEventListener('change', async (ev) => {
   preview.style.display = 'block';
 });
 
+// Stores the readable version of the color (see brandColor.js), previews it,
+// and tells the vendor when a too-light custom color had to be darkened.
 function selectSwatch(el, color) {
   document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
   document.getElementById('custom-swatch').style.background = '';
   el.classList.add('selected');
-  document.getElementById('brandColor').value = color;
+  const applied = applyBrandColor(color, document.getElementById('brand-preview'));
+  document.getElementById('brandColor').value = applied;
+  const note = document.getElementById('brand-color-note');
+  if (applied !== color.toUpperCase()) {
+    note.textContent = `Darkened to ${applied} so white text stays clear on your event form.`;
+    note.style.display = 'block';
+  } else {
+    note.style.display = 'none';
+  }
+  return applied;
 }
+
+const initialSwatch = document.querySelector('#brand-color-swatches .swatch.selected');
+selectSwatch(initialSwatch, initialSwatch.dataset.color);
 
 document.querySelectorAll('#brand-color-swatches button.swatch').forEach((swatch) => {
   swatch.addEventListener('click', () => selectSwatch(swatch, swatch.dataset.color));
@@ -65,8 +80,7 @@ document.querySelectorAll('#brand-color-swatches button.swatch').forEach((swatch
 
 document.getElementById('custom-color-input').addEventListener('input', (ev) => {
   const customSwatch = document.getElementById('custom-swatch');
-  selectSwatch(customSwatch, ev.target.value);
-  customSwatch.style.background = ev.target.value;
+  customSwatch.style.background = selectSwatch(customSwatch, ev.target.value);
 });
 
 registerBtn.addEventListener('click', async () => {

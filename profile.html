@@ -27,12 +27,12 @@
     justify-content: space-between;
     gap: 1rem;
   }
-  .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
-  .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
+  .header p { font-size: 11px; letter-spacing: 0.12em; color: #FFFFFF; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
+  .header h1 { font-size: 20px; font-weight: 500; color: #FFFFFF; margin: 0; }
   .header-icon { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
   .subbar { background: var(--brand-color-light); padding: 8px 2rem; display: flex; justify-content: space-between; gap: 1rem; }
-  .subbar p { font-size: 12px; color: #E6F1FB; margin: 0; }
-  .subbar a { font-size: 12px; color: #E6F1FB; }
+  .subbar p { font-size: 12px; color: #FFFFFF; margin: 0; }
+  .subbar a { font-size: 12px; color: #FFFFFF; }
   .subbar .req { color: #F09595; }
   .body-card {
     background: #ffffff; border: 0.5px solid #d8dade; border-top: none;
@@ -73,7 +73,7 @@
   .actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
   .primary-btn {
     padding: 9px 22px; font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
-    background: var(--brand-color); border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+    background: var(--brand-color); border: none; border-radius: 4px; color: #FFFFFF; cursor: pointer;
   }
   .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .legal-row {
@@ -102,6 +102,15 @@
     text-shadow: 0 0 2px rgba(0,0,0,0.6); pointer-events: none;
   }
   .custom-swatch.selected .custom-swatch-plus { display: none; }
+  .brand-preview {
+    margin-top: 12px; border-radius: 6px; overflow: hidden; border: 1px solid #d8dade;
+  }
+  .brand-preview-header {
+    background: var(--brand-color); color: #fff; padding: 10px 14px; text-align: center;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .brand-preview-subbar { background: var(--brand-color-light); color: #fff; padding: 5px 14px; font-size: 11px; }
+  .brand-color-note { font-size: 12px; color: #555; margin: 6px 0 0; }
   .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
   .product-row input { flex: 1; }
   .product-row button {
@@ -217,6 +226,11 @@
             </label>
           </div>
           <input type="hidden" id="brandColor" value="#0C447C" />
+          <div id="brand-preview" class="brand-preview" aria-hidden="true">
+            <div class="brand-preview-header">Your event form</div>
+            <div class="brand-preview-subbar">This is how your header will look</div>
+          </div>
+          <p id="brand-color-note" class="brand-color-note" style="display:none;"></p>
         </div>
 
         <div class="field">

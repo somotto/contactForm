@@ -4,6 +4,7 @@ import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, delet
 import { uploadData, remove, getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
 import { getPendingFile, clearPendingFiles } from './pendingFiles.js';
+import { applyBrandColor } from './brandColor.js';
 
 Amplify.configure(outputs);
 const client = generateClient({ authMode: 'userPool' });
@@ -519,7 +520,7 @@ async function loadVendorProfile() {
       currentVendorProfile = data[0];
       companyName = data[0].companyName;
       if (data[0].brandColor) {
-        document.documentElement.style.setProperty('--brand-color', data[0].brandColor);
+        applyBrandColor(data[0].brandColor);
       }
       if (data[0].logoKey) {
         try {
@@ -546,7 +547,7 @@ async function loadVendorProfile() {
         const profile = JSON.parse(pending);
         companyName = profile.companyName || null;
         if (profile.brandColor) {
-          document.documentElement.style.setProperty('--brand-color', profile.brandColor);
+          applyBrandColor(profile.brandColor);
         }
       } catch { /* ignore */ }
     }
@@ -628,7 +629,7 @@ function renderEventsList() {
       <td>${escapeHtml(ev.name)}</td>
       <td>${escapeHtml(ev.venue || '—')}</td>
       <td>${formatDateRange(ev.startDate, ev.endDate) || '—'}</td>
-      <td>${url ? `<a href="${url}" target="_blank" style="color:#0C447C; word-break: break-all;">Open link</a>` : '—'}</td>
+      <td>${url ? `<a href="${url}" target="_blank" style="color:var(--brand-color); word-break: break-all;">Open link</a>` : '—'}</td>
       <td><button type="button" class="edit-event-btn" style="padding:4px 10px; font-size:12px; border:1px solid #c7c9cf; border-radius:4px; background:#fff; cursor:pointer;">Edit</button></td>
     `;
     row.querySelector('.edit-event-btn').addEventListener('click', () => startEditEvent(ev));

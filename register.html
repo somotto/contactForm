@@ -88,6 +88,15 @@
     text-shadow: 0 0 2px rgba(0,0,0,0.6); pointer-events: none;
   }
   .custom-swatch.selected .custom-swatch-plus { display: none; }
+  .brand-preview {
+    margin-top: 12px; border-radius: 6px; overflow: hidden; border: 1px solid #d8dade;
+  }
+  .brand-preview-header {
+    background: var(--brand-color); color: #fff; padding: 10px 14px; text-align: center;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .brand-preview-subbar { background: var(--brand-color-light); color: #fff; padding: 5px 14px; font-size: 11px; }
+  .brand-color-note { font-size: 12px; color: #555; margin: 6px 0 0; }
   .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
   .product-row input { flex: 1; }
   .product-row button {
@@ -226,6 +235,11 @@
             </label>
           </div>
           <input type="hidden" id="brandColor" value="#0C447C" />
+          <div id="brand-preview" class="brand-preview" aria-hidden="true">
+            <div class="brand-preview-header">Your event form</div>
+            <div class="brand-preview-subbar">This is how your header will look</div>
+          </div>
+          <p id="brand-color-note" class="brand-color-note" style="display:none;"></p>
         </div>
 
         <div class="field">
