@@ -61,7 +61,8 @@ contactForm/
 │   ├── dashboard.js           # Vendor login + event/submission dashboard logic
 │   ├── event.js               # Public contact form logic (slug lookup + guest submission)
 │   └── register.js             # Vendor sign-up + email verification logic
-├── index.html                  # Vendor dashboard (root)
+├── index.html                  # Public landing page (root)
+├── login.html                  # Vendor login + dashboard
 ├── e.html                      # Public contact form, served at /e/<slug>
 ├── register.html                # Vendor registration + verification
 ├── vite.config.js              # Build config (multi-page: index + e + register)
@@ -86,6 +87,9 @@ One record per vendor account, created after their first login.
 | `logoKey` | String | No | S3 key for the uploaded logo, set after the first authenticated login |
 | `description` | String | Yes | Brief description of the vendor's product/service, shown to attendees on the public event form |
 | `brandColor` | String | No | Hex color chosen at registration from a preset swatch palette or a free color picker; re-tints the header/subbar on the public event form |
+| `videoUrl` | String | No | Optional YouTube link, normalized at registration to `https://www.youtube.com/watch?v=<id>`; mutually exclusive with `videoKey` |
+| `videoKey` | String | No | S3 key for an optional uploaded company video (MP4/WebM/MOV, max 50 MB), set after the first authenticated login |
+| `profileDocKey` / `profileDocName` | String | No | S3 key and original filename of an optional company profile document (PDF/Word/PowerPoint, max 10 MB), set after the first authenticated login |
 
 Authorization: `allow.owner()` — a vendor can only read/write their own record.
 
@@ -99,7 +103,7 @@ Authorization: `allow.owner()` — a vendor can only read/write their own record
 | `eventUrl` | String | No | Optional vendor-provided link (e.g. event website) |
 | `venue` | String | No | Optional vendor-provided venue name, shown alongside the date range in the public form's header banner |
 | `startDate` / `endDate` | Date | No | Restricted client-side (`dashboard.js`) to today or later, and `endDate` must be on/after `startDate` — not enforced by the schema itself |
-| `vendorCompanyName`, `vendorDescription`, `vendorLogoKey`, `vendorPhone`, `vendorContactEmail`, `vendorBrandColor` | String | No | Snapshot of the vendor's profile, copied from `Vendor` at the moment the event is created (see [Vendor logos and profile info](#vendor-logos-and-profile-info)) |
+| `vendorCompanyName`, `vendorDescription`, `vendorLogoKey`, `vendorPhone`, `vendorContactEmail`, `vendorBrandColor`, `vendorVideoUrl`, `vendorVideoKey`, `vendorProfileDocKey`, `vendorProfileDocName` | String | No | Snapshot of the vendor's profile, copied from `Vendor` at the moment the event is created (see [Vendor logos and profile info](#vendor-logos-and-profile-info)) |
 
 Authorization: guests can `read` (needed to resolve `/e/<slug>` on the public form); authenticated users can `create`/`read`/`update`/`delete`.
 
@@ -129,7 +133,11 @@ These rules are defined in `amplify/data/resource.ts` and enforced by AppSync it
 
 Vendors upload a required logo/photo, write a required product/service description, and pick a brand color from a preset swatch palette during registration (`register.html`). Since the account isn't authenticated yet at that point, the logo is held as a base64 data URL in `localStorage` and uploaded to S3 (`vendorAssets` bucket, path `logos/<identity-id>/logo.<ext>`) on the vendor's first successful login, at which point `Vendor.logoKey` is set.
 
-The `Vendor` record itself stays fully private (`allow.owner()` only) — there's no public-read access to it. Instead, the vendor's logo key, description, phone, email, and brand color are **snapshotted onto each `Event`** at the moment it's created (`dashboard.js`'s `handleAddEvent`), and (minus the brand color) again onto each `Submission` at the moment a guest submits (`event.js`). The public contact form (`e.html`) reads these fields off the resolved `Event` to render the vendor's logo/description/contact info and re-tint its header, and the confirmation-email Lambda reads the rest off the `Submission` stream record — neither ever queries `Vendor` directly.
+Vendors can change every registration field later on `profile.html` ("Edit profile" in the dashboard header). Saving there also re-copies the snapshot fields onto all of the vendor's existing events (not their per-event products list, and not past submissions). Changing the email goes through Cognito's verification-code flow, since it is also the login username; password changes use Cognito's `updatePassword`.
+
+Registration also offers two optional fields: a company video (either a YouTube link or an uploaded video file, not both) and a company profile document. The files are too large for `localStorage`, so `register.js` holds them as Blobs in IndexedDB (`src/pendingFiles.js`) and `dashboard.js` uploads them to `media/<identity-id>/video.<ext>` / `media/<identity-id>/company-profile.<ext>` on first login. Unlike the logo, a failed upload of either is logged and skipped rather than blocking `Vendor.create`. On `e.html` a YouTube link renders as a `youtube-nocookie.com` embed, an uploaded video as a `<video>` player, and the document as a "View our company profile" link (presigned URLs requested with a 1-hour expiry).
+
+The `Vendor` record itself stays fully private (`allow.owner()` only) — there's no public-read access to it. Instead, the vendor's logo key, description, phone, email, brand color, and video/profile-document fields are **snapshotted onto each `Event`** at the moment it's created (`dashboard.js`'s `handleAddEvent`), and (minus the brand color and video/document fields) again onto each `Submission` at the moment a guest submits (`event.js`). The public contact form (`e.html`) reads these fields off the resolved `Event` to render the vendor's logo/description/contact info and re-tint its header, and the confirmation-email Lambda reads the rest off the `Submission` stream record — neither ever queries `Vendor` directly.
 
 **Brand color:** `e.html` exposes the header/subbar/icon/input-focus/checkbox colors as a `--brand-color` CSS custom property (default `#0C447C`, matching the original design). `event.js` overrides it via `document.documentElement.style.setProperty('--brand-color', ...)` once the event resolves. The subbar/icon use `color-mix(in srgb, var(--brand-color) 75%, white)` to reproduce the original lighter-tint relationship between the header and subbar for whatever color a vendor picks. Registration offers 8 preset swatches, each chosen to stay legible against the header's light text, plus a free `<input type="color">` picker (the last swatch slot, styled as a rainbow circle with a "+" until a color is picked) — since that custom option isn't contrast-checked, a vendor can pick a color too light for the header's white text.
 
@@ -159,7 +167,8 @@ npx vite
 ```
 
 Open:
-- `http://localhost:5173/` — vendor dashboard (login)
+- `http://localhost:5173/` — public landing page
+- `http://localhost:5173/login.html` — vendor dashboard (login)
 - `http://localhost:5173/register.html` — vendor registration
 - `http://localhost:5173/e.html?path=/e/<slug>` — public contact form for a given event (the clean `/e/<slug>` path relies on a hosting-level rewrite rule that isn't active under the plain Vite dev server; use the `?path=` query param locally instead)
 
@@ -227,7 +236,7 @@ This link is shown in the dashboard next to each event once created. Regenerate 
 
 - **Consent is informational only.** The checkbox does not gate submission — it is stored as `true`/`false` for the vendor's reference.
 - **No server-enforced multi-tenancy.** See the note under Data model — `vendorId` filtering for `Event`/`Submission` is client-side only.
-- **Vendor profile info is snapshotted onto `Event`/`Submission`, not live.** Editing a vendor's profile after an event exists won't retroactively update it (there's no edit-profile UI today, so this is currently theoretical).
+- **Vendor profile info is snapshotted onto `Event`/`Submission`, not live.** Saving on `profile.html` re-copies the vendor's details onto all existing events, but past `Submission` rows keep the details as they were at submit time, and each event's products list is only changed from the dashboard.
 - **Confirmation emails require SES setup outside this repo** (verified sender identity, possibly production access) — see [Submission confirmation email](#submission-confirmation-email). Without it, submissions still succeed; only the email silently doesn't send.
 - **Account deletion is best-effort, not transactional.** If it fails partway through (e.g. after deleting submissions but before deleting the Cognito user), there's no automatic rollback.
 - **Brand color theming relies on CSS `color-mix()`** (Chrome 111+, Safari 16.2+, Firefox 113+ — all in wide use since 2023). On older browsers the subbar/icon just won't tint correctly; the header itself still applies fine since it's a plain `var()`.

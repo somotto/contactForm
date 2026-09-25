@@ -1,6 +1,8 @@
 import { Amplify } from 'aws-amplify';
 import { signUp, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
+import { putPendingFile, clearPendingFiles } from './pendingFiles.js';
+import { parseYouTubeId } from './youtube.js';
 
 Amplify.configure(outputs);
 
@@ -70,6 +72,9 @@ registerBtn.addEventListener('click', async () => {
     .filter(Boolean);
   const password    = document.getElementById('password').value;
   const logoFile    = document.getElementById('logo').files[0] || null;
+  const videoInput  = document.getElementById('video-url').value.trim();
+  const videoFile   = document.getElementById('video-file').files[0] || null;
+  const profileDoc  = document.getElementById('profile-doc').files[0] || null;
 
   errorMsg.style.display = 'none';
   successMsg.style.display = 'none';
@@ -84,10 +89,33 @@ registerBtn.addEventListener('click', async () => {
   if (!logoFile) { showError('A logo or photo is required.'); return; }
   if (logoFile.size > 2 * 1024 * 1024) { showError('Logo must be 2 MB or smaller.'); return; }
 
+  let videoUrl = null;
+  if (videoInput) {
+    const videoId = parseYouTubeId(videoInput);
+    if (!videoId) { showError('Please enter a valid YouTube video link.'); return; }
+    videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  }
+  if (videoUrl && videoFile) { showError('Please provide either a YouTube link or a video file, not both.'); return; }
+  if (videoFile && videoFile.size > 50 * 1024 * 1024) { showError('Video must be 50 MB or smaller.'); return; }
+  if (profileDoc && profileDoc.size > 10 * 1024 * 1024) { showError('Company profile document must be 10 MB or smaller.'); return; }
+
   registerBtn.disabled = true;
   registerBtn.textContent = 'Creating account…';
 
   try {
+    // Stash optional files before signUp, so a storage failure aborts before an
+    // account exists. Clearing first stops a previous abandoned attempt's files
+    // from being uploaded against this account.
+    try {
+      await clearPendingFiles();
+      if (videoFile) await putPendingFile('video', videoFile);
+      if (profileDoc) await putPendingFile('profileDoc', profileDoc);
+    } catch (err) {
+      console.error('Failed to store pending files:', err);
+      showError('Your browser could not store the video/document for upload. Try without them, or use a different browser.');
+      return;
+    }
+
     const vendorId = generateVendorId(companyName);
 
     await signUp({
@@ -117,6 +145,7 @@ registerBtn.addEventListener('click', async () => {
       description: products.join(', '), // kept for older single-string consumers (email fallback, etc.)
       products,
       brandColor,
+      videoUrl,               // videoKey / profileDocKey filled in by dashboard after upload
     }));
 
     localStorage.setItem('pendingVendorLogo', JSON.stringify({
@@ -172,7 +201,7 @@ document.getElementById('verify-btn').addEventListener('click', async () => {
     document.getElementById('verification-form').style.display = 'none';
     successMsg.innerHTML = `
       Account verified! You can now
-      <a href="/" style="color:#1e6b2e; font-weight:500;">log in to your dashboard</a>.
+      <a href="/login.html" style="color:#1e6b2e; font-weight:500;">log in to your dashboard</a>.
     `;
     successMsg.style.display = 'block';
 

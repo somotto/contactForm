@@ -3,376 +3,351 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vendor Dashboard</title>
+<title>TheEventConnector — Turn event visitors into leads</title>
+<meta name="description" content="Create an event, share one link, and let attendees leave their contact details in seconds — no app or login needed. Every lead lands in your vendor dashboard." />
 <link rel="icon" type="image/jpeg" href="./src/assets/favicon.jpg" />
-<!-- Route /e/* to the event contact form before any JS loads -->
+<!-- Route /e/* to the event contact form before any JS loads. This page is
+     what Amplify Hosting's catch-all serves, so the fallback must live here. -->
 <script>
   if (window.location.pathname.startsWith('/e/')) {
     window.location.replace('/e.html?path=' + encodeURIComponent(window.location.pathname));
   }
 </script>
+<link rel="stylesheet" href="./src/nav.css" />
 <style>
+  :root {
+    --navy: #0B2340;
+    --navy-2: #12325A;
+    --sky: #2EA8E6;
+    --orange: #F4893A;
+    --ink: #0F172A;
+    --muted: #526077;
+    --line: #E3E8EF;
+  }
+  * { box-sizing: border-box; }
   body {
-    background:
-      linear-gradient(rgba(244,245,247,0.65), rgba(244,245,247,0.65)),
-      url('./src/assets/login.jpg') center / cover no-repeat fixed;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     margin: 0;
-    padding: 2rem 1rem;
-    color: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--ink);
+    background: #F7F9FC;
+    -webkit-font-smoothing: antialiased;
   }
-  body.dashboard-active {
+  /* This page has no body padding to cancel. `body` prefix outranks nav.css,
+     which Vite's build may emit after this <style> block. */
+  body .site-nav { margin: 0; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Buttons ─────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 13px 26px; border-radius: 8px; font-size: 15px; font-weight: 500;
+    text-decoration: none; transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--orange); color: var(--navy); border: 2px solid var(--orange); }
+  .btn-primary:hover { background: #F79B55; border-color: #F79B55; }
+  .btn-outline { color: #fff; border: 2px solid rgba(255, 255, 255, 0.85); }
+  .btn-outline:hover { background: rgba(255, 255, 255, 0.08); }
+
+  /* ── Hero ────────────────────────────────────────────── */
+  .hero {
     background:
-      linear-gradient(rgba(244,245,247,0.65), rgba(244,245,247,0.65)),
-      url('./src/assets/dashboard.jpg') center / cover no-repeat fixed;
+      radial-gradient(600px 400px at 85% 55%, rgba(46, 168, 230, 0.16), transparent 70%),
+      radial-gradient(500px 300px at 95% 90%, rgba(244, 137, 58, 0.10), transparent 70%),
+      var(--navy);
+    color: #fff;
+    padding: 72px 0 96px;
+    overflow: hidden;
   }
-  :root { --brand-color: #0C447C; --brand-color-light: color-mix(in srgb, var(--brand-color) 75%, white); }
-  .wrap { max-width: 420px; margin: 0 auto; transition: max-width 0.2s ease; }
-  .wrap.dashboard-active { max-width: 900px; }
-  .header {
-    background: var(--brand-color); border-radius: 10px 10px 0 0; padding: 1.5rem 2rem;
-    display: flex; align-items: center; justify-content: space-between;
+  .hero-grid {
+    display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 48px;
   }
-  .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
-  .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  #header-logo { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
-  #logout-btn {
-    background: var(--brand-color-light); border: none; color: #E6F1FB; padding: 8px 14px;
-    border-radius: 4px; font-size: 13px; cursor: pointer; display: none;
+  .eyebrow {
+    font-size: 15px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #fff; margin: 0 0 18px;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 4.6vw, 52px); line-height: 1.12; font-weight: 700;
+    letter-spacing: -0.02em; margin: 0 0 24px;
+  }
+  .hero h1 .accent { color: var(--sky); }
+  .hero-sub { font-size: 17px; line-height: 1.6; color: #D3DEEC; margin: 0 0 6px; max-width: 520px; }
+  .hero-sub strong { color: #fff; font-weight: 600; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+  .hero-art svg { width: 100%; height: auto; max-width: 500px; display: block; margin: 0 auto; }
+
+  /* ── Sections ────────────────────────────────────────── */
+  section.block { padding: 88px 0; }
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto 52px; }
+  .section-head h2 { font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.015em; margin: 0 0 12px; }
+  .section-head p { font-size: 16px; color: var(--muted); line-height: 1.6; margin: 0; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .step {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 28px;
+  }
+  .step-num {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px;
+    margin-bottom: 18px;
+  }
+  .step h3 { font-size: 18px; margin: 0 0 8px; }
+  .step p { font-size: 15px; line-height: 1.6; color: var(--muted); margin: 0; }
+
+  .feature {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+  }
+  .feature + .feature { margin-top: 88px; }
+  .feature.reverse .feature-art { order: 2; }
+  .feature-art {
+    border-radius: 18px; padding: 40px; min-height: 280px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .feature-art.blue { background: #E6F2FB; }
+  .feature-art.orange { background: #FDF0E6; }
+  .feature-art svg { width: 100%; max-width: 320px; height: auto; }
+  .feature h2 { font-size: clamp(24px, 2.6vw, 30px); letter-spacing: -0.015em; margin: 0 0 12px; }
+  .feature > div > p { font-size: 16px; line-height: 1.6; color: var(--muted); margin: 0 0 20px; }
+  .checks { list-style: none; padding: 0; margin: 0; }
+  .checks li {
+    position: relative; padding-left: 30px; margin: 12px 0; font-size: 15px; line-height: 1.5;
+  }
+  .checks li::before {
+    content: ''; position: absolute; left: 0; top: 2px; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--navy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 20px no-repeat;
   }
 
-  /* Login card */
-  #login-card {
-    background: #fff; border: 0.5px solid #d8dade; border-top: none;
-    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+  .cta-band {
+    background: var(--navy); color: #fff; border-radius: 20px; padding: 56px 48px;
+    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
   }
-  #login-card label {
-    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-    text-transform: uppercase; color: #555; margin-bottom: 6px;
-  }
-  #login-card .field { margin-bottom: 1.25rem; }
-  #login-card input {
-    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
-    padding: 10px 12px; font-size: 14px;
-  }
-  #login-btn {
-    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
-    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
-  }
-  #login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .register-link { text-align: center; margin-top: 1.25rem; font-size: 13px; color: #555; }
-  .register-link a { color: #0C447C; text-decoration: underline; }
-  .forgot-link { text-align: right; margin: 0.6rem 0 1.25rem; font-size: 12px; }
-  .forgot-link a { color: #0C447C; text-decoration: underline; cursor: pointer; }
-  #verify-email-card {
-    background: #fff; border: 0.5px solid #d8dade; border-top: none;
-    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
-    display: none;
-  }
-  #verify-email-card label {
-    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-    text-transform: uppercase; color: #555; margin-bottom: 6px;
-  }
-  #verify-email-card .field { margin-bottom: 1.25rem; }
-  #verify-email-card input {
-    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
-    padding: 10px 12px; font-size: 14px;
-  }
-  #verify-email-card button {
-    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
-    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
-  }
-  #verify-email-card button:disabled { opacity: 0.6; cursor: not-allowed; }
-  #verify-success-msg {
-    display: none; margin-top: 1rem; font-size: 13px; color: #1e6b2e; background: #eaf6ec;
-    border-left: 3px solid #639922; padding: 10px 14px;
-  }
-  #verify-error-msg {
-    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
-    border-left: 3px solid #E24B4A; padding: 10px 14px;
-  }
-  #forgot-password-card {
-    background: #fff; border: 0.5px solid #d8dade; border-top: none;
-    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
-    display: none;
-  }
-  #forgot-password-card label {
-    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-    text-transform: uppercase; color: #555; margin-bottom: 6px;
-  }
-  #forgot-password-card .field { margin-bottom: 1.25rem; }
-  #forgot-password-card input {
-    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
-    padding: 10px 12px; font-size: 14px;
-  }
-  #forgot-password-card button {
-    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
-    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
-  }
-  #forgot-password-card button:disabled { opacity: 0.6; cursor: not-allowed; }
-  #forgot-success-msg {
-    display: none; margin-top: 1rem; font-size: 13px; color: #1e6b2e; background: #eaf6ec;
-    border-left: 3px solid #639922; padding: 10px 14px;
-  }
-  #forgot-error-msg {
-    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
-    border-left: 3px solid #E24B4A; padding: 10px 14px;
-  }
-  #otp-card {
-    background: #fff; border: 0.5px solid #d8dade; border-top: none;
-    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
-    display: none;
-  }
-  #otp-card label {
-    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
-    text-transform: uppercase; color: #555; margin-bottom: 6px;
-  }
-  #otp-card .field { margin-bottom: 1.25rem; }
-  #otp-card input {
-    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
-    padding: 10px 12px; font-size: 14px;
-  }
-  #otp-verify-btn {
-    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
-    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
-  }
-  #otp-verify-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  #otp-error-msg {
-    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
-    border-left: 3px solid #E24B4A; padding: 10px 14px;
-  }
+  .cta-band h2 { font-size: clamp(24px, 2.8vw, 32px); margin: 0 0 8px; letter-spacing: -0.015em; }
+  .cta-band p { margin: 0; color: #D3DEEC; font-size: 16px; }
 
-  /* Dashboard */
-  #dashboard-card {
-    background: #fff; border: 0.5px solid #d8dade; border-top: none;
-    border-radius: 0 0 10px 10px; padding: 2rem; display: none;
+  footer {
+    border-top: 1px solid var(--line); padding: 28px 0; margin-top: 88px;
   }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eceef1; }
-  th { background: #f7f8fa; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #666; }
-  tr:hover { background: #fafbfc; }
-  .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .product-row .product-input {
-    flex: 1; box-sizing: border-box; padding: 8px 10px; border-radius: 4px;
-    border: 1px solid #c7c9cf; font-size: 13px;
+  footer .container {
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-size: 13px; color: #7A8699;
   }
-  .product-row .remove-product-btn {
-    flex-shrink: 0; width: 32px; border-radius: 4px; border: 1px solid #c7c9cf;
-    background: #fff; color: #b42318; font-size: 15px; cursor: pointer;
+  footer a { color: #7A8699; }
+
+  @media (max-width: 900px) {
+    .hero { padding: 48px 0 64px; }
+    .hero-grid, .feature { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .feature.reverse .feature-art { order: 0; }
+    .hero-art svg { max-width: 380px; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    section.block { padding: 64px 0; }
+    .feature + .feature { margin-top: 64px; }
+    .cta-band { padding: 40px 28px; }
   }
-  #add-event-product-btn {
-    background: none; border: none; color: #0C447C; font-size: 12px; font-weight: 500;
-    cursor: pointer; padding: 4px 0;
-  }
-  .consent-yes { color: #1e6b2e; font-weight: 500; }
-  .consent-no { color: #999; }
-  #error-msg {
-    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
-    border-left: 3px solid #E24B4A; padding: 10px 14px;
-  }
-  #loading-msg { font-size: 13px; color: #888; padding: 1rem 0; }
-  #empty-msg { font-size: 13px; color: #888; padding: 1rem 0; display: none; }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <div class="header">
-    <div class="header-left">
-      <img id="header-logo" src="./src/assets/logo.jpg" alt="" />
-      <div>
-        <p id="header-company">TheEventConnector Platform</p>
-        <h1 id="header-title">Vendor dashboard</h1>
-      </div>
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="/"><img src="./src/assets/favicon.jpg" alt="" /><span>TheEventConnector</span></a>
+    <div class="site-links">
+      <a href="/" aria-current="page">Home</a>
+      <a href="/faq.html">FAQ</a>
     </div>
-    <button id="logout-btn">Log out</button>
+    <a class="site-cta" href="/login.html">Log in</a>
   </div>
+</nav>
 
-  <div id="login-card">
-    <div class="field">
-      <label for="login-email">Email</label>
-      <input id="login-email" type="email" placeholder="you@yourcompany.com" />
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <p class="eyebrow">TheEventConnector</p>
+      <h1>Say hello at the booth.<br /><span class="accent">Stay connected</span> after the event.</h1>
+      <p class="hero-sub">Create an event, share one link, and let visitors leave their details in seconds.</p>
+      <p class="hero-sub"><strong>No app, no login for attendees — every lead lands in your dashboard.</strong></p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/register.html">Register as a vendor</a>
+        <a class="btn btn-outline" href="/login.html">Log in</a>
+      </div>
     </div>
-    <div class="field">
-      <label for="login-password">Password</label>
-      <input id="login-password" type="password" placeholder="••••••••" />
-    </div>
-    <button id="login-btn">Log in</button>
-    <div class="forgot-link"><a id="forgot-password-link">Forgot password?</a></div>
-    <div class="forgot-link"><a id="verify-email-link">Need to verify your email?</a></div>
-    <div id="error-msg"><span id="error-text"></span></div>
-    <div class="register-link">
-      Don't have an account? <a href="/register.html">Register here</a>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 480 420" xmlns="http://www.w3.org/2000/svg" role="presentation">
+        <defs>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+            <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#020817" flood-opacity="0.35" />
+          </filter>
+        </defs>
+        <circle cx="250" cy="210" r="195" fill="#12325A" />
+        <circle cx="250" cy="210" r="150" fill="#17406E" opacity="0.7" />
+
+        <!-- Phone showing the contact form -->
+        <g filter="url(#shadow)">
+          <rect x="160" y="30" width="180" height="350" rx="28" fill="#F8FAFC" />
+        </g>
+        <rect x="220" y="42" width="60" height="8" rx="4" fill="#D5DEE8" />
+        <rect x="172" y="62" width="156" height="64" rx="10" fill="#1B4F8A" />
+        <circle cx="196" cy="94" r="14" fill="#fff" />
+        <path d="M189 94a7 7 0 0 1 7-7h3M203 94a7 7 0 0 1-7 7h-3" stroke="#2EA8E6" stroke-width="3" fill="none" stroke-linecap="round" />
+        <rect x="218" y="84" width="90" height="8" rx="4" fill="#fff" opacity="0.9" />
+        <rect x="218" y="98" width="60" height="6" rx="3" fill="#9CC7EE" />
+        <rect x="176" y="140" width="50" height="6" rx="3" fill="#A7B4C4" />
+        <rect x="176" y="152" width="148" height="26" rx="6" fill="#fff" stroke="#D5DEE8" />
+        <rect x="184" y="162" width="70" height="6" rx="3" fill="#334155" opacity="0.7" />
+        <rect x="176" y="190" width="40" height="6" rx="3" fill="#A7B4C4" />
+        <rect x="176" y="202" width="148" height="26" rx="6" fill="#fff" stroke="#D5DEE8" />
+        <rect x="184" y="212" width="96" height="6" rx="3" fill="#334155" opacity="0.7" />
+        <rect x="176" y="240" width="56" height="6" rx="3" fill="#A7B4C4" />
+        <rect x="176" y="252" width="148" height="26" rx="6" fill="#fff" stroke="#2EA8E6" stroke-width="1.5" />
+        <rect x="184" y="262" width="50" height="6" rx="3" fill="#334155" opacity="0.7" />
+        <rect x="176" y="292" width="12" height="12" rx="3" fill="#F4893A" />
+        <path d="M179 298l2 2 4-4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" />
+        <rect x="196" y="295" width="110" height="6" rx="3" fill="#CBD5E1" />
+        <rect x="176" y="320" width="148" height="34" rx="8" fill="#F4893A" />
+        <rect x="216" y="334" width="68" height="6" rx="3" fill="#0B2340" opacity="0.85" />
+
+        <!-- New lead notification -->
+        <g transform="translate(286 96)">
+          <g filter="url(#shadow)"><rect width="190" height="72" rx="14" fill="#fff" /></g>
+          <circle cx="32" cy="36" r="17" fill="#2EA8E6" />
+          <circle cx="32" cy="31" r="6" fill="#fff" />
+          <path d="M22 46a10 9 0 0 1 20 0" fill="#fff" />
+          <text x="60" y="32" font-size="14" font-weight="700" fill="#0B2340" font-family="inherit">New lead</text>
+          <text x="60" y="50" font-size="11" fill="#64748B" font-family="inherit">Added to your dashboard</text>
+          <circle cx="182" cy="8" r="13" fill="#22C55E" />
+          <path d="M176 8l4 4 8-8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Confirmation email -->
+        <g transform="translate(4 258)">
+          <g filter="url(#shadow)"><rect width="186" height="66" rx="14" fill="#fff" /></g>
+          <rect x="16" y="18" width="36" height="30" rx="6" fill="#FDEBDD" />
+          <path d="M22 25l12 9 12-9M22 25h24v17H22z" stroke="#F4893A" stroke-width="2" fill="none" stroke-linejoin="round" />
+          <text x="64" y="30" font-size="13" font-weight="700" fill="#0B2340" font-family="inherit">Confirmation sent</text>
+          <text x="64" y="47" font-size="11" fill="#64748B" font-family="inherit">with your contact details</text>
+        </g>
+
+        <circle cx="96" cy="92" r="6" fill="#2EA8E6" />
+        <circle cx="440" cy="300" r="5" fill="#F4893A" />
+        <circle cx="408" cy="46" r="4" fill="#fff" opacity="0.5" />
+        <circle cx="60" cy="190" r="3" fill="#fff" opacity="0.4" />
+      </svg>
     </div>
   </div>
+</header>
 
-  <div id="verify-email-card">
-    <div id="verify-request-form">
-      <p style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter your email and we'll send you a verification code.</p>
-      <div class="field">
-        <label for="verify-email">Email</label>
-        <input id="verify-email" type="email" placeholder="you@yourcompany.com" />
+<main>
+  <section class="block">
+    <div class="container">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p>From sign-up to your first lead in a few minutes.</p>
       </div>
-      <button id="verify-send-btn">Send verification code</button>
-    </div>
-
-    <div id="verify-confirm-form" style="display:none;">
-      <p id="verify-hint" style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter the verification code sent to your email.</p>
-      <div class="field">
-        <label for="verify-code">Verification code</label>
-        <input id="verify-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
-      </div>
-      <button id="verify-confirm-btn">Verify email</button>
-      <div class="forgot-link"><a id="verify-resend-link">Resend code</a></div>
-    </div>
-
-    <div id="verify-error-msg"><span id="verify-error-text"></span></div>
-    <div id="verify-success-msg"><span id="verify-success-text"></span></div>
-    <div class="register-link">
-      <a id="back-to-login-from-verify-link">Back to login</a>
-    </div>
-  </div>
-
-  <div id="forgot-password-card">
-    <div id="forgot-request-form">
-      <div class="field">
-        <label for="forgot-email">Email</label>
-        <input id="forgot-email" type="email" placeholder="you@yourcompany.com" />
-      </div>
-      <button id="forgot-send-btn">Send reset code</button>
-    </div>
-
-    <div id="forgot-confirm-form" style="display:none;">
-      <div class="field">
-        <label for="forgot-code">Verification code</label>
-        <input id="forgot-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
-      </div>
-      <div class="field">
-        <label for="forgot-new-password">New password</label>
-        <input id="forgot-new-password" type="password" placeholder="Min 8 chars, upper, lower, number, symbol" />
-      </div>
-      <button id="forgot-confirm-btn">Reset password</button>
-    </div>
-
-    <div id="forgot-error-msg"><span id="forgot-error-text"></span></div>
-    <div id="forgot-success-msg"><span id="forgot-success-text"></span></div>
-    <div class="register-link">
-      <a id="back-to-login-link">Back to login</a>
-    </div>
-  </div>
-
-  <div id="otp-card">
-    <p id="otp-hint" style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter the verification code sent to your email.</p>
-    <div class="field">
-      <label for="otp-code">Verification code</label>
-      <input id="otp-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
-    </div>
-    <button id="otp-verify-btn">Verify</button>
-    <div id="otp-error-msg"><span id="otp-error-text"></span></div>
-  </div>
-
-  <div id="dashboard-card">
-
-    <div id="add-event-section">
-      <h2 id="add-event-heading" style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Add an Event</h2>
-      <div style="border: 0.5px solid #d8dade; border-radius: 4px; padding: 16px; background: #f7f8fa;">
-        <div style="margin-bottom: 10px;">
-          <label for="new-event-name" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event name <span style="color:#d23b3b;">*</span></label>
-          <input id="new-event-name" type="text" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Register your company</h3>
+          <p>Add your logo, brand color, and the products or services you offer. Optionally add a company video and profile document.</p>
         </div>
-        <div style="margin-bottom: 10px;">
-          <label for="new-event-url" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event website <span style="color:#999; font-weight:400;">(optional)</span></label>
-          <input id="new-event-url" type="url" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Create an event</h3>
+          <p>Add the event name, venue and dates. You get a short link to a contact form branded with your company details.</p>
         </div>
-        <div style="margin-bottom: 10px;">
-          <label for="new-event-venue" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Venue <span style="color:#999; font-weight:400;">(optional)</span></label>
-          <input id="new-event-venue" type="text" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Collect leads</h3>
+          <p>Visitors fill in the form on their phone. Each submission appears in your dashboard right away, filtered by event.</p>
         </div>
-        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
-          <div style="flex: 1;">
-            <label for="new-event-start" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Start date <span style="color:#999; font-weight:400;">(optional)</span></label>
-            <input id="new-event-start" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
-          </div>
-          <div style="flex: 1;">
-            <label for="new-event-end" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">End date <span style="color:#999; font-weight:400;">(optional)</span></label>
-            <input id="new-event-end" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
-          </div>
-        </div>
-        <div style="margin-bottom: 12px;">
-          <label style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Services offered for this event <span style="color:#999; font-weight:400;">(optional)</span></label>
-          <div id="event-products-container">
-            <div class="product-row">
-              <input type="text" class="product-input" />
-              <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
-            </div>
-          </div>
-          <button type="button" id="add-event-product-btn">+ Add another</button>
-        </div>
-        <button id="add-event-btn" style="padding: 8px 20px; background: var(--brand-color); color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Add event</button>
-        <button id="cancel-edit-event-btn" type="button" style="display:none; margin-left: 8px; padding: 8px 20px; background: #fff; color: #555; border: 1px solid #c7c9cf; border-radius: 4px; font-size: 13px; cursor: pointer;">Cancel</button>
-        <div id="add-event-msg" style="display: none; margin-top: 10px; font-size: 12px;"></div>
       </div>
     </div>
+  </section>
 
-    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+  <section class="block" style="padding-top:0;">
+    <div class="container">
+      <div class="feature">
+        <div class="feature-art blue" aria-hidden="true">
+          <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="300" height="200" rx="14" fill="#fff" />
+            <rect x="10" y="10" width="300" height="40" rx="14" fill="#0B2340" />
+            <rect x="10" y="36" width="300" height="14" fill="#0B2340" />
+            <rect x="28" y="26" width="90" height="8" rx="4" fill="#fff" opacity="0.85" />
+            <rect x="238" y="22" width="56" height="16" rx="5" fill="#2EA8E6" />
+            <g fill="#E3E8EF">
+              <rect x="28" y="70" width="264" height="1" /><rect x="28" y="110" width="264" height="1" />
+              <rect x="28" y="150" width="264" height="1" /><rect x="28" y="190" width="264" height="1" />
+            </g>
+            <g>
+              <circle cx="42" cy="90" r="10" fill="#2EA8E6" /><rect x="62" y="85" width="80" height="8" rx="4" fill="#334155" /><rect x="170" y="85" width="60" height="8" rx="4" fill="#CBD5E1" /><rect x="250" y="82" width="42" height="14" rx="7" fill="#DCFCE7" />
+              <circle cx="42" cy="130" r="10" fill="#F4893A" /><rect x="62" y="125" width="64" height="8" rx="4" fill="#334155" /><rect x="170" y="125" width="72" height="8" rx="4" fill="#CBD5E1" /><rect x="250" y="122" width="42" height="14" rx="7" fill="#DCFCE7" />
+              <circle cx="42" cy="170" r="10" fill="#1B4F8A" /><rect x="62" y="165" width="88" height="8" rx="4" fill="#334155" /><rect x="170" y="165" width="52" height="8" rx="4" fill="#CBD5E1" /><rect x="250" y="162" width="42" height="14" rx="7" fill="#E0F2FE" />
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h2>For vendors</h2>
+          <p>Stop collecting business cards and typing up sign-up sheets. Every contact is captured once, correctly, and kept in one place.</p>
+          <ul class="checks">
+            <li>A contact form with your logo, brand color and services</li>
+            <li>Showcase your company video and profile document</li>
+            <li>Leads from every event in one dashboard, updated live</li>
+            <li>A separate link for each event you attend</li>
+          </ul>
+        </div>
+      </div>
 
-    <div id="events-list-section">
-      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Your Events</h2>
-      <table id="events-table" style="display:none;">
-        <thead>
-          <tr>
-            <th>Event</th>
-            <th>Venue</th>
-            <th>Dates</th>
-            <th>Form link</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="events-body"></tbody>
-      </table>
-      <div id="events-empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">No events yet — add one above.</div>
-    </div>
-
-    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
-
-    <div id="view-submissions-section">
-      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Event Submissions</h2>
-      <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
-      <div id="submission-count" style="font-size: 12px; color: #666; margin-bottom: 0.5rem; display: none;"></div>
-      <div id="loading-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">Loading submissions…</div>
-      <div id="empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0; display: none;">No submissions yet.</div>
-      <table id="submissions-table" style="display:none;">
-        <thead>
-          <tr>
-            <th>Event</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Comment</th>
-            <th>Consent</th>
-            <th>Submitted at</th>
-          </tr>
-        </thead>
-        <tbody id="submissions-body"></tbody>
-      </table>
-    </div>
-
-    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
-
-    <div id="danger-zone-section">
-      <div style="border: 0.5px solid #f3c6c4; border-radius: 4px; padding: 16px; background: #fdeeee;">
-        <p style="font-size: 13px; color: #555; margin: 0 0 12px;">
-          Permanently delete your account, all of your events, and all submissions. This cannot be undone.
-        </p>
-        <button id="delete-account-btn" style="padding: 8px 20px; background: #b42318; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Delete my account</button>
-        <div id="delete-account-msg" style="display: none; margin-top: 10px; font-size: 12px; color: #b42318;"></div>
+      <div class="feature reverse">
+        <div class="feature-art orange" aria-hidden="true">
+          <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+            <rect x="100" y="8" width="120" height="204" rx="20" fill="#fff" />
+            <rect x="140" y="18" width="40" height="6" rx="3" fill="#E3E8EF" />
+            <rect x="112" y="36" width="96" height="36" rx="8" fill="#1B4F8A" />
+            <rect x="122" y="50" width="56" height="7" rx="3.5" fill="#fff" opacity="0.9" />
+            <rect x="112" y="84" width="96" height="18" rx="5" fill="#F1F5F9" />
+            <rect x="112" y="110" width="96" height="18" rx="5" fill="#F1F5F9" />
+            <rect x="112" y="136" width="96" height="18" rx="5" fill="#F1F5F9" />
+            <rect x="112" y="170" width="96" height="24" rx="7" fill="#F4893A" />
+            <g transform="translate(222 120)">
+              <rect width="86" height="60" rx="12" fill="#0B2340" />
+              <path d="M18 20l25 17 25-17M18 20h50v26H18z" stroke="#fff" stroke-width="2.5" fill="none" stroke-linejoin="round" />
+            </g>
+            <circle cx="64" cy="70" r="30" fill="#22C55E" />
+            <path d="M50 70l10 10 18-18" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div>
+          <h2>For attendees</h2>
+          <p>Visitors open the link on their own phone and are done in under a minute.</p>
+          <ul class="checks">
+            <li>No app to install and no account to create</li>
+            <li>Just a name, email and phone number, plus an optional comment</li>
+            <li>A confirmation email with the vendor's contact details</li>
+            <li>Consent to follow-up is asked for up front</li>
+          </ul>
+        </div>
       </div>
     </div>
+  </section>
 
+  <section class="block" style="padding-top:0; padding-bottom:0;">
+    <div class="container">
+      <div class="cta-band">
+        <div>
+          <h2>Ready for your next event?</h2>
+          <p>Set up your company profile and first event link today.</p>
+        </div>
+        <a class="btn btn-primary" href="/register.html">Register as a vendor</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>© 2026 TheEventConnector. All rights reserved.</span>
+    <span><a href="./privacy.html">Privacy Policy</a> · <a href="./terms.html">Terms of Use</a> · <a href="./faq.html">FAQ</a></span>
   </div>
-</div>
+</footer>
 
-<script type="module" src="./src/dashboard.js"></script>
 </body>
 </html>

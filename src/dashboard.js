@@ -3,6 +3,7 @@ import { generateClient } from 'aws-amplify/data';
 import { signIn, confirmSignIn, getCurrentUser, signOut, fetchAuthSession, deleteUser, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 import { uploadData, remove, getUrl } from 'aws-amplify/storage';
 import outputs from '../amplify_outputs.json' with { type: 'json' };
+import { getPendingFile, clearPendingFiles } from './pendingFiles.js';
 
 Amplify.configure(outputs);
 const client = generateClient({ authMode: 'userPool' });
@@ -387,6 +388,8 @@ async function showDashboard() {
   loginCard.style.display = 'none';
   dashboardCard.style.display = 'block';
   logoutBtn.style.display = 'inline-block';
+  document.getElementById('edit-profile-btn').style.display = 'inline-block';
+  document.getElementById('nav-cta').style.display = 'none'; // "Register" makes no sense once logged in
   wrapEl.classList.add('dashboard-active');
   document.body.classList.add('dashboard-active');
 
@@ -396,13 +399,13 @@ async function showDashboard() {
     try {
       const profile = JSON.parse(pending);
 
+      // Use identityId (Identity Pool ID) — this is what {entity_id} maps to in storage rules
+      const { identityId } = await fetchAuthSession();
+
       // Upload logo now that the user is authenticated
       const pendingLogo = localStorage.getItem('pendingVendorLogo');
       if (pendingLogo) {
         const { data: dataUrl, type, ext } = JSON.parse(pendingLogo);
-        // Use identityId (Identity Pool ID) — this is what {entity_id} maps to in storage rules
-        const session = await fetchAuthSession();
-        const identityId = session.identityId;
         const key = `logos/${identityId}/logo.${ext}`;
         // Decode base64 data URL → Uint8Array → Blob
         const base64 = dataUrl.split(',')[1];
@@ -413,11 +416,20 @@ async function showDashboard() {
         localStorage.removeItem('pendingVendorLogo');
       }
 
+      const video = await uploadPendingFile('video', identityId, 'video');
+      if (video) profile.videoKey = video.key;
+      const profileDoc = await uploadPendingFile('profileDoc', identityId, 'company-profile');
+      if (profileDoc) {
+        profile.profileDocKey = profileDoc.key;
+        profile.profileDocName = profileDoc.fileName;
+      }
+
       const { errors } = await client.models.Vendor.create(profile);
       if (errors) {
         console.error('Vendor.create errors:', errors);
       } else {
         localStorage.removeItem('pendingVendorProfile');
+        await clearPendingFiles().catch((err) => console.error('Failed to clear pending files:', err));
       }
     } catch (err) {
       console.error('Failed to save vendor profile:', err);
@@ -472,6 +484,27 @@ async function showDashboard() {
     console.error(err);
     loadingMsg.style.display = 'none';
     showError('Failed to load dashboard data.');
+  }
+}
+
+// Uploads an optional file stashed by register.js (see pendingFiles.js).
+// Unlike the logo, a failure is logged and skipped rather than blocking
+// Vendor.create — these fields are optional, and a large video is the
+// likeliest upload to fail.
+async function uploadPendingFile(name, identityId, baseName) {
+  try {
+    const file = await getPendingFile(name);
+    if (!file) return null;
+    const key = `media/${identityId}/${baseName}.${file.name.split('.').pop()}`;
+    await uploadData({
+      path: key,
+      data: file,
+      options: { contentType: file.type || 'application/octet-stream' },
+    }).result;
+    return { key, fileName: file.name };
+  } catch (err) {
+    console.error(`Failed to upload pending ${name}:`, err);
+    return null;
   }
 }
 
@@ -749,8 +782,13 @@ async function handleDeleteAccount() {
       await client.models.Event.delete({ id: event.id });
     }
 
-    if (currentVendorProfile?.logoKey) {
-      await remove({ path: currentVendorProfile.logoKey });
+    const fileKeys = [
+      currentVendorProfile?.logoKey,
+      currentVendorProfile?.videoKey,
+      currentVendorProfile?.profileDocKey,
+    ].filter(Boolean);
+    for (const key of fileKeys) {
+      await remove({ path: key });
     }
 
     if (currentVendorProfile?.id) {
@@ -924,6 +962,10 @@ async function handleSaveEvent() {
         vendorPhone: currentVendorProfile?.phone,
         vendorContactEmail: currentVendorProfile?.email,
         vendorBrandColor: currentVendorProfile?.brandColor,
+        vendorVideoUrl: currentVendorProfile?.videoUrl,
+        vendorVideoKey: currentVendorProfile?.videoKey,
+        vendorProfileDocKey: currentVendorProfile?.profileDocKey,
+        vendorProfileDocName: currentVendorProfile?.profileDocName,
       });
 
       if (errors) {

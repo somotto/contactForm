@@ -1,0 +1,41 @@
+/* Site-wide top navigation bar, linked from every vendor-facing page (not
+   e.html, which keeps the vendor's own branded header). The markup itself is
+   duplicated in each page's HTML — keep it in sync when adding links. */
+
+.site-nav {
+  background: #0B2340;
+  /* Pages pad <body> by 2rem 1rem; cancel that so the bar spans the viewport
+     and sits flush with the top. index.html (no body padding) overrides this. */
+  margin: -2rem -1rem 2rem;
+}
+.site-nav-inner {
+  max-width: 1120px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center; gap: 36px;
+}
+.site-brand {
+  display: flex; align-items: center; gap: 10px;
+  color: #fff; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none;
+}
+.site-brand img {
+  width: 32px; height: 32px; border-radius: 8px; background: #fff;
+  object-fit: contain; padding: 2px; box-sizing: border-box;
+}
+.site-links { display: flex; align-items: center; gap: 28px; }
+.site-links a {
+  color: #C9D8EA; font-size: 14px; font-weight: 500; text-decoration: none;
+  padding: 4px 0; border-bottom: 2px solid transparent;
+}
+.site-links a:hover { color: #fff; }
+.site-links a[aria-current="page"] { color: #fff; border-bottom-color: #F07E26; }
+.site-cta {
+  margin-left: auto; color: #fff; font-size: 13px; font-weight: 500; text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.65); border-radius: 6px; padding: 6px 14px;
+  transition: background 0.15s ease;
+}
+.site-cta:hover { background: rgba(255, 255, 255, 0.1); }
+
+@media (max-width: 560px) {
+  .site-nav-inner { gap: 18px; padding: 12px 16px; }
+  .site-brand span { display: none; }
+  .site-links { gap: 18px; }
+}

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vendor Dashboard</title>
+<link rel="icon" type="image/jpeg" href="./src/assets/favicon.jpg" />
+<link rel="stylesheet" href="./src/nav.css" />
+<style>
+  body {
+    background:
+      linear-gradient(rgba(244,245,247,0.65), rgba(244,245,247,0.65)),
+      url('./src/assets/login.jpg') center / cover no-repeat fixed;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    margin: 0;
+    padding: 2rem 1rem;
+    color: #1a1a1a;
+  }
+  body.dashboard-active {
+    background:
+      linear-gradient(rgba(244,245,247,0.65), rgba(244,245,247,0.65)),
+      url('./src/assets/dashboard.jpg') center / cover no-repeat fixed;
+  }
+  :root { --brand-color: #0C447C; --brand-color-light: color-mix(in srgb, var(--brand-color) 75%, white); }
+  .wrap { max-width: 420px; margin: 0 auto; transition: max-width 0.2s ease; }
+  .wrap.dashboard-active { max-width: 900px; }
+  .header {
+    background: var(--brand-color); border-radius: 10px 10px 0 0; padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
+  .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  #header-logo { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+  #logout-btn, #edit-profile-btn {
+    background: var(--brand-color-light); border: none; color: #E6F1FB; padding: 8px 14px;
+    border-radius: 4px; font-size: 13px; font-family: inherit; line-height: normal;
+    cursor: pointer; display: none; text-decoration: none;
+  }
+
+  /* Login card */
+  #login-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+  }
+  #login-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #login-card .field { margin-bottom: 1.25rem; }
+  #login-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #login-btn {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .register-link { text-align: center; margin-top: 1.25rem; font-size: 13px; color: #555; }
+  .register-link a { color: #0C447C; text-decoration: underline; }
+  .forgot-link { text-align: right; margin: 0.6rem 0 1.25rem; font-size: 12px; }
+  .forgot-link a { color: #0C447C; text-decoration: underline; cursor: pointer; }
+  #verify-email-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+    display: none;
+  }
+  #verify-email-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #verify-email-card .field { margin-bottom: 1.25rem; }
+  #verify-email-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #verify-email-card button {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #verify-email-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+  #verify-success-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #1e6b2e; background: #eaf6ec;
+    border-left: 3px solid #639922; padding: 10px 14px;
+  }
+  #verify-error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
+  #forgot-password-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+    display: none;
+  }
+  #forgot-password-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #forgot-password-card .field { margin-bottom: 1.25rem; }
+  #forgot-password-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #forgot-password-card button {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #forgot-password-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+  #forgot-success-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #1e6b2e; background: #eaf6ec;
+    border-left: 3px solid #639922; padding: 10px 14px;
+  }
+  #forgot-error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
+  #otp-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2.5rem 2rem; max-width: 420px; margin: 0 auto;
+    display: none;
+  }
+  #otp-card label {
+    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  #otp-card .field { margin-bottom: 1.25rem; }
+  #otp-card input {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 10px 12px; font-size: 14px;
+  }
+  #otp-verify-btn {
+    width: 100%; padding: 10px; font-size: 14px; font-weight: 500; background: #0C447C;
+    border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  #otp-verify-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  #otp-error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
+
+  /* Dashboard */
+  #dashboard-card {
+    background: #fff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2rem; display: none;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eceef1; }
+  th { background: #f7f8fa; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #666; }
+  tr:hover { background: #fafbfc; }
+  .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .product-row .product-input {
+    flex: 1; box-sizing: border-box; padding: 8px 10px; border-radius: 4px;
+    border: 1px solid #c7c9cf; font-size: 13px;
+  }
+  .product-row .remove-product-btn {
+    flex-shrink: 0; width: 32px; border-radius: 4px; border: 1px solid #c7c9cf;
+    background: #fff; color: #b42318; font-size: 15px; cursor: pointer;
+  }
+  #add-event-product-btn {
+    background: none; border: none; color: #0C447C; font-size: 12px; font-weight: 500;
+    cursor: pointer; padding: 4px 0;
+  }
+  .consent-yes { color: #1e6b2e; font-weight: 500; }
+  .consent-no { color: #999; }
+  #error-msg {
+    display: none; margin-top: 1rem; font-size: 13px; color: #b42318; background: #fdeeee;
+    border-left: 3px solid #E24B4A; padding: 10px 14px;
+  }
+  #loading-msg { font-size: 13px; color: #888; padding: 1rem 0; }
+  #empty-msg { font-size: 13px; color: #888; padding: 1rem 0; display: none; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="/"><img src="./src/assets/favicon.jpg" alt="" /><span>TheEventConnector</span></a>
+    <div class="site-links">
+      <a href="/">Home</a>
+      <a href="/faq.html">FAQ</a>
+    </div>
+    <a class="site-cta" id="nav-cta" href="/register.html">Register</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-left">
+      <img id="header-logo" src="./src/assets/logo.jpg" alt="" />
+      <div>
+        <p id="header-company">TheEventConnector Platform</p>
+        <h1 id="header-title">Vendor dashboard</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a id="edit-profile-btn" href="/profile.html">Edit profile</a>
+      <button id="logout-btn">Log out</button>
+    </div>
+  </div>
+
+  <div id="login-card">
+    <div class="field">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" placeholder="you@yourcompany.com" />
+    </div>
+    <div class="field">
+      <label for="login-password">Password</label>
+      <input id="login-password" type="password" placeholder="••••••••" />
+    </div>
+    <button id="login-btn">Log in</button>
+    <div class="forgot-link"><a id="forgot-password-link">Forgot password?</a></div>
+    <div class="forgot-link"><a id="verify-email-link">Need to verify your email?</a></div>
+    <div id="error-msg"><span id="error-text"></span></div>
+    <div class="register-link">
+      Don't have an account? <a href="/register.html">Register here</a>
+    </div>
+  </div>
+
+  <div id="verify-email-card">
+    <div id="verify-request-form">
+      <p style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter your email and we'll send you a verification code.</p>
+      <div class="field">
+        <label for="verify-email">Email</label>
+        <input id="verify-email" type="email" placeholder="you@yourcompany.com" />
+      </div>
+      <button id="verify-send-btn">Send verification code</button>
+    </div>
+
+    <div id="verify-confirm-form" style="display:none;">
+      <p id="verify-hint" style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter the verification code sent to your email.</p>
+      <div class="field">
+        <label for="verify-code">Verification code</label>
+        <input id="verify-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
+      </div>
+      <button id="verify-confirm-btn">Verify email</button>
+      <div class="forgot-link"><a id="verify-resend-link">Resend code</a></div>
+    </div>
+
+    <div id="verify-error-msg"><span id="verify-error-text"></span></div>
+    <div id="verify-success-msg"><span id="verify-success-text"></span></div>
+    <div class="register-link">
+      <a id="back-to-login-from-verify-link">Back to login</a>
+    </div>
+  </div>
+
+  <div id="forgot-password-card">
+    <div id="forgot-request-form">
+      <div class="field">
+        <label for="forgot-email">Email</label>
+        <input id="forgot-email" type="email" placeholder="you@yourcompany.com" />
+      </div>
+      <button id="forgot-send-btn">Send reset code</button>
+    </div>
+
+    <div id="forgot-confirm-form" style="display:none;">
+      <div class="field">
+        <label for="forgot-code">Verification code</label>
+        <input id="forgot-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
+      </div>
+      <div class="field">
+        <label for="forgot-new-password">New password</label>
+        <input id="forgot-new-password" type="password" placeholder="Min 8 chars, upper, lower, number, symbol" />
+      </div>
+      <button id="forgot-confirm-btn">Reset password</button>
+    </div>
+
+    <div id="forgot-error-msg"><span id="forgot-error-text"></span></div>
+    <div id="forgot-success-msg"><span id="forgot-success-text"></span></div>
+    <div class="register-link">
+      <a id="back-to-login-link">Back to login</a>
+    </div>
+  </div>
+
+  <div id="otp-card">
+    <p id="otp-hint" style="font-size:13px; color:#555; margin:0 0 1.25rem;">Enter the verification code sent to your email.</p>
+    <div class="field">
+      <label for="otp-code">Verification code</label>
+      <input id="otp-code" type="text" placeholder="Enter 6-digit code" maxlength="6" style="letter-spacing: 0.2em; text-align: center;" />
+    </div>
+    <button id="otp-verify-btn">Verify</button>
+    <div id="otp-error-msg"><span id="otp-error-text"></span></div>
+  </div>
+
+  <div id="dashboard-card">
+
+    <div id="add-event-section">
+      <h2 id="add-event-heading" style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Add an Event</h2>
+      <div style="border: 0.5px solid #d8dade; border-radius: 4px; padding: 16px; background: #f7f8fa;">
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-name" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event name <span style="color:#d23b3b;">*</span></label>
+          <input id="new-event-name" type="text" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-url" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Event website <span style="color:#999; font-weight:400;">(optional)</span></label>
+          <input id="new-event-url" type="url" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="new-event-venue" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Venue <span style="color:#999; font-weight:400;">(optional)</span></label>
+          <input id="new-event-venue" type="text" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+        </div>
+        <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <label for="new-event-start" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Start date <span style="color:#999; font-weight:400;">(optional)</span></label>
+            <input id="new-event-start" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+          </div>
+          <div style="flex: 1;">
+            <label for="new-event-end" style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">End date <span style="color:#999; font-weight:400;">(optional)</span></label>
+            <input id="new-event-end" type="date" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 4px; border: 1px solid #c7c9cf; font-size: 13px;" />
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Services offered for this event <span style="color:#999; font-weight:400;">(optional)</span></label>
+          <div id="event-products-container">
+            <div class="product-row">
+              <input type="text" class="product-input" />
+              <button type="button" class="remove-product-btn" aria-label="Remove">&times;</button>
+            </div>
+          </div>
+          <button type="button" id="add-event-product-btn">+ Add another</button>
+        </div>
+        <button id="add-event-btn" style="padding: 8px 20px; background: var(--brand-color); color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Add event</button>
+        <button id="cancel-edit-event-btn" type="button" style="display:none; margin-left: 8px; padding: 8px 20px; background: #fff; color: #555; border: 1px solid #c7c9cf; border-radius: 4px; font-size: 13px; cursor: pointer;">Cancel</button>
+        <div id="add-event-msg" style="display: none; margin-top: 10px; font-size: 12px;"></div>
+      </div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="events-list-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">Your Events</h2>
+      <table id="events-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Venue</th>
+            <th>Dates</th>
+            <th>Form link</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="events-body"></tbody>
+      </table>
+      <div id="events-empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">No events yet — add one above.</div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="view-submissions-section">
+      <h2 style="font-size: 14px; font-weight: 600; color: #333; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.06em;">View Event Submissions</h2>
+      <div id="event-filter-container" style="margin-bottom: 1rem;"></div>
+      <div id="submission-count" style="font-size: 12px; color: #666; margin-bottom: 0.5rem; display: none;"></div>
+      <div id="loading-msg" style="font-size: 13px; color: #888; padding: 1rem 0;">Loading submissions…</div>
+      <div id="empty-msg" style="font-size: 13px; color: #888; padding: 1rem 0; display: none;">No submissions yet.</div>
+      <table id="submissions-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Comment</th>
+            <th>Consent</th>
+            <th>Submitted at</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-body"></tbody>
+      </table>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #e2e3e7; margin: 2rem 0;" />
+
+    <div id="danger-zone-section">
+      <div style="border: 0.5px solid #f3c6c4; border-radius: 4px; padding: 16px; background: #fdeeee;">
+        <p style="font-size: 13px; color: #555; margin: 0 0 12px;">
+          Permanently delete your account, all of your events, and all submissions. This cannot be undone.
+        </p>
+        <button id="delete-account-btn" style="padding: 8px 20px; background: #b42318; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 500;">Delete my account</button>
+        <div id="delete-account-msg" style="display: none; margin-top: 10px; font-size: 12px; color: #b42318;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="./src/dashboard.js"></script>
+</body>
+</html>

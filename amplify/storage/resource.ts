@@ -11,5 +11,11 @@ export const storage = defineStorage({
       allow.guest.to(['read']),
       allow.authenticated.to(['read']),
     ],
+    // Optional company video and company profile document, same access rules.
+    'media/{entity_id}/*': [
+      allow.entity('identity').to(['read', 'write', 'delete']),
+      allow.guest.to(['read']),
+      allow.authenticated.to(['read']),
+    ],
   }),
 });

@@ -81,6 +81,14 @@
   #vendor-description ul { margin: 0; padding-left: 1.1em; }
   #vendor-description li { margin: 2px 0; }
   #vendor-contact { font-size: 14px; color: #333; font-weight: 500; margin: 6px 0 0; }
+  #vendor-video { display: none; margin-top: 14px; }
+  #vendor-video iframe, #vendor-video video {
+    display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 6px; background: #000;
+  }
+  #vendor-profile-doc {
+    display: none; margin-top: 12px; font-size: 13px; font-weight: 500;
+    color: var(--brand-color); text-decoration: underline;
+  }
 </style>
 </head>
 <body>
@@ -107,6 +115,8 @@
       </div>
       <div id="vendor-description"></div>
       <p id="vendor-contact"></p>
+      <div id="vendor-video"></div>
+      <a id="vendor-profile-doc" target="_blank" rel="noopener">📄 View our company profile</a>
     </div>
 
     <div id="form-content" style="display:none;">

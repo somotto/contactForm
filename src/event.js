@@ -151,7 +151,8 @@ function formatDateRange(start, end) {
 
 async function renderVendorInfo(ev) {
   const vendorInfo = document.getElementById('vendor-info');
-  const hasVendorInfo = ev.vendorCompanyName || ev.vendorDescription || ev.vendorProducts?.length || ev.vendorPhone || ev.vendorContactEmail || ev.vendorLogoKey;
+  const hasVendorInfo = ev.vendorCompanyName || ev.vendorDescription || ev.vendorProducts?.length || ev.vendorPhone || ev.vendorContactEmail || ev.vendorLogoKey
+    || ev.vendorVideoUrl || ev.vendorVideoKey || ev.vendorProfileDocKey;
   if (!hasVendorInfo) return;
 
   document.getElementById('vendor-company').textContent = ev.vendorCompanyName || '';
@@ -183,7 +184,60 @@ async function renderVendorInfo(ev) {
     logoImg.style.display = 'none';
   }
 
+  await Promise.all([renderVendorVideo(ev), renderVendorProfileDoc(ev)]);
+
   vendorInfo.style.display = 'block';
+}
+
+// Presigned S3 URLs default to 15 minutes; a visitor may sit on the page a
+// while before pressing play or opening the document, so ask for an hour.
+const MEDIA_URL_EXPIRES_IN = 3600;
+
+async function renderVendorVideo(ev) {
+  const container = document.getElementById('vendor-video');
+
+  // register.js normalizes the link to https://www.youtube.com/watch?v=<id>;
+  // re-validate the ID anyway since it ends up in an iframe src.
+  let youtubeId = null;
+  try {
+    if (ev.vendorVideoUrl) youtubeId = new URL(ev.vendorVideoUrl).searchParams.get('v');
+  } catch { /* ignore malformed */ }
+
+  if (youtubeId && /^[\w-]{11}$/.test(youtubeId)) {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
+    iframe.title = `${ev.vendorCompanyName || 'Vendor'} video`;
+    iframe.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
+    container.appendChild(iframe);
+    container.style.display = 'block';
+  } else if (ev.vendorVideoKey) {
+    try {
+      const { url } = await getUrl({ path: ev.vendorVideoKey, options: { expiresIn: MEDIA_URL_EXPIRES_IN } });
+      const video = document.createElement('video');
+      video.src = url.toString();
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      container.appendChild(video);
+      container.style.display = 'block';
+    } catch (err) {
+      console.error('Failed to load vendor video:', err);
+    }
+  }
+}
+
+async function renderVendorProfileDoc(ev) {
+  if (!ev.vendorProfileDocKey) return;
+  const link = document.getElementById('vendor-profile-doc');
+  try {
+    const { url } = await getUrl({ path: ev.vendorProfileDocKey, options: { expiresIn: MEDIA_URL_EXPIRES_IN } });
+    link.href = url.toString();
+    link.style.display = 'inline-block';
+  } catch (err) {
+    console.error('Failed to load vendor profile document:', err);
+  }
 }
 
 init();

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Edit Profile</title>
+<link rel="icon" type="image/jpeg" href="./src/assets/favicon.jpg" />
+<link rel="stylesheet" href="./src/nav.css" />
+<style>
+  body {
+    background:
+      linear-gradient(rgba(244,245,247,0.65), rgba(244,245,247,0.65)),
+      url('./src/assets/dashboard.jpg') center / cover no-repeat fixed;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    margin: 0;
+    padding: 2rem 1rem;
+    color: #1a1a1a;
+  }
+  :root { --brand-color: #0C447C; --brand-color-light: color-mix(in srgb, var(--brand-color) 75%, white); }
+  .card-wrap { max-width: 520px; margin: 0 auto; }
+  .header {
+    background: var(--brand-color);
+    border-radius: 10px 10px 0 0;
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .header p { font-size: 11px; letter-spacing: 0.12em; color: #85B7EB; margin: 0 0 4px; text-transform: uppercase; font-weight: 500; }
+  .header h1 { font-size: 20px; font-weight: 500; color: #E6F1FB; margin: 0; }
+  .header-icon { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #fff; }
+  .subbar { background: var(--brand-color-light); padding: 8px 2rem; display: flex; justify-content: space-between; gap: 1rem; }
+  .subbar p { font-size: 12px; color: #E6F1FB; margin: 0; }
+  .subbar a { font-size: 12px; color: #E6F1FB; }
+  .subbar .req { color: #F09595; }
+  .body-card {
+    background: #ffffff; border: 0.5px solid #d8dade; border-top: none;
+    border-radius: 0 0 10px 10px; padding: 2rem;
+  }
+  h2 {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #1a1a1a; margin: 0 0 1.25rem; padding-top: 1.5rem; border-top: 0.5px solid #e2e3e7;
+  }
+  h2.first { padding-top: 0; border-top: none; }
+  .section { margin-bottom: 2rem; }
+  .field { margin-bottom: 1.5rem; }
+  label {
+    display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 6px;
+  }
+  label .req { color: #d23b3b; }
+  label .hint { color: #999; font-weight: 400; text-transform: none; }
+  label.check { text-transform: none; font-weight: 400; font-size: 13px; letter-spacing: 0; color: #333; margin: 8px 0 0; cursor: pointer; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="password"] {
+    width: 100%; box-sizing: border-box; border-radius: 4px;
+    border: 1px solid #c7c9cf; padding: 10px 12px; font-size: 14px;
+  }
+  input[type="file"] {
+    width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #c7c9cf;
+    padding: 8px 12px; font-size: 13px; background: #fff; cursor: pointer;
+  }
+  input:focus { outline: 2px solid var(--brand-color-light); outline-offset: -1px; }
+  .note { font-size: 11px; color: #999; margin: 4px 0 0; }
+  .current { font-size: 13px; color: #333; margin: 0 0 8px; }
+  .current a { color: var(--brand-color); }
+  #logo-preview { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; border: 1px solid #c7c9cf; margin-bottom: 8px; display: none; }
+  .msg {
+    display: none; margin-top: 1rem; font-size: 13px; border-radius: 4px; padding: 10px 14px;
+  }
+  .msg.error { color: #b42318; background: #fdeeee; border-left: 3px solid #E24B4A; }
+  .msg.success { color: #1e6b2e; background: #eaf6ec; border-left: 3px solid #639922; }
+  .actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
+  .primary-btn {
+    padding: 9px 22px; font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
+    background: var(--brand-color); border: none; border-radius: 4px; color: #E6F1FB; cursor: pointer;
+  }
+  .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .legal-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 1rem; padding: 0 4px;
+  }
+  .legal-row p { font-size: 11px; color: #999; margin: 0; }
+  #loading-msg { text-align: center; padding: 2rem 0; font-size: 13px; color: #888; }
+  #brand-color-swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  #brand-color-swatches .swatch {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent;
+    cursor: pointer; padding: 0;
+  }
+  #brand-color-swatches .swatch.selected { border-color: #1a1a1a; }
+  .custom-swatch {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    background: conic-gradient(from 180deg, #ff0000, #ff8c00, #ffee00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+  }
+  .custom-swatch input[type="color"] {
+    position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0;
+  }
+  .custom-swatch .custom-swatch-plus {
+    position: relative; color: #fff; font-size: 16px; font-weight: 700;
+    text-shadow: 0 0 2px rgba(0,0,0,0.6); pointer-events: none;
+  }
+  .custom-swatch.selected .custom-swatch-plus { display: none; }
+  .product-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .product-row input { flex: 1; }
+  .product-row button {
+    flex-shrink: 0; width: 36px; border-radius: 4px; border: 1px solid #c7c9cf;
+    background: #fff; color: #b42318; font-size: 16px; cursor: pointer;
+  }
+  #add-product-btn {
+    background: none; border: none; color: var(--brand-color); font-size: 13px; font-weight: 500;
+    cursor: pointer; padding: 4px 0;
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="/"><img src="./src/assets/favicon.jpg" alt="" /><span>TheEventConnector</span></a>
+    <div class="site-links">
+      <a href="/">Home</a>
+      <a href="/faq.html">FAQ</a>
+    </div>
+    <a class="site-cta" href="/login.html">Dashboard</a>
+  </div>
+</nav>
+
+<div class="card-wrap">
+  <div class="header">
+    <div>
+      <p id="header-company">TheEventConnector</p>
+      <h1>Edit profile</h1>
+    </div>
+    <img id="header-logo" class="header-icon" src="./src/assets/logo.jpg" alt="" />
+  </div>
+
+  <div class="subbar">
+    <p>Fields marked <span class="req">*</span> are mandatory</p>
+    <a href="/login.html">← Back to dashboard</a>
+  </div>
+
+  <div class="body-card">
+    <div id="loading-msg">Loading your profile…</div>
+
+    <div id="profile-content" style="display:none;">
+
+      <!-- ── Profile details ─────────────────────────────────────────── -->
+      <div class="section">
+        <h2 class="first">Company details</h2>
+
+        <div class="field">
+          <label for="fullname">Full name <span class="req">*</span></label>
+          <input id="fullname" type="text" />
+        </div>
+
+        <div class="field">
+          <label for="companyname">Company name <span class="req">*</span></label>
+          <input id="companyname" type="text" />
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone number <span class="req">*</span></label>
+          <input id="phone" type="tel" />
+        </div>
+
+        <div class="field">
+          <label for="website">Company website</label>
+          <input id="website" type="url" />
+        </div>
+
+        <div class="field">
+          <label for="logo">Company logo / My Photo <span class="hint">(choose a file to replace the current one)</span></label>
+          <img id="logo-preview" alt="Current logo" />
+          <input id="logo" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+          <p class="note">PNG, JPG or WebP · max 2 MB</p>
+        </div>
+
+        <div class="field">
+          <label for="video-url">Company video <span class="hint">(optional · YouTube link or upload a video)</span></label>
+          <p class="current" id="current-video" style="display:none;"></p>
+          <input id="video-url" type="url" placeholder="https://www.youtube.com/watch?v=…" />
+          <p class="note" style="margin:8px 0 4px;">or upload a video file instead</p>
+          <input id="video-file" type="file" accept="video/mp4,video/webm,video/quicktime" />
+          <p class="note">MP4, WebM or MOV · max 50 MB</p>
+          <label class="check" id="remove-video-row" style="display:none;">
+            <input type="checkbox" id="remove-video" /> Remove my uploaded video
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="profile-doc">Company profile document <span class="hint">(optional)</span></label>
+          <p class="current" id="current-doc" style="display:none;"></p>
+          <input id="profile-doc" type="file"
+            accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+          <p class="note">PDF, Word or PowerPoint · max 10 MB</p>
+          <label class="check" id="remove-doc-row" style="display:none;">
+            <input type="checkbox" id="remove-doc" /> Remove my company profile document
+          </label>
+        </div>
+
+        <div class="field">
+          <label>Brand color <span class="hint">(used on your event form's header)</span></label>
+          <div id="brand-color-swatches">
+            <button type="button" class="swatch" data-color="#0C447C" style="background:#0C447C" aria-label="Blue"></button>
+            <button type="button" class="swatch" data-color="#0F5132" style="background:#0F5132" aria-label="Forest green"></button>
+            <button type="button" class="swatch" data-color="#6B2C91" style="background:#6B2C91" aria-label="Purple"></button>
+            <button type="button" class="swatch" data-color="#8C2F39" style="background:#8C2F39" aria-label="Maroon"></button>
+            <button type="button" class="swatch" data-color="#B45309" style="background:#B45309" aria-label="Amber"></button>
+            <button type="button" class="swatch" data-color="#0F766E" style="background:#0F766E" aria-label="Teal"></button>
+            <button type="button" class="swatch" data-color="#374151" style="background:#374151" aria-label="Slate"></button>
+            <button type="button" class="swatch" data-color="#9D174D" style="background:#9D174D" aria-label="Rose"></button>
+            <label id="custom-swatch" class="swatch custom-swatch" title="Choose a custom color">
+              <input type="color" id="custom-color-input" value="#0C447C" aria-label="Custom color" />
+              <span class="custom-swatch-plus" aria-hidden="true">+</span>
+            </label>
+          </div>
+          <input type="hidden" id="brandColor" value="#0C447C" />
+        </div>
+
+        <div class="field">
+          <label>Products / services <span class="req">*</span> <span class="hint">(default list for new events)</span></label>
+          <div id="products-container"></div>
+          <button type="button" id="add-product-btn">+ Add another</button>
+        </div>
+
+        <p class="note">Saving also updates the company details, logo, video, document and brand color shown on your existing event forms. Each event keeps its own products/services list — edit those per event on the dashboard.</p>
+
+        <div id="profile-msg" class="msg"></div>
+        <div class="actions">
+          <button id="save-profile-btn" class="primary-btn" type="button">Save changes</button>
+        </div>
+      </div>
+
+      <!-- ── Login email ─────────────────────────────────────────────── -->
+      <div class="section">
+        <h2>Email address</h2>
+        <div class="field">
+          <label for="email">Email address <span class="req">*</span> <span class="hint">(used to log in and shown on your event forms)</span></label>
+          <input id="email" type="email" />
+        </div>
+        <div id="email-code-row" class="field" style="display:none;">
+          <label for="email-code">Verification code <span class="req">*</span></label>
+          <input id="email-code" type="text" maxlength="6" placeholder="Enter 6-digit code"
+            style="letter-spacing: 0.2em; font-size: 18px; text-align: center;" />
+          <p class="note" id="email-code-hint"></p>
+        </div>
+        <div id="email-msg" class="msg"></div>
+        <div class="actions">
+          <button id="email-btn" class="primary-btn" type="button">Change email</button>
+        </div>
+      </div>
+
+      <!-- ── Password ────────────────────────────────────────────────── -->
+      <div class="section" style="margin-bottom:0;">
+        <h2>Password</h2>
+        <div class="field">
+          <label for="current-password">Current password <span class="req">*</span></label>
+          <input id="current-password" type="password" autocomplete="current-password" />
+        </div>
+        <div class="field">
+          <label for="new-password">New password <span class="req">*</span></label>
+          <input id="new-password" type="password" autocomplete="new-password" placeholder="Min 8 chars, upper, lower, number, symbol" />
+        </div>
+        <div id="password-msg" class="msg"></div>
+        <div class="actions">
+          <button id="password-btn" class="primary-btn" type="button">Change password</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="legal-row">
+    <p>© 2026 TheEventConnector. All rights reserved.</p>
+    <p><a href="./privacy.html" style="color:#999;">Privacy Policy</a> · <a href="./terms.html" style="color:#999;">Terms of Use</a> · <a href="./faq.html" style="color:#999;">FAQ</a></p>
+  </div>
+</div>
+
+<script type="module" src="./src/profile.js"></script>
+</body>
+</html>

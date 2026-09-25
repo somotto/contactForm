@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vendor Registration</title>
 <link rel="icon" type="image/jpeg" href="./src/assets/favicon.jpg" />
+<link rel="stylesheet" href="./src/nav.css" />
 <style>
   body {
     background:
@@ -100,6 +101,17 @@
 </head>
 <body>
 
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="/"><img src="./src/assets/favicon.jpg" alt="" /><span>TheEventConnector</span></a>
+    <div class="site-links">
+      <a href="/">Home</a>
+      <a href="/faq.html">FAQ</a>
+    </div>
+    <a class="site-cta" href="/login.html">Log in</a>
+  </div>
+</nav>
+
 <div class="card-wrap">
   <div class="header">
     <div>
@@ -142,12 +154,31 @@
       </div>
 
       <div class="field">
-        <label for="logo">Logo or photo <span class="req">*</span> <span style="color:#999; font-weight:400; text-transform:none;">(shown on your event form)</span></label>
+        <label for="logo">Company logo / My Photo<span class="req">*</span> <span style="color:#999; font-weight:400; text-transform:none;">(shown on your event form)</span></label>
         <input id="logo" type="file" accept="image/png,image/jpeg,image/webp,image/gif"
           style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
                  padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
         <p style="font-size:11px; color:#999; margin:4px 0 0;">PNG, JPG or WebP · max 2 MB</p>
         <img id="logo-preview" alt="Logo preview" style="display:none; width:64px; height:64px; object-fit:cover; border-radius:4px; border:1px solid #c7c9cf; margin-top:8px;" />
+      </div>
+
+      <div class="field">
+        <label for="video-url">Company video <span style="color:#999; font-weight:400; text-transform:none;">(optional · YouTube link or upload a video)</span></label>
+        <input id="video-url" type="url" placeholder="https://www.youtube.com/watch?v=…" />
+        <p style="font-size:11px; color:#999; margin:8px 0 4px;">or upload a video file instead</p>
+        <input id="video-file" type="file" accept="video/mp4,video/webm,video/quicktime"
+          style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
+                 padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
+        <p style="font-size:11px; color:#999; margin:4px 0 0;">MP4, WebM or MOV · max 50 MB</p>
+      </div>
+
+      <div class="field">
+        <label for="profile-doc">Company profile document <span style="color:#999; font-weight:400; text-transform:none;">(optional)</span></label>
+        <input id="profile-doc" type="file"
+          accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          style="width:100%; box-sizing:border-box; border-radius:4px; border:1px solid #c7c9cf;
+                 padding:8px 12px; font-size:13px; background:#fff; cursor:pointer;" />
+        <p style="font-size:11px; color:#999; margin:4px 0 0;">PDF, Word or PowerPoint · max 10 MB</p>
       </div>
 
       <div class="field">
@@ -193,7 +224,7 @@
       </div>
 
       <div class="login-link">
-        Already have an account? <a href="/">Log in</a>
+        Already have an account? <a href="/login.html">Log in</a>
       </div>
     </div>
 

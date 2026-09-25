@@ -14,6 +14,10 @@ const schema = a.schema({
       description: a.string().required(),
       products: a.string().array(),
       brandColor: a.string(),
+      videoUrl: a.string(),
+      videoKey: a.string(),
+      profileDocKey: a.string(),
+      profileDocName: a.string(),
     })
     .authorization((allow) => [
       allow.owner(),
@@ -35,6 +39,10 @@ const schema = a.schema({
       vendorPhone: a.string(),
       vendorContactEmail: a.string(),
       vendorBrandColor: a.string(),
+      vendorVideoUrl: a.string(),
+      vendorVideoKey: a.string(),
+      vendorProfileDocKey: a.string(),
+      vendorProfileDocName: a.string(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['read']),
