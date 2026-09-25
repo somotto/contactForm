@@ -59,7 +59,9 @@ function selectSwatch(el, color) {
   document.querySelectorAll('#brand-color-swatches .swatch').forEach((s) => s.classList.remove('selected'));
   document.getElementById('custom-swatch').style.background = '';
   el.classList.add('selected');
-  const applied = applyBrandColor(color, document.getElementById('brand-preview'));
+  const preview = document.getElementById('brand-preview');
+  const applied = applyBrandColor(color, preview);
+  preview.style.display = 'block';
   document.getElementById('brandColor').value = applied;
   const note = document.getElementById('brand-color-note');
   if (applied !== color.toUpperCase()) {
@@ -70,9 +72,6 @@ function selectSwatch(el, color) {
   }
   return applied;
 }
-
-const initialSwatch = document.querySelector('#brand-color-swatches .swatch.selected');
-selectSwatch(initialSwatch, initialSwatch.dataset.color);
 
 document.querySelectorAll('#brand-color-swatches button.swatch').forEach((swatch) => {
   swatch.addEventListener('click', () => selectSwatch(swatch, swatch.dataset.color));
@@ -117,6 +116,7 @@ registerBtn.addEventListener('click', async () => {
   if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
   if (!logoFile) { showError('A logo or photo is required.'); return; }
   if (logoFile.size > 2 * 1024 * 1024) { showError('Logo must be 2 MB or smaller.'); return; }
+  if (!brandColor) { showError('Please choose a brand color for your event form.'); return; }
 
   let videoUrl = null;
   if (videoInput) {

@@ -192,6 +192,30 @@
       </div>
 
       <div class="field">
+        <label>Brand color <span class="req">*</span> <span style="color:#999; font-weight:400; text-transform:none;">(used on your event form's header)</span></label>
+        <div id="brand-color-swatches">
+          <button type="button" class="swatch" data-color="#0C447C" style="background:#0C447C" aria-label="Blue"></button>
+          <button type="button" class="swatch" data-color="#0F5132" style="background:#0F5132" aria-label="Forest green"></button>
+          <button type="button" class="swatch" data-color="#6B2C91" style="background:#6B2C91" aria-label="Purple"></button>
+          <button type="button" class="swatch" data-color="#8C2F39" style="background:#8C2F39" aria-label="Maroon"></button>
+          <button type="button" class="swatch" data-color="#B45309" style="background:#B45309" aria-label="Amber"></button>
+          <button type="button" class="swatch" data-color="#0F766E" style="background:#0F766E" aria-label="Teal"></button>
+          <button type="button" class="swatch" data-color="#374151" style="background:#374151" aria-label="Slate"></button>
+          <button type="button" class="swatch" data-color="#9D174D" style="background:#9D174D" aria-label="Rose"></button>
+          <label id="custom-swatch" class="swatch custom-swatch" title="Choose a custom color">
+            <input type="color" id="custom-color-input" value="#0C447C" aria-label="Custom color" />
+            <span class="custom-swatch-plus" aria-hidden="true">+</span>
+          </label>
+        </div>
+        <input type="hidden" id="brandColor" value="" />
+        <div id="brand-preview" class="brand-preview" aria-hidden="true" style="display:none;">
+          <div class="brand-preview-header">Your event form</div>
+          <div class="brand-preview-subbar">This is how your header will look</div>
+        </div>
+        <p id="brand-color-note" class="brand-color-note" style="display:none;"></p>
+      </div>
+
+      <div class="field">
         <label>Products / services <span class="req">*</span> <span style="color:#999; font-weight:400; text-transform:none;">(shown as a list on your event form)</span></label>
         <div id="products-container">
           <div class="product-row">
@@ -210,36 +234,12 @@
       <details id="optional-details">
         <summary>
           <span>Add optional details</span>
-          <span class="summary-hint">Website, brand color, company video, company profile</span>
+          <span class="summary-hint">Website, company video, company profile</span>
         </summary>
         <div class="optional-body">
         <div class="field">
           <label for="website">Company website</label>
           <input id="website" type="url" />
-        </div>
-
-        <div class="field">
-          <label>Brand color <span style="color:#999; font-weight:400; text-transform:none;">(used on your event form's header)</span></label>
-          <div id="brand-color-swatches">
-            <button type="button" class="swatch selected" data-color="#0C447C" style="background:#0C447C" aria-label="Blue"></button>
-            <button type="button" class="swatch" data-color="#0F5132" style="background:#0F5132" aria-label="Forest green"></button>
-            <button type="button" class="swatch" data-color="#6B2C91" style="background:#6B2C91" aria-label="Purple"></button>
-            <button type="button" class="swatch" data-color="#8C2F39" style="background:#8C2F39" aria-label="Maroon"></button>
-            <button type="button" class="swatch" data-color="#B45309" style="background:#B45309" aria-label="Amber"></button>
-            <button type="button" class="swatch" data-color="#0F766E" style="background:#0F766E" aria-label="Teal"></button>
-            <button type="button" class="swatch" data-color="#374151" style="background:#374151" aria-label="Slate"></button>
-            <button type="button" class="swatch" data-color="#9D174D" style="background:#9D174D" aria-label="Rose"></button>
-            <label id="custom-swatch" class="swatch custom-swatch" title="Choose a custom color">
-              <input type="color" id="custom-color-input" value="#0C447C" aria-label="Custom color" />
-              <span class="custom-swatch-plus" aria-hidden="true">+</span>
-            </label>
-          </div>
-          <input type="hidden" id="brandColor" value="#0C447C" />
-          <div id="brand-preview" class="brand-preview" aria-hidden="true">
-            <div class="brand-preview-header">Your event form</div>
-            <div class="brand-preview-subbar">This is how your header will look</div>
-          </div>
-          <p id="brand-color-note" class="brand-color-note" style="display:none;"></p>
         </div>
 
         <div class="field">
